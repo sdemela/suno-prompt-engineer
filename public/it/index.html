@@ -74,7 +74,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .out-blk{padding:20px;border-bottom:1px solid var(--border);}
 .out-blk:last-child{border-bottom:none;}
 .out-blk-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
-.ptxt{font-family:'Space Mono',monospace;font-size:13px;line-height:1.9;word-break:break-word;}
+.ptxt{font-family:'Space Mono',monospace;font-size:14px;line-height:1.8;word-break:break-word;color:var(--text);letter-spacing:.3px;}
 .cpbtn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 16px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
 .cpbtn:hover{border-color:var(--green);color:var(--green);}
 .tpill{font-size:12px;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.2);color:var(--green);padding:4px 12px;border-radius:6px;font-family:'Space Mono',monospace;display:inline-block;margin:3px;}
@@ -134,9 +134,11 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
   <div class="free-banner" id="freeBanner">
     <div>
-      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni AI gratuite oggi</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Si resettano ogni giorno a mezzanotte</div>
+      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni gratuite oggi</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Dalla 3ª aggiungi la tua API key — reset a mezzanotte</div>
     </div>
+    <div class="free-dots"><div class="free-dot" id="dot0"></div><div class="free-dot" id="dot1"></div></div>
+  </div>
     <div class="free-dots"><div class="free-dot" id="dot0"></div><div class="free-dot" id="dot1"></div></div>
   </div>
 
@@ -145,7 +147,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       🔑 API Key Personale — <span style="color:var(--muted)">generazioni illimitate</span>
     </div>
     <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:4px">
-      Opzionale. Ottienila su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → Settings → API Keys → Create Key.
+      Opzionale. Ottienila su <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key.
     </div>
     <div id="apiKeyArea">
       <div class="api-row">
@@ -392,22 +394,14 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <div id="refContent" style="background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.2);border-radius:8px;padding:12px 16px;font-size:12px;font-family:'Space Mono',monospace;color:var(--purple);line-height:1.9"></div>
       </div>
       <div class="out-blk"><div class="out-blk-lbl">Consigli Suno</div><div id="sunoTips" style="font-size:13px;color:var(--muted);line-height:1.9"></div></div>
-      <div class="out-blk">
-        <div class="legend">
-          <div class="li"><div class="ld" style="background:#7b5cff"></div>genre/era</div>
-          <div class="li"><div class="ld" style="background:#ff3c5f"></div>style</div>
-          <div class="li"><div class="ld" style="background:#f5c842"></div>mood</div>
-          <div class="li"><div class="ld" style="background:#00e5b0"></div>instruments</div>
-          <div class="li"><div class="ld" style="background:#a0d8ff"></div>production</div>
-        </div>
       </div>
     </div>
   </div>
 
   <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
     SUNO PROMPT ENGINEER<br>
-    <a href="https://console.anthropic.com" target="_blank" style="color:var(--border)">Get Anthropic API Key</a> &nbsp;·&nbsp;
-    <a href="https://suno.com" target="_blank" style="color:var(--border)">Suno AI</a>
+    <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Get Anthropic API Key</a> &nbsp;·&nbsp;
+    <a href="https://suno.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Suno AI</a>
   </div>
 </div>
 
@@ -445,7 +439,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <button id="modalCloseBtn" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px">CHIUDI</button>
     </div>
     <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-      Crea la key su <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → Settings → API Keys → Create Key
+      Crea la key su <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key
     </div>
   </div>
 </div>
@@ -459,7 +453,7 @@ function updateBanner(){
   var u=getUsed(),r=Math.max(0,FREE_LIMIT-u),b=document.getElementById('freeBanner');
   if(apiKey){b.style.display='none';return;}
   b.style.display='flex';
-  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+' free AI generation'+(r>1?'s':'')+' today'):'🔒 Limite raggiunto — inserisci la tua API key';
+  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+' generazione'+(r>1?'i':'')+' gratuita'+(r>1?'e':'')+' oggi'):'🔒 Aggiungi la tua API key per continuare';
   document.getElementById('dot0').className='free-dot'+(u>0?' used':'');
   document.getElementById('dot1').className='free-dot'+(u>1?' used':'');
 }
@@ -472,19 +466,23 @@ function saveKey(){
 }
 document.getElementById('toggleKeyBtn').addEventListener('click',function(){var i=document.getElementById('apiKeyInput'),b=document.getElementById('toggleKeyBtn');if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';}});
 document.getElementById('saveKeyBtn').addEventListener('click',saveKey);
-document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';updateBanner();});
+var _savedKey=localStorage.getItem('spe_apikey');
+if(_savedKey&&_savedKey.startsWith('sk-ant-')){document.getElementById('apiKeyInput').value=_savedKey;saveKey();}
+document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';localStorage.removeItem('spe_apikey');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';updateBanner();});
 document.getElementById('modalCloseBtn').addEventListener('click',function(){document.getElementById('limitModal').style.display='none';});
-document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-'))return;apiKey=v;document.getElementById('apiKeyInput').value=v;saveKey();document.getElementById('limitModal').style.display='none';generate();});
-var AD_SEC=5;
+document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-')){return;}localStorage.setItem('spe_apikey',v);apiKey=v;document.getElementById('apiKeyInput').value=v;saveKey();document.getElementById('limitModal').style.display='none';generate();});
+var AD_SEC=5;var adPushed=false;
 function showAd(cb){
   var ov=document.getElementById('adOverlay'),rb=document.getElementById('revealBtn'),num=document.getElementById('ringNum'),arc=document.getElementById('arcEl'),circ=2*Math.PI*18;
   ov.style.display='flex';rb.className='btn-reveal';arc.style.strokeDashoffset=circ;num.textContent=AD_SEC;
-  try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}
+  if(!adPushed){try{(adsbygoogle=window.adsbygoogle||[]).push({});adPushed=true;}catch(e){}}
   var left=AD_SEC;
   if(cdTimer)clearInterval(cdTimer);
   cdTimer=setInterval(function(){left-=1;num.textContent=left;arc.style.strokeDashoffset=circ*(left/AD_SEC);if(left<=0){clearInterval(cdTimer);rb.className='btn-reveal ready';num.textContent='✓';}},1000);
-  function onReveal(){if(!rb.classList.contains('ready'))return;clearInterval(cdTimer);ov.style.display='none';rb.removeEventListener('click',onReveal);cb();}
-  rb.addEventListener('click',onReveal);
+  rb.addEventListener('click',function onReveal(){
+    if(!rb.classList.contains('ready'))return;
+    clearInterval(cdTimer);ov.style.display='none';cb();
+  },{once:true});
 }
 var wf=document.getElementById('waveform');
 [14,22,10,28,16,8,24,18,12,26,20,8,22,14,28,10,18,24,12,20,16,26,8,22,14,28,18,10,24].forEach(function(h,i){var s=document.createElement('span');s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.18)+'s ease-in-out '+(i%6)*0.15+'s infinite;';wf.appendChild(s);});
@@ -500,60 +498,122 @@ dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
 dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');loadAudio(e.dataTransfer.files[0]);});
 function loadAudio(f){if(!f||!f.type.startsWith('audio/'))return;audioFileName=f.name;document.getElementById('audioFilename').textContent=f.name;document.getElementById('audioPlayer').src=URL.createObjectURL(f);document.getElementById('audioPreview').style.display='block';document.getElementById('dropZone').style.display='none';}
 var COLORS={genre:'#7b5cff',style:'#ff3c5f',mood:'#f5c842',instr:'#00e5b0',tech:'#a0d8ff',extra:'#6b6b85'};
+
+function buildSystemPrompt(){
+  return 'You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt for Suno AI.\n\nOutput ONLY a raw JSON object with this exact structure, no markdown, no explanation:\n{\n  "stylePrompt": "the complete style prompt string — max 120 chars, comma-separated keywords optimized for Suno",\n  "tips": ["tip1", "tip2"]\n}\n\nRules for stylePrompt:\n- Natural flowing sequence of style keywords, NOT a sentence\n- Order: genre/era → mood/energy → instruments → production/mix → structure\n- NEVER include artist names, song titles, or brand names\n- Max 120 characters total, English only\n- If reference description provided, extract sonic keywords and blend them in\n\nRules for tips: 1-3 short actionable tips specific to the genre/settings, max 80 chars each.';
+}
+
+function buildUserMessage(f){
+  var parts=[];
+  if(f.genre)parts.push('Genre: '+f.genre);
+  if(f.era)parts.push('Era/Reference: '+f.era);
+  if(f.substyles&&f.substyles.length)parts.push('Sub-styles: '+f.substyles.join(', '));
+  if(f.moods&&f.moods.length)parts.push('Mood: '+f.moods.join(', '));
+  if(f.energy)parts.push('Energy: '+f.energy);
+  if(f.bpm)parts.push('BPM: '+f.bpm);
+  if(f.key)parts.push('Key: '+f.key);
+  if(f.timeSig)parts.push('Time signature: '+f.timeSig);
+  if(f.instruments&&f.instruments.length)parts.push('Instruments: '+f.instruments.join(', '));
+  if(f.mix&&f.mix.length)parts.push('Mix: '+f.mix.join(', '));
+  if(f.structure&&f.structure.length)parts.push('Structure: '+f.structure.join(', '));
+  if(f.vocalStyle)parts.push('Vocals: '+[f.vocalStyle,f.vocalTex,f.vocalLang].filter(Boolean).join(', '));
+  if(f.extra)parts.push('Extra notes: '+f.extra);
+  if(f.refDesc)parts.push('Reference description: '+f.refDesc);
+  return parts.join('\n');
+}
+
 async function generate(){
   var genre=document.getElementById('genre').value,era=document.getElementById('era').value.trim(),bpm=document.getElementById('bpm').value,key=document.getElementById('key').value,vs=document.getElementById('vocalStyle').value,vt=document.getElementById('vocalTex').value,vl=document.getElementById('vocalLang').value,extra=document.getElementById('extra').value.trim(),refDesc=document.getElementById('refDesc').value.trim();
   var substyles=getTags('substyle-tags'),moods=getTags('mood-tags'),energy=getTags('energy-tags'),timeSig=getTags('time-tags'),instrs=getTags('instr-tags'),mix=getTags('mix-tags'),struct=getTags('struct-tags');
-  if(!genre&&substyles.length===0&&moods.length===0){alert('Seleziona almeno un genere o qualche tag.');return;}
-  if(!apiKey&&refDesc&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
-  var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERATING...';
-  var parts=[];
-  if(genre)parts.push({text:genre,cls:'genre'});if(era)parts.push({text:era,cls:'genre'});
-  substyles.forEach(function(s){parts.push({text:s,cls:'style'});});moods.forEach(function(m){parts.push({text:m,cls:'mood'});});
-  energy.forEach(function(e){parts.push({text:e,cls:'mood'});});instrs.forEach(function(i){parts.push({text:i,cls:'instr'});});
-  mix.forEach(function(m){parts.push({text:m,cls:'tech'});});struct.forEach(function(s){parts.push({text:s,cls:'style'});});
-  if(vs)parts.push({text:[vs,vt,vl].filter(Boolean).join(', '),cls:'instr'});else parts.push({text:'no vocals',cls:'tech'});
-  if(extra)parts.push({text:extra,cls:'extra'});
-  var refs=[];
-  if(refDesc){
-    var sys='You are a music prompt engineer for Suno AI. The user describes a reference track in Italian or English. Extract 4-8 concise English style keywords for Suno Style of Music field. NEVER include artist names or song titles. Output ONLY a raw JSON array of strings, no markdown, no explanation. Max 4 words per item. Focus on rhythm, texture, energy, mix, structure. Example: ["hypnotic groove","dry punchy kick","long reverb tails","warm analog mix"]';
-    try{
-      var resp,data,raw;
-      if(apiKey){
-        resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:300,system:sys,messages:[{role:'user',content:'Reference: '+refDesc}]})});
-        if(!resp.ok){var e=await resp.json();throw new Error(e.error?e.error.message:'API error');}
-        data=await resp.json();raw=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-        refs=JSON.parse(raw.replace(/```json|```/g,'').trim());
-      }else{
-        resp=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({refDesc:refDesc})});
-        if(resp.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;}
-        if(!resp.ok){var e2=await resp.json();throw new Error(e2.error||'Server error');}
-        data=await resp.json();refs=data.keywords||[];incUsed();updateBanner();
-      }
-      refs.forEach(function(k){parts.push({text:k,cls:'style'});});
-    }catch(err){console.error(err);}
+  if(!genre&&substyles.length===0&&moods.length===0){alert('Seleziona almeno un genere o alcuni tag.');return;}
+  if(refDesc.length>1000){alert('Descrizione reference troppo lunga (max 1000 caratteri).');return;}
+
+  if(!apiKey&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
+
+  var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERAZIONE IN CORSO...';
+  document.getElementById('apiError').style.display='none';
+
+  var formData={
+    genre:genre,era:era,substyles:substyles,moods:moods,
+    energy:energy[0]||'',bpm:bpm,key:key,timeSig:timeSig[0]||'4/4',
+    instruments:instrs,mix:mix,structure:struct,
+    vocalStyle:vs,vocalTex:vt,vocalLang:vl,
+    extra:extra,refDesc:refDesc
+  };
+
+  var result=null;
+  try{
+    if(apiKey){
+      var resp=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:buildSystemPrompt(),messages:[{role:'user',content:buildUserMessage(formData)}]})
+      });
+      if(!resp.ok){var e=await resp.json();throw new Error(e.error?e.error.message:'Errore API');}
+      var data=await resp.json();
+      var raw=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+      try{result=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){result={stylePrompt:raw,tips:[]};}
+    } else {
+      var resp2=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({formData:formData})});
+      if(resp2.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;}
+      if(!resp2.ok){var e2=await resp2.json();throw new Error(e2.error||'Errore server');}
+      result=await resp2.json();
+      incUsed();updateBanner();
+    }
+  }catch(err){
+    console.error(err);
+    var eb=document.getElementById('apiError');eb.textContent='⚠ Errore: '+err.message;eb.style.display='block';
+    btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;
   }
-  var techTags=[bpm+' BPM',key,timeSig[0]].filter(Boolean),bpmN=parseInt(bpm,10),tips=[];
-  if(audioFileName&&refDesc)tips.push('🎧 Audio + descrizione: carica il file in Suno via Upload audio.');
-  else if(audioFileName)tips.push('🎧 Carica il file in Suno via Upload audio. Max 8 keyword nel prompt.');
-  else if(refDesc)tips.push('📝 Keyword estratte. Titolo e artista rimangono privati.');
-  if(bpmN>145)tips.push('⚡ BPM alto: prova no vocals per drum pattern più puliti.');
-  if(90>bpmN)tips.push('🌊 BPM lento: considera atmospheric o cinematic.');
-  if(['Techno','Minimal Techno','Industrial Techno'].indexOf(genre)>-1)tips.push('🔊 Techno: prova "Berlin club sound", "warehouse rave".');
-  if(['Ambient','IDM'].indexOf(genre)>-1)tips.push('🎛 Ambient/IDM: prova "textural", "no drums", "glitchy percussion".');
-  if(['House','Deep House','Afro House'].indexOf(genre)>-1)tips.push('🎹 House: aggiungi "soulful" o "chicago" per le radici storiche.');
-  if(instrs.indexOf('acid bassline')>-1)tips.push('🟡 Acid: usa "303 acid", "squelchy bassline".');
-  if(!vs)tips.push('🎵 Senza voce: write [Instrumental] in Suno\'s text field.');
-  if(tips.length===0)tips.push('✅ Paste the Style Prompt into Suno\'s Style of Music field.');
+
+  if(!result||!result.stylePrompt){
+    var eb2=document.getElementById('apiError');eb2.textContent='⚠ Risposta inattesa dall\'AI. Riprova.';eb2.style.display='block';
+    btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;
+  }
+
+  var techTags=[bpm+' BPM',key,timeSig[0]].filter(Boolean);
+  var tips=result.tips||[];
+  var bpmN=parseInt(bpm,10);
+  if(tips.length===0){
+    if(bpmN>145)tips.push('⚡ BPM alto: prova senza vocals per pattern drum più puliti.');
+    if(bpmN<90)tips.push('🌊 BPM lento: considera di aggiungere atmospheric o cinematic.');
+    if(!vs)tips.push('🎵 Niente vocals: scrivi [Instrumental] nel campo testo di Suno.');
+    if(tips.length===0)tips.push('✅ Incolla lo Style Prompt nel campo "Style of Music" di Suno.');
+  }
+
   document.getElementById('outLabel').textContent=(genre||'Custom')+' — '+bpm+' BPM';
-  var pt=document.getElementById('promptText');pt.innerHTML='';
-  parts.forEach(function(p,i){var s=document.createElement('span');s.textContent=p.text;s.style.color=COLORS[p.cls]||'#e8e8f0';if(p.cls==='extra')s.style.fontStyle='italic';pt.appendChild(s);if(parts.length-1>i){var sep=document.createElement('span');sep.textContent=', ';sep.style.color='#2a2a3a';pt.appendChild(sep);}});
+  document.getElementById('promptText').textContent=result.stylePrompt;
   document.getElementById('techTags').innerHTML=techTags.map(function(t){return '<span class="tpill">'+t+'</span>';}).join('');
-  if(audioFileName||refs.length>0){var h='';if(audioFileName)h+='📎 <strong>'+audioFileName+'</strong> — carica in Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';if(refs.length>0)h+='🔍 Keyword estratte: <strong style="color:#fff">'+refs.join(', ')+'</strong><br>';h+='<span style="color:#6b6b85;font-size:11px">→ Titolo e artista rimangono privati.</span>';document.getElementById('refContent').innerHTML=h;document.getElementById('refBlock').style.display='block';}else{document.getElementById('refBlock').style.display='none';}
+
+  if(audioFileName||refDesc){
+    var h='';
+    if(audioFileName)h+='📎 <strong>'+audioFileName+'</strong> — carica su Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';
+    if(refDesc)h+='📝 Descrizione reference usata per estrazione keyword AI.<br>';
+    h+='<span style="color:#6b6b85;font-size:11px">→ Titolo e artista rimangono privati.</span>';
+    document.getElementById('refContent').innerHTML=h;
+    document.getElementById('refBlock').style.display='block';
+  } else {
+    document.getElementById('refBlock').style.display='none';
+  }
+
   document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
-  lastOutput=parts;btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';
-  showAd(function(){document.getElementById('outputWrapper').style.display='block';setTimeout(function(){document.getElementById('outputWrapper').scrollIntoView({behavior:'smooth',block:'start'});},80);});
+
+  lastOutput=result.stylePrompt;
+  btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';
+
+  showAd(function(){
+    var ow=document.getElementById('outputWrapper');
+    ow.style.display='none';ow.style.animation='none';
+    requestAnimationFrame(function(){
+      ow.style.display='block';
+      requestAnimationFrame(function(){
+        ow.style.animation='';
+        setTimeout(function(){ow.scrollIntoView({behavior:'smooth',block:'start'});},80);
+      });
+    });
+  });
 }
-document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;var txt=lastOutput.map(function(p){return p.text;}).join(', ');navigator.clipboard.writeText(txt).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Prompt';b.style.color='';b.style.borderColor='';},2000);});});
+document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Prompt';b.style.color='';b.style.borderColor='';},2000);});});});
 document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
 updateBanner();
 </script>
