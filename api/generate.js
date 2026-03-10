@@ -1,20 +1,16 @@
 // api/generate.js — Vercel serverless function
 // Handles free-tier AI calls (max 2/day per IP)
-// Rate limit stored in-memory per invocation (use Vercel KV or Upstash Redis for production persistence)
+// From 3rd use onward, user must provide their own API key (BYOK)
 
 const FREE_LIMIT = 2;
-
-// Simple in-memory store — resets on cold start
-// For persistent rate limiting, replace with Upstash Redis (free tier available)
 const ipStore = new Map();
 
 function getTodayKey(ip) {
-  const today = new Date().toISOString().slice(0, 10); // YYYY-MM-DD
+  const today = new Date().toISOString().slice(0, 10);
   return `${ip}::${today}`;
 }
 
 export default async function handler(req, res) {
-  // CORS
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -25,36 +21,27 @@ export default async function handler(req, res) {
   const key = getTodayKey(ip);
   const used = ipStore.get(key) || 0;
 
-  const { refDesc, mode } = req.body || {};
+  const { formData } = req.body || {};
 
-  // If just checking quota
-  if (mode === "check") {
-    return res.status(200).json({ used, limit: FREE_LIMIT, remaining: Math.max(0, FREE_LIMIT - used) });
-  }
+  if (!formData) return res.status(400).json({ error: "Missing formData" });
 
-  if (!refDesc) return res.status(400).json({ error: "Missing refDesc" });
-  // Fix #8: server-side length guard to prevent API abuse
-  if (refDesc.length > 1000) return res.status(400).json({ error: "refDesc too long (max 1000 chars)" });
+  // Validate input length
+  const totalLen = JSON.stringify(formData).length;
+  if (totalLen > 3000) return res.status(400).json({ error: "Input too long" });
 
   // Check rate limit
   if (used >= FREE_LIMIT) {
     return res.status(429).json({
       error: "free_limit_reached",
-      message: `Daily limit reached (${FREE_LIMIT} free AI extractions). Add your API key to continue.`,
+      message: `You've used your ${FREE_LIMIT} free generations today. Add your Anthropic API key to continue.`,
       used,
       limit: FREE_LIMIT
     });
   }
 
-  // Call Anthropic
-  const sysPrompt =
-    "You are a music prompt engineer for Suno AI. " +
-    "The user describes a reference track in Italian or English. " +
-    "Extract 4-8 concise English style keywords for Suno Style of Music field. " +
-    "NEVER include artist names or song titles. " +
-    "Output ONLY a raw JSON array of strings, no markdown, no explanation. " +
-    "Max 4 words per item. Focus on rhythm, texture, energy, mix, structure. " +
-    'Example: ["hypnotic groove","dry punchy kick","long reverb tails","warm analog mix"]';
+  // Build system prompt
+  const sysPrompt = buildSystemPrompt();
+  const userMessage = buildUserMessage(formData);
 
   try {
     const resp = await fetch("https://api.anthropic.com/v1/messages", {
@@ -66,9 +53,9 @@ export default async function handler(req, res) {
       },
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
-        max_tokens: 300,
+        max_tokens: 600,
         system: sysPrompt,
-        messages: [{ role: "user", content: "Reference: " + refDesc }]
+        messages: [{ role: "user", content: userMessage }]
       })
     });
 
@@ -78,21 +65,68 @@ export default async function handler(req, res) {
     }
 
     const data = await resp.json();
-    const raw = (data.content || []).find(b => b.type === "text")?.text || "[]";
-    // Fix #3: guard against malformed JSON from AI
-    let keywords;
+    const raw = (data.content || []).find(b => b.type === "text")?.text || "{}";
+
+    let result;
     try {
-      keywords = JSON.parse(raw.replace(/```json|```/g, "").trim());
-      if (!Array.isArray(keywords)) keywords = [];
-    } catch(parseErr) {
-      keywords = [];
+      result = JSON.parse(raw.replace(/```json|```/g, "").trim());
+      if (!result.stylePrompt) result = { stylePrompt: raw, tips: [] };
+    } catch(e) {
+      result = { stylePrompt: raw, tips: [] };
     }
 
-    // Increment counter
     ipStore.set(key, used + 1);
 
-    return res.status(200).json({ keywords, used: used + 1, limit: FREE_LIMIT, remaining: Math.max(0, FREE_LIMIT - used - 1) });
+    return res.status(200).json({
+      ...result,
+      used: used + 1,
+      limit: FREE_LIMIT,
+      remaining: Math.max(0, FREE_LIMIT - used - 1)
+    });
+
   } catch (e) {
     return res.status(500).json({ error: e.message });
   }
+}
+
+function buildSystemPrompt() {
+  return `You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt for Suno AI.
+
+Output ONLY a raw JSON object with this exact structure, no markdown, no explanation:
+{
+  "stylePrompt": "the complete style prompt string — max 120 chars, comma-separated keywords optimized for Suno",
+  "tips": ["tip1", "tip2"]
+}
+
+Rules for stylePrompt:
+- Write a natural, flowing sequence of style keywords — NOT a sentence, NOT a list of labels
+- Order: genre/era → mood/energy → instruments → production/mix → structure
+- NEVER include artist names, song titles, or brand names
+- Max 120 characters total
+- Use English only
+- If the user provided a reference description, extract sonic keywords from it and blend them in
+
+Rules for tips:
+- 1-3 short actionable tips specific to the genre/settings chosen
+- Each tip max 80 chars
+- Focus on how to use this prompt effectively in Suno`;
+}
+
+function buildUserMessage(f) {
+  const parts = [];
+  if (f.genre) parts.push(`Genre: ${f.genre}`);
+  if (f.era) parts.push(`Era/Reference: ${f.era}`);
+  if (f.substyles?.length) parts.push(`Sub-styles: ${f.substyles.join(', ')}`);
+  if (f.moods?.length) parts.push(`Mood: ${f.moods.join(', ')}`);
+  if (f.energy) parts.push(`Energy: ${f.energy}`);
+  if (f.bpm) parts.push(`BPM: ${f.bpm}`);
+  if (f.key) parts.push(`Key: ${f.key}`);
+  if (f.timeSig) parts.push(`Time signature: ${f.timeSig}`);
+  if (f.instruments?.length) parts.push(`Instruments: ${f.instruments.join(', ')}`);
+  if (f.mix?.length) parts.push(`Mix: ${f.mix.join(', ')}`);
+  if (f.structure?.length) parts.push(`Structure: ${f.structure.join(', ')}`);
+  if (f.vocalStyle) parts.push(`Vocals: ${[f.vocalStyle, f.vocalTex, f.vocalLang].filter(Boolean).join(', ')}`);
+  if (f.extra) parts.push(`Extra notes: ${f.extra}`);
+  if (f.refDesc) parts.push(`Reference description: ${f.refDesc}`);
+  return parts.join('\n');
 }
