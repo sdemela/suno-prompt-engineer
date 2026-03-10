@@ -145,7 +145,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       🔑 Personal API Key — <span style="color:var(--muted)">unlimited generations</span>
     </div>
     <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:4px">
-      Optional. Get yours at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → Settings → API Keys → Create Key.
+      Optional. Get yours at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key.
     </div>
     <div id="apiKeyArea">
       <div class="api-row">
@@ -406,8 +406,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
   <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
     SUNO PROMPT ENGINEER<br>
-    <a href="https://console.anthropic.com" target="_blank" style="color:var(--border)">Get Anthropic API Key</a> &nbsp;·&nbsp;
-    <a href="https://suno.com" target="_blank" style="color:var(--border)">Suno AI</a>
+    <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Get Anthropic API Key</a> &nbsp;·&nbsp;
+    <a href="https://suno.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Suno AI</a>
   </div>
 </div>
 
@@ -445,7 +445,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <button id="modalCloseBtn" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px">CLOSE</button>
     </div>
     <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-      Get your key at <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → Settings → API Keys → Create Key
+      Get your key at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key
     </div>
   </div>
 </div>
@@ -459,32 +459,40 @@ function updateBanner(){
   var u=getUsed(),r=Math.max(0,FREE_LIMIT-u),b=document.getElementById('freeBanner');
   if(apiKey){b.style.display='none';return;}
   b.style.display='flex';
-  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+' free AI generation'+(r>1?'s':'')+' today'):'🔒 Limit reached — add your API key';
+  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+' free AI keyword extraction'+(r>1?'s':'')+' today'):'🔒 AI extraction limit reached — add your API key';
   document.getElementById('dot0').className='free-dot'+(u>0?' used':'');
   document.getElementById('dot1').className='free-dot'+(u>1?' used':'');
 }
 function saveKey(){
   var v=document.getElementById('apiKeyInput').value.trim();
   if(!v.startsWith('sk-ant-')){document.getElementById('apiError').textContent='⚠ Key must start with sk-ant-';document.getElementById('apiError').style.display='block';return;}
-  apiKey=v;document.getElementById('apiError').style.display='none';
+  apiKey=v;localStorage.setItem('spe_apikey',v); // Fix #4: persist key
+  document.getElementById('apiError').style.display='none';
   document.getElementById('apiKeyArea').style.display='none';document.getElementById('apiSaved').style.display='flex';
   document.getElementById('apiSavedText').textContent='✓ API key active — '+v.slice(0,12)+'••••';updateBanner();
 }
 document.getElementById('toggleKeyBtn').addEventListener('click',function(){var i=document.getElementById('apiKeyInput'),b=document.getElementById('toggleKeyBtn');if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';}});
 document.getElementById('saveKeyBtn').addEventListener('click',saveKey);
-document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';updateBanner();});
+// Fix #4: restore key from localStorage on page load
+var _savedKey=localStorage.getItem('spe_apikey');
+if(_savedKey&&_savedKey.startsWith('sk-ant-')){document.getElementById('apiKeyInput').value=_savedKey;saveKey();}
+document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';localStorage.removeItem('spe_apikey');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';updateBanner();});
 document.getElementById('modalCloseBtn').addEventListener('click',function(){document.getElementById('limitModal').style.display='none';});
 document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-'))return;apiKey=v;document.getElementById('apiKeyInput').value=v;saveKey();document.getElementById('limitModal').style.display='none';generate();});
-var AD_SEC=5;
+var AD_SEC=5;var adPushed=false;
 function showAd(cb){
   var ov=document.getElementById('adOverlay'),rb=document.getElementById('revealBtn'),num=document.getElementById('ringNum'),arc=document.getElementById('arcEl'),circ=2*Math.PI*18;
   ov.style.display='flex';rb.className='btn-reveal';arc.style.strokeDashoffset=circ;num.textContent=AD_SEC;
-  try{(adsbygoogle=window.adsbygoogle||[]).push({});}catch(e){}
+  // Fix #5: push only once to avoid AdSense duplicate errors
+  if(!adPushed){try{(adsbygoogle=window.adsbygoogle||[]).push({});adPushed=true;}catch(e){}}
   var left=AD_SEC;
   if(cdTimer)clearInterval(cdTimer);
   cdTimer=setInterval(function(){left-=1;num.textContent=left;arc.style.strokeDashoffset=circ*(left/AD_SEC);if(left<=0){clearInterval(cdTimer);rb.className='btn-reveal ready';num.textContent='✓';}},1000);
-  function onReveal(){if(!rb.classList.contains('ready'))return;clearInterval(cdTimer);ov.style.display='none';rb.removeEventListener('click',onReveal);cb();}
-  rb.addEventListener('click',onReveal);
+  // Fix #1: {once:true} prevents listener accumulation on multiple generations
+  rb.addEventListener('click',function onReveal(){
+    if(!rb.classList.contains('ready'))return;
+    clearInterval(cdTimer);ov.style.display='none';cb();
+  },{once:true});
 }
 var wf=document.getElementById('waveform');
 [14,22,10,28,16,8,24,18,12,26,20,8,22,14,28,10,18,24,12,20,16,26,8,22,14,28,18,10,24].forEach(function(h,i){var s=document.createElement('span');s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.18)+'s ease-in-out '+(i%6)*0.15+'s infinite;';wf.appendChild(s);});
@@ -504,6 +512,8 @@ async function generate(){
   var genre=document.getElementById('genre').value,era=document.getElementById('era').value.trim(),bpm=document.getElementById('bpm').value,key=document.getElementById('key').value,vs=document.getElementById('vocalStyle').value,vt=document.getElementById('vocalTex').value,vl=document.getElementById('vocalLang').value,extra=document.getElementById('extra').value.trim(),refDesc=document.getElementById('refDesc').value.trim();
   var substyles=getTags('substyle-tags'),moods=getTags('mood-tags'),energy=getTags('energy-tags'),timeSig=getTags('time-tags'),instrs=getTags('instr-tags'),mix=getTags('mix-tags'),struct=getTags('struct-tags');
   if(!genre&&substyles.length===0&&moods.length===0){alert('Select at least a genre or some tags.');return;}
+  // Fix #8: limit refDesc to 1000 chars to prevent API abuse
+  if(refDesc.length>1000){alert('Reference description is too long (max 1000 characters).');return;}
   if(!apiKey&&refDesc&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
   var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERATING...';
   var parts=[];
@@ -530,7 +540,11 @@ async function generate(){
         data=await resp.json();refs=data.keywords||[];incUsed();updateBanner();
       }
       refs.forEach(function(k){parts.push({text:k,cls:'style'});});
-    }catch(err){console.error(err);}
+    }catch(err){
+      console.error(err);
+      var eb=document.getElementById('apiError');eb.textContent='⚠ AI error: '+err.message;eb.style.display='block';
+      btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
+    }
   }
   var techTags=[bpm+' BPM',key,timeSig[0]].filter(Boolean),bpmN=parseInt(bpm,10),tips=[];
   if(audioFileName&&refDesc)tips.push('🎧 Audio + description: upload the file in Suno via Upload audio.');
@@ -551,7 +565,18 @@ async function generate(){
   if(audioFileName||refs.length>0){var h='';if(audioFileName)h+='📎 <strong>'+audioFileName+'</strong> — upload in Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';if(refs.length>0)h+='🔍 Extracted keywords: <strong style="color:#fff">'+refs.join(', ')+'</strong><br>';h+='<span style="color:#6b6b85;font-size:11px">→ Title and artist stay private.</span>';document.getElementById('refContent').innerHTML=h;document.getElementById('refBlock').style.display='block';}else{document.getElementById('refBlock').style.display='none';}
   document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
   lastOutput=parts;btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';
-  showAd(function(){document.getElementById('outputWrapper').style.display='block';setTimeout(function(){document.getElementById('outputWrapper').scrollIntoView({behavior:'smooth',block:'start'});},80);});
+  showAd(function(){
+    // Fix #10: re-trigger fadeUp animation each time
+    var ow=document.getElementById('outputWrapper');
+    ow.style.display='none';ow.style.animation='none';
+    requestAnimationFrame(function(){
+      ow.style.display='block';
+      requestAnimationFrame(function(){
+        ow.style.animation='';
+        setTimeout(function(){ow.scrollIntoView({behavior:'smooth',block:'start'});},80);
+      });
+    });
+  });
 }
 document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;var txt=lastOutput.map(function(p){return p.text;}).join(', ');navigator.clipboard.writeText(txt).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copied!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copy Prompt';b.style.color='';b.style.borderColor='';},2000);});});
 document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
