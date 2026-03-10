@@ -33,12 +33,14 @@ export default async function handler(req, res) {
   }
 
   if (!refDesc) return res.status(400).json({ error: "Missing refDesc" });
+  // Fix #8: server-side length guard to prevent API abuse
+  if (refDesc.length > 1000) return res.status(400).json({ error: "refDesc too long (max 1000 chars)" });
 
   // Check rate limit
   if (used >= FREE_LIMIT) {
     return res.status(429).json({
       error: "free_limit_reached",
-      message: `Hai usato i tuoi ${FREE_LIMIT} prompt gratuiti di oggi. Inserisci la tua API key per continuare.`,
+      message: `Daily limit reached (${FREE_LIMIT} free AI extractions). Add your API key to continue.`,
       used,
       limit: FREE_LIMIT
     });
@@ -77,7 +79,14 @@ export default async function handler(req, res) {
 
     const data = await resp.json();
     const raw = (data.content || []).find(b => b.type === "text")?.text || "[]";
-    const keywords = JSON.parse(raw.replace(/```json|```/g, "").trim());
+    // Fix #3: guard against malformed JSON from AI
+    let keywords;
+    try {
+      keywords = JSON.parse(raw.replace(/```json|```/g, "").trim());
+      if (!Array.isArray(keywords)) keywords = [];
+    } catch(parseErr) {
+      keywords = [];
+    }
 
     // Increment counter
     ipStore.set(key, used + 1);
