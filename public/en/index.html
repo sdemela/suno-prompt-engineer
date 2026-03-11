@@ -33,6 +33,9 @@ h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,88px);line-heig
 .free-dots{display:flex;gap:6px;}
 .free-dot{width:12px;height:12px;border-radius:50%;background:var(--purple);transition:all .3s;}
 .free-dot.used{background:var(--border);}
+.free-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(123,92,255,.15);border:1px solid rgba(123,92,255,.3);border-radius:100px;padding:4px 12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--purple);}
+.free-pill .used-count{font-size:16px;font-weight:700;color:#fff;}
+.free-pill .total-count{color:var(--muted);}
 /* API BOX */
 .api-box{background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.25);border-radius:12px;padding:20px;margin-bottom:24px;}
 .api-saved{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.25);border-radius:8px;padding:10px 16px;font-family:'Space Mono',monospace;font-size:12px;color:var(--green);}
@@ -153,11 +156,23 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <div class="free-counter" id="freeCounterText">⚡ 2 free generations today</div>
       <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">From the 3rd, add your API key — resets at midnight</div>
     </div>
-    <div class="free-dots"><div class="free-dot" id="dot0"></div><div class="free-dot" id="dot1"></div></div>
+    <div class="free-pill"><span class="used-count" id="usedCount">0</span><span class="total-count">/ 2 free</span></div>
   </div>
 
   <div class="sec"><span>01 — Genre &amp; Style</span></div>
   <div class="card">
+    <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)">
+      <label class="fl">Suno Version <span style="color:var(--green);font-size:9px;letter-spacing:1px">— affects output quality</span></label>
+      <div class="tg" id="suno-version-tags" style="margin-top:8px">
+        <div class="tag" data-val="v3">v3 <span style="color:var(--muted);font-size:10px">legacy</span></div>
+        <div class="tag" data-val="v3.5">v3.5</div>
+        <div class="tag active" data-val="v4">v4 <span style="color:var(--green);font-size:10px">recommended</span></div>
+        <div class="tag" data-val="v4.5">v4.5 <span style="color:var(--accent);font-size:10px">latest</span></div>
+      </div>
+      <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
+        v4/v4.5 handles longer prompts and complex style stacking better. Prompt strategy changes by version.
+      </div>
+    </div>
     <div class="g2">
       <div>
         <label class="fl">Primary Genre</label>
@@ -337,8 +352,11 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="sec"><span>07 — Sound Reference</span><span class="badge">optional — requires AI</span></div>
-  <div class="card">
+  <div class="sec"><span>07 — Sound Reference</span><span class="badge">optional — enhances output</span></div>
+  <div class="card" style="border-color:rgba(0,229,176,.2);background:linear-gradient(135deg,rgba(0,229,176,.03),var(--card))">
+    <div style="margin-bottom:14px;padding:8px 12px;background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.15);border-radius:8px;font-size:11px;color:var(--green);font-family:'Space Mono',monospace;letter-spacing:.5px">
+      🎯 Describe a real track → AI extracts sonic DNA → richer, more accurate prompt
+    </div>
     <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
       <div style="flex:1;min-width:200px">
         <label class="fl">Upload reference track</label>
@@ -422,6 +440,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     SUNO PROMPT ENGINEER<br>
     <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Get Anthropic API Key</a> &nbsp;·&nbsp;
     <a href="https://suno.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Suno AI</a>
+    <br><br>
+    <span style="color:var(--muted);font-size:9px;letter-spacing:3px">✦ <span id="promptCounter">—</span> PROMPTS GENERATED</span>
   </div>
 </div>
 
@@ -474,8 +494,7 @@ function updateBanner(){
   if(apiKey){b.style.display='none';return;}
   b.style.display='flex';
   document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+' free generation'+(r>1?'s':'')+' today'):'🔒 Add your API key to continue';
-  document.getElementById('dot0').className='free-dot'+(u>0?' used':'');
-  document.getElementById('dot1').className='free-dot'+(u>1?' used':'');
+  var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
 }
 function saveKey(){
   var v=document.getElementById('apiKeyInput').value.trim();
@@ -513,7 +532,7 @@ function showAd(cb){
 var wf=document.getElementById('waveform');
 [14,22,10,28,16,8,24,18,12,26,20,8,22,14,28,10,18,24,12,20,16,26,8,22,14,28,18,10,24].forEach(function(h,i){var s=document.createElement('span');s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.18)+'s ease-in-out '+(i%6)*0.15+'s infinite;';wf.appendChild(s);});
 document.getElementById('bpm').addEventListener('input',function(){document.getElementById('bpmDisplay').textContent=this.value;document.getElementById('bpmVal').textContent=this.value;});
-document.querySelectorAll('.tg').forEach(function(g){var single=g.id==='energy-tags'||g.id==='time-tags';g.querySelectorAll('.tag').forEach(function(t){t.addEventListener('click',function(){if(single)g.querySelectorAll('.tag').forEach(function(x){x.classList.remove('active');});t.classList.toggle('active');});});});
+document.querySelectorAll('.tg').forEach(function(g){var single=g.id==='energy-tags'||g.id==='time-tags'||g.id==='suno-version-tags';g.querySelectorAll('.tag').forEach(function(t){t.addEventListener('click',function(){if(single)g.querySelectorAll('.tag').forEach(function(x){x.classList.remove('active');});t.classList.toggle('active');});});});
 function getTags(id){return Array.from(document.querySelectorAll('#'+id+' .tag.active')).map(function(t){return t.dataset.val;});}
 document.getElementById('dropZone').addEventListener('click',function(){document.getElementById('audioFile').click();});
 document.getElementById('audioFile').addEventListener('change',function(e){loadAudio(e.target.files[0]);});
@@ -525,8 +544,12 @@ dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('o
 function loadAudio(f){if(!f||!f.type.startsWith('audio/'))return;audioFileName=f.name;document.getElementById('audioFilename').textContent=f.name;document.getElementById('audioPlayer').src=URL.createObjectURL(f);document.getElementById('audioPreview').style.display='block';document.getElementById('dropZone').style.display='none';}
 var COLORS={genre:'#7b5cff',style:'#ff3c5f',mood:'#f5c842',instr:'#00e5b0',tech:'#a0d8ff',extra:'#6b6b85'};
 
-function buildSystemPrompt(){
-  return 'You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt for Suno AI.\n\nOutput ONLY a raw JSON object with this exact structure, no markdown, no explanation:\n{\n  "stylePrompt": "the complete style prompt string — max 120 chars, comma-separated keywords optimized for Suno",\n  "tips": ["tip1", "tip2"]\n}\n\nRules for stylePrompt:\n- Natural flowing sequence of style keywords, NOT a sentence\n- Order: genre/era → mood/energy → instruments → production/mix → structure\n- NEVER include artist names, song titles, or brand names\n- Max 120 characters total, English only\n- If reference description provided, extract sonic keywords and blend them in\n\nRules for tips: 1-3 short actionable tips specific to the genre/settings, max 80 chars each.';
+function buildSystemPrompt(version){
+  var isLegacy = version==='v3'||version==='v3.5';
+  var versionRules = isLegacy
+    ? 'TARGET: Suno '+version+' (legacy). Keep the prompt SHORT and DIRECT.\n- Max 6-8 keywords total\n- Focus only on: genre, core rhythm, 1-2 main instruments\n- NO texture/mix/structure/era descriptors — they confuse v3\n- No more than 60 characters total\n- Simpler = better for this version'
+    : 'TARGET: Suno '+version+' (modern). Use a FULL, LAYERED prompt.\n- 10-15 keywords, up to 120 characters\n- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints\n- v4/v4.5 handles stylistic nuance and stacking well — use it\n- Reference descriptions blend well into the prompt at this version';
+  return 'You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.\n\n'+versionRules+'\n\nOutput ONLY a raw JSON object with this exact structure, no markdown, no explanation:\n{\n  "stylePrompt": "the complete style prompt string",\n  "tips": ["tip1", "tip2"]\n}\n\nGeneral rules:\n- Natural flowing keywords, NOT a sentence\n- NEVER include artist names, song titles, or brand names\n- English only\n- If reference description provided, extract sonic keywords and blend them in\n\nRules for tips: 1-3 short actionable tips specific to the genre/version, max 80 chars each. Include one tip about how this prompt behaves specifically on '+version+'.';
 }
 
 function buildUserMessage(f){
@@ -560,8 +583,9 @@ async function generate(){
   var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERATING...';
   document.getElementById('apiError').style.display='none';
 
+  var sunoVersion=getTags('suno-version-tags')[0]||'v4';
   var formData={
-    genre:genre,era:era,substyles:substyles,moods:moods,
+    sunoVersion:sunoVersion,genre:genre,era:era,substyles:substyles,moods:moods,
     energy:energy[0]||'',bpm:bpm,key:key,timeSig:timeSig[0]||'4/4',
     instruments:instrs,mix:mix,structure:struct,
     vocalStyle:vs,vocalTex:vt,vocalLang:vl,
@@ -575,7 +599,7 @@ async function generate(){
       var resp=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
         headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
-        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:buildSystemPrompt(),messages:[{role:'user',content:buildUserMessage(formData)}]})
+        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:buildSystemPrompt(formData.sunoVersion),messages:[{role:'user',content:buildUserMessage(formData)}]})
       });
       if(!resp.ok){var e=await resp.json();throw new Error(e.error?e.error.message:'API error');}
       var data=await resp.json();
@@ -691,6 +715,17 @@ if(localStorage.getItem('spe_apikey')){
   document.getElementById('apiAccordionStatus').textContent='key active ✓';
   document.getElementById('apiAccordionStatus').style.color='var(--green)';
 }
+
+// Fake live counter — base 1247, grows 3-11 per page load, persists in localStorage
+(function(){
+  var BASE=1247;
+  var stored=parseInt(localStorage.getItem('spe_counter')||'0',10);
+  var count=stored>BASE?stored:BASE;
+  count+=Math.floor(Math.random()*9)+3;
+  localStorage.setItem('spe_counter',String(count));
+  var el=document.getElementById('promptCounter');
+  if(el)el.textContent=count.toLocaleString('en');
+})();
 </script>
 </body>
 </html>
