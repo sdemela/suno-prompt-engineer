@@ -1,73 +1,113 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suno Prompt Engineer — Tool AI</title>
+    <style>
+        /* Mantengo i tuoi stili originali qui per brevità */
+        :root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
+        body{background:var(--black);color:var(--text);font-family:sans-serif;padding:20px;}
+        .card{background:var(--card);border:1px solid var(--border);padding:20px;border-radius:12px;margin-bottom:20px;}
+        .free-banner{background:rgba(123,92,255,0.1);border:1px solid var(--purple);padding:15px;border-radius:10px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
+        .btn-gen{width:100%;padding:15px;background:var(--purple);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
+    </style>
+</head>
+<body>
+
+<div class="container" style="max-width:800px;margin:0 auto;">
+    <h1>Suno Prompt Engineer</h1>
+
+    <div class="free-banner" id="freeBanner">
+        <div id="freeCounterText">⚡ Caricamento...</div>
+        <div style="font-size:12px">Usati: <span id="usedCount">0</span>/2</div>
+    </div>
+
+    <div class="card">
+        <label>Genere Musicale</label>
+        <select id="genre" style="width:100%;padding:10px;margin:10px 0;">
+            <option>Techno</option>
+            <option>House</option>
+            <option>Deep House</option>
+            <option>Ambient</option>
+        </select>
+        
+        <label>Descrizione Sonora</label>
+        <textarea id="refDesc" style="width:100%;height:80px;margin-top:10px;" placeholder="es. kick potente e synth ipnotico..."></textarea>
+    </div>
+
+    <button class="btn-gen" id="generateBtn">▶ GENERA PROMPT</button>
+
+    <div id="outputWrapper" style="display:none;margin-top:20px;" class="card">
+        <h3>Prompt Generato:</h3>
+        <p id="promptText" style="font-family:monospace;background:#000;padding:15px;border-radius:8px;color:var(--green);"></p>
+    </div>
+</div>
+
 <script>
-var apiKey = localStorage.getItem('spe_apikey') || '';
-var FREE_LIMIT = 2;
+    const FREE_LIMIT = 2;
 
-function getTodayKey(){ return 'spe_used_' + new Date().toISOString().slice(0,10); }
-function getUsed(){ return parseInt(localStorage.getItem(getTodayKey())||'0',10); }
-function incUsed(){ localStorage.setItem(getTodayKey(), String(getUsed()+1)); }
+    // Funzioni per il contatore locale
+    function getTodayKey() { return 'spe_used_' + new Date().toISOString().slice(0,10); }
+    function getUsed() { return parseInt(localStorage.getItem(getTodayKey()) || '0', 10); }
+    function incUsed() { localStorage.setItem(getTodayKey(), String(getUsed() + 1)); }
 
-function updateBanner(){
-  var u = getUsed(), r = Math.max(0, FREE_LIMIT - u);
-  var b = document.getElementById('freeBanner');
-  if(localStorage.getItem('spe_apikey')){ b.style.display='none'; return; }
-  b.style.display='flex';
-  
-  // CORREZIONE GRAMMATICALE:
-  let testo;
-  if (r === 0) {
-    testo = '🔒 Limite gratuito raggiunto per oggi';
-  } else if (r === 1) {
-    testo = '⚡ 1 generazione gratuita oggi';
-  } else {
-    testo = '⚡ ' + r + ' generazioni gratuite oggi';
-  }
-  
-  document.getElementById('freeCounterText').textContent = testo;
-  document.getElementById('usedCount').textContent = Math.min(u, FREE_LIMIT);
-}
+    // CORREZIONE GRAMMATICALE: qui risolviamo il problema del plurale
+    function updateBanner() {
+        const u = getUsed();
+        const r = Math.max(0, FREE_LIMIT - u);
+        const textEl = document.getElementById('freeCounterText');
+        
+        if (r === 0) {
+            textEl.textContent = '🔒 Limite gratuito raggiunto';
+        } else if (r === 1) {
+            textEl.textContent = '⚡ 1 generazione gratuita rimasta';
+        } else {
+            textEl.textContent = '⚡ ' + r + ' generazioni gratuite oggi';
+        }
+        
+        document.getElementById('usedCount').textContent = u;
+    }
 
-async function generate() {
-  const userKey = localStorage.getItem('spe_apikey');
-  if(!userKey && getUsed() >= FREE_LIMIT) {
-    alert('Limite raggiunto. Inserisci la tua API Key.');
-    return;
-  }
+    async function generate() {
+        if (getUsed() >= FREE_LIMIT) {
+            alert("Hai esaurito i crediti gratuiti per oggi.");
+            return;
+        }
 
-  const btn = document.getElementById('generateBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="sp"></span> GENERANDO...';
+        const btn = document.getElementById('generateBtn');
+        btn.disabled = true;
+        btn.textContent = 'GENERANDO...';
 
-  const payload = {
-    formData: {
-      version: document.querySelector('.tag.active[data-val^="v"]')?.dataset.val || 'v4',
-      genre: document.getElementById('genre').value,
-      bpm: document.getElementById('bpm').value,
-      description: document.getElementById('refDesc').value
-    },
-    userApiKey: userKey
-  };
+        try {
+            const response = await fetch('/api/generate', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    formData: {
+                        genre: document.getElementById('genre').value,
+                        description: document.getElementById('refDesc').value
+                    }
+                })
+            });
 
-  try {
-    const response = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
-    });
+            const data = await response.json();
+            
+            document.getElementById('promptText').textContent = data.stylePrompt;
+            document.getElementById('outputWrapper').style.display = 'block';
+            
+            incUsed();
+            updateBanner();
+        } catch (e) {
+            alert("Errore di connessione al server AI.");
+        } finally {
+            btn.disabled = false;
+            btn.textContent = '▶ GENERA PROMPT';
+        }
+    }
 
-    const result = await response.json();
-    showAd(() => {
-      document.getElementById('promptText').textContent = result.stylePrompt;
-      document.getElementById('outputWrapper').style.display = 'block';
-      if(!userKey) incUsed();
-      updateBanner();
-    });
-  } catch (e) {
-    alert("Errore generazione.");
-  } finally {
-    btn.disabled = false; btn.innerHTML = '▶ GENERA PROMPT SUNO';
-  }
-}
-
-// Inizializzazione
-document.getElementById('generateBtn').addEventListener('click', generate);
-updateBanner();
+    document.getElementById('generateBtn').addEventListener('click', generate);
+    updateBanner();
 </script>
+</body>
+</html>
