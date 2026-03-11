@@ -5,7 +5,6 @@
     { "src": "/api/(.*)", "dest": "/api/$1" },
     { "src": "/it/(.*)", "dest": "/public/it/$1" },
     { "src": "/en/(.*)", "dest": "/public/en/$1" },
-    { "src": "/", "dest": "/public/index.html" },
-    { "src": "/(.*)", "dest": "/public/$1" }
+    { "src": "/", "dest": "/public/it/index.html" }
   ]
 }
