@@ -1,113 +1,160 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Suno Prompt Engineer — Tool AI</title>
-    <style>
-        /* Mantengo i tuoi stili originali qui per brevità */
-        :root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
-        body{background:var(--black);color:var(--text);font-family:sans-serif;padding:20px;}
-        .card{background:var(--card);border:1px solid var(--border);padding:20px;border-radius:12px;margin-bottom:20px;}
-        .free-banner{background:rgba(123,92,255,0.1);border:1px solid var(--purple);padding:15px;border-radius:10px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;}
-        .btn-gen{width:100%;padding:15px;background:var(--purple);color:white;border:none;border-radius:8px;cursor:pointer;font-weight:bold;}
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suno Prompt Engineer — Tool AI per Musica</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* --- TUTTI I TUOI STILI ORIGINALI --- */
+:root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;margin:0;padding:20px;line-height:1.6;}
+.container{max-width:900px;margin:0 auto;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:24px;margin-bottom:20px;}
+.tag-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.tag{background:var(--deep);border:1px solid var(--border);padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;transition:0.2s;}
+.tag.active{background:var(--purple);border-color:var(--purple);color:white;}
+.free-banner{background:linear-gradient(90deg, rgba(123,92,255,0.1), rgba(255,60,95,0.1));border:1px solid var(--border);padding:16px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;}
+.btn-gen{width:100%;background:linear-gradient(45deg, var(--purple), var(--accent));color:white;border:none;padding:18px;border-radius:12px;font-weight:bold;font-size:16px;cursor:pointer;box-shadow:0 4px 15px rgba(123,92,255,0.3);}
+.btn-gen:disabled{opacity:0.6;cursor:not-allowed;}
+textarea, select{width:100%;background:var(--deep);border:1px solid var(--border);color:white;padding:12px;border-radius:8px;margin-top:8px;}
+/* Aggiungi qui gli altri tuoi stili specifici se ne mancano */
+</style>
 </head>
 <body>
 
-<div class="container" style="max-width:800px;margin:0 auto;">
-    <h1>Suno Prompt Engineer</h1>
+<div class="container">
+    <header style="text-align:center;margin-bottom:40px;">
+        <h1 style="font-family:'Space Mono';letter-spacing:-1px;">SUNO PROMPT ENGINEER <span style="color:var(--accent)">v4</span></h1>
+        <p style="color:var(--muted)">Generatore professionale di prompt per Suno AI</p>
+    </header>
 
     <div class="free-banner" id="freeBanner">
         <div id="freeCounterText">⚡ Caricamento...</div>
-        <div style="font-size:12px">Usati: <span id="usedCount">0</span>/2</div>
+        <div class="counter-pill" style="background:var(--black);padding:4px 12px;border-radius:20px;font-size:12px;border:1px solid var(--border);">
+            USATI: <span id="usedCount" style="color:var(--purple)">0</span>/2
+        </div>
     </div>
 
     <div class="card">
-        <label>Genere Musicale</label>
-        <select id="genre" style="width:100%;padding:10px;margin:10px 0;">
-            <option>Techno</option>
-            <option>House</option>
-            <option>Deep House</option>
-            <option>Ambient</option>
-        </select>
-        
-        <label>Descrizione Sonora</label>
-        <textarea id="refDesc" style="width:100%;height:80px;margin-top:10px;" placeholder="es. kick potente e synth ipnotico..."></textarea>
+        <label style="font-weight:500;color:var(--muted);text-transform:uppercase;font-size:12px;">Versione Suno</label>
+        <div class="tag-group" id="suno-version-tags">
+            <div class="tag" data-val="v3.5">v3.5</div>
+            <div class="tag active" data-val="v4">v4 (Optimized)</div>
+        </div>
     </div>
 
-    <button class="btn-gen" id="generateBtn">▶ GENERA PROMPT</button>
+    <div class="card">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+            <div>
+                <label>Genere</label>
+                <select id="genre">
+                    <option value="Techno">Techno</option>
+                    <option value="House">House</option>
+                    <option value="Melodic Techno">Melodic Techno</option>
+                </select>
+            </div>
+            <div>
+                <label>BPM</label>
+                <input type="number" id="bpm" value="124" style="width:100%;background:var(--deep);border:1px solid var(--border);color:white;padding:12px;border-radius:8px;margin-top:8px;">
+            </div>
+        </div>
+        <br>
+        <label>Descrizione libera (Opzionale)</label>
+        <textarea id="refDesc" placeholder="es. synth analogico scuro, atmosfera ipnotica..."></textarea>
+    </div>
 
-    <div id="outputWrapper" style="display:none;margin-top:20px;" class="card">
-        <h3>Prompt Generato:</h3>
-        <p id="promptText" style="font-family:monospace;background:#000;padding:15px;border-radius:8px;color:var(--green);"></p>
+    <button class="btn-gen" id="generateBtn">▶ GENERA PROMPT SUNO</button>
+
+    <div id="outputWrapper" style="display:none;margin-top:30px;">
+        <div class="card" style="border-color:var(--purple);">
+            <h3 style="margin-top:0;color:var(--purple);">Prompt Generato</h3>
+            <div id="promptText" style="background:var(--black);padding:20px;border-radius:8px;font-family:'Space Mono';color:var(--green);word-break:break-word;"></div>
+            <button id="copyBtn" style="margin-top:15px;background:none;border:1px solid var(--purple);color:var(--purple);padding:8px 16px;border-radius:6px;cursor:pointer;">Copia Prompt</button>
+        </div>
     </div>
 </div>
 
 <script>
-    const FREE_LIMIT = 2;
+// --- LOGICA DI FUNZIONAMENTO ---
+var FREE_LIMIT = 2;
 
-    // Funzioni per il contatore locale
-    function getTodayKey() { return 'spe_used_' + new Date().toISOString().slice(0,10); }
-    function getUsed() { return parseInt(localStorage.getItem(getTodayKey()) || '0', 10); }
-    function incUsed() { localStorage.setItem(getTodayKey(), String(getUsed() + 1)); }
+// Gestione Tag (per ripristinare la selezione cliccabile)
+document.querySelectorAll('.tag').forEach(tag => {
+    tag.addEventListener('click', function() {
+        this.parentElement.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+        this.classList.add('active');
+    });
+});
 
-    // CORREZIONE GRAMMATICALE: qui risolviamo il problema del plurale
-    function updateBanner() {
-        const u = getUsed();
-        const r = Math.max(0, FREE_LIMIT - u);
-        const textEl = document.getElementById('freeCounterText');
-        
-        if (r === 0) {
-            textEl.textContent = '🔒 Limite gratuito raggiunto';
-        } else if (r === 1) {
-            textEl.textContent = '⚡ 1 generazione gratuita rimasta';
-        } else {
-            textEl.textContent = '⚡ ' + r + ' generazioni gratuite oggi';
-        }
-        
-        document.getElementById('usedCount').textContent = u;
+function getTodayKey() { return 'spe_used_' + new Date().toISOString().slice(0,10); }
+function getUsed() { return parseInt(localStorage.getItem(getTodayKey()) || '0', 10); }
+function incUsed() { localStorage.setItem(getTodayKey(), String(getUsed() + 1)); }
+
+function updateBanner() {
+    var u = getUsed(), r = Math.max(0, FREE_LIMIT - u);
+    var textEl = document.getElementById('freeCounterText');
+    
+    // CORREZIONE GRAMMATICALE
+    if (r === 0) {
+        textEl.textContent = '🔒 Limite gratuito raggiunto';
+    } else if (r === 1) {
+        textEl.textContent = '⚡ 1 generazione gratuita rimasta';
+    } else {
+        textEl.textContent = '⚡ ' + r + ' generazioni gratuite oggi';
+    }
+    document.getElementById('usedCount').textContent = u;
+}
+
+async function generate() {
+    if (getUsed() >= FREE_LIMIT) {
+        alert("Limite giornaliero raggiunto!");
+        return;
     }
 
-    async function generate() {
-        if (getUsed() >= FREE_LIMIT) {
-            alert("Hai esaurito i crediti gratuiti per oggi.");
-            return;
+    const btn = document.getElementById('generateBtn');
+    btn.disabled = true;
+    btn.textContent = 'GENERANDO...';
+
+    // Raccogliamo tutti i dati (incluse le versioni che avevi prima)
+    const payload = {
+        formData: {
+            version: document.querySelector('#suno-version-tags .tag.active')?.dataset.val || 'v4',
+            genre: document.getElementById('genre').value,
+            bpm: document.getElementById('bpm').value,
+            description: document.getElementById('refDesc').value
         }
+    };
 
-        const btn = document.getElementById('generateBtn');
-        btn.disabled = true;
-        btn.textContent = 'GENERANDO...';
+    try {
+        const response = await fetch('/api/generate', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
 
-        try {
-            const response = await fetch('/api/generate', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    formData: {
-                        genre: document.getElementById('genre').value,
-                        description: document.getElementById('refDesc').value
-                    }
-                })
-            });
-
-            const data = await response.json();
-            
-            document.getElementById('promptText').textContent = data.stylePrompt;
-            document.getElementById('outputWrapper').style.display = 'block';
-            
-            incUsed();
-            updateBanner();
-        } catch (e) {
-            alert("Errore di connessione al server AI.");
-        } finally {
-            btn.disabled = false;
-            btn.textContent = '▶ GENERA PROMPT';
-        }
+        const data = await response.json();
+        
+        document.getElementById('promptText').textContent = data.stylePrompt;
+        document.getElementById('outputWrapper').style.display = 'block';
+        
+        incUsed();
+        updateBanner();
+    } catch (e) {
+        alert("Errore tecnico. Riprova.");
+    } finally {
+        btn.disabled = false;
+        btn.textContent = '▶ GENERA PROMPT SUNO';
     }
+}
 
-    document.getElementById('generateBtn').addEventListener('click', generate);
-    updateBanner();
+document.getElementById('generateBtn').addEventListener('click', generate);
+document.getElementById('copyBtn').addEventListener('click', () => {
+    navigator.clipboard.writeText(document.getElementById('promptText').textContent);
+    alert("Copiato!");
+});
+
+updateBanner();
 </script>
 </body>
 </html>
