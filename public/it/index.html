@@ -14,29 +14,21 @@
 body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 a{color:var(--purple);text-decoration:none;}a:hover{text-decoration:underline;}
 .container{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
-/* LANG TOGGLE */
 .lang-bar{display:flex;justify-content:flex-end;margin-bottom:16px;}
 .lang-btn{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
 .lang-btn a{padding:6px 14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted);transition:all .15s;}
 .lang-btn a.active{background:var(--purple);color:#fff;}
 .lang-btn a:hover:not(.active){background:var(--card);color:var(--text);}
-/* AD */
 .ad-top{width:100%;background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.06);border-radius:8px;padding:8px;text-align:center;margin-bottom:20px;}
 .ad-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--border);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
-/* HEADER */
 .logo-tag{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;}
 h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,88px);line-height:.9;letter-spacing:2px;background:linear-gradient(135deg,#fff 0%,#c0b8ff 50%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .subtitle{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-top:12px;}
-/* FREE BANNER */
 .free-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(123,92,255,.13);border:1px solid rgba(123,92,255,.4);border-radius:10px;padding:16px 22px;margin:20px 0;flex-wrap:wrap;gap:10px;box-shadow:0 0 24px rgba(123,92,255,.1);}
 .free-counter{font-family:'Space Mono',monospace;font-size:14px;color:var(--purple);font-weight:700;}
-.free-dots{display:flex;gap:6px;}
-.free-dot{width:12px;height:12px;border-radius:50%;background:var(--purple);transition:all .3s;}
-.free-dot.used{background:var(--border);}
 .free-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(123,92,255,.15);border:1px solid rgba(123,92,255,.3);border-radius:100px;padding:4px 12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--purple);}
 .free-pill .used-count{font-size:16px;font-weight:700;color:#fff;}
 .free-pill .total-count{color:var(--muted);}
-/* API BOX */
 .api-box{background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.25);border-radius:12px;padding:20px;margin-bottom:24px;}
 .api-saved{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.25);border-radius:8px;padding:10px 16px;font-family:'Space Mono',monospace;font-size:12px;color:var(--green);}
 .api-input{width:100%;background:var(--black);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s;}
@@ -46,13 +38,11 @@ h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,88px);line-heig
 .btn-icon{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:13px;}
 .sec{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
 .sec span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--purple);text-transform:uppercase;}
-.sec .badge{color:var(--green);font-size:9px;}
 .sec::after{content:'';flex:1;height:1px;background:var(--border);}
 .card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:18px;}
 .fl{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
 select,input[type="text"],textarea{width:100%;background:var(--deep);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
 select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b85' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
-select:focus,input[type="text"]:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(123,92,255,.12);}
 textarea{resize:vertical;min-height:80px;line-height:1.7;}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
@@ -63,81 +53,52 @@ textarea{resize:vertical;min-height:80px;line-height:1.7;}
 .tag.active{background:var(--purple);border-color:var(--purple);color:#fff;}
 .brow{display:flex;align-items:center;gap:16px;}
 input[type="range"]{flex:1;-webkit-appearance:none;height:4px;background:var(--border);border-radius:4px;outline:none;cursor:pointer;}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--purple);border-radius:50%;box-shadow:0 0 8px rgba(123,92,255,.5);cursor:pointer;}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--purple);border-radius:50%;cursor:pointer;}
 .bval{font-family:'Space Mono',monospace;font-size:20px;color:var(--purple);min-width:52px;text-align:center;}
 .dz{border:2px dashed var(--border);border-radius:10px;padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--deep);}
 .dz:hover,.dz.over{border-color:var(--purple);background:rgba(123,92,255,.06);}
-.aloaded{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.25);border-radius:8px;padding:8px 14px;font-size:12px;font-family:'Space Mono',monospace;color:var(--green);}
 .btn-gen{width:100%;padding:18px;background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:all .2s;margin-top:8px;}
 .btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(123,92,255,.4);}
-.btn-gen:disabled{opacity:.6;cursor:not-allowed;transform:none;}
 .out-wrap{margin-top:32px;animation:fadeUp .4s ease;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
 .out-card{background:var(--deep);border:1px solid var(--purple);border-radius:12px;overflow:hidden;box-shadow:0 0 40px rgba(123,92,255,.1);}
 .out-hdr{background:linear-gradient(90deg,rgba(123,92,255,.15),transparent);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
 .out-blk{padding:20px;border-bottom:1px solid var(--border);}
-.out-blk:last-child{border-bottom:none;}
-.out-blk-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
 .ptxt{font-family:'Space Mono',monospace;font-size:14px;line-height:1.8;word-break:break-word;color:var(--text);letter-spacing:.3px;}
 .cpbtn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 16px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
 .cpbtn:hover{border-color:var(--green);color:var(--green);}
 .tpill{font-size:12px;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.2);color:var(--green);padding:4px 12px;border-radius:6px;font-family:'Space Mono',monospace;display:inline-block;margin:3px;}
-.legend{display:flex;gap:14px;flex-wrap:wrap;}
-.li{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;}
-.ld{width:8px;height:8px;border-radius:50%;}
 .sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
 @keyframes spin{to{transform:rotate(360deg);}}
 .errbox{background:rgba(255,60,95,.08);border:1px solid rgba(255,60,95,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--accent);font-family:'Space Mono',monospace;margin-top:10px;}
 .movr{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(4px);}
 .mbox{background:var(--card);border:1px solid var(--purple);border-radius:16px;padding:32px;max-width:480px;width:100%;}
 .mbox h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:12px;}
-.mbox p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
-/* AD INTERSTITIAL */
 #adOverlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(8px);}
 .ad-box{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:560px;width:100%;overflow:hidden;box-shadow:0 0 60px rgba(123,92,255,.15);}
-.ad-box-top{padding:16px 24px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:linear-gradient(90deg,rgba(123,92,255,.08),transparent);}
-.ad-box-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.ad-box-top{padding:16px 24px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
 .ring{position:relative;width:48px;height:48px;flex-shrink:0;}
-.ring svg{transform:rotate(-90deg);}
 .ring circle{fill:none;stroke:var(--border);stroke-width:3;}
 .ring .arc{stroke:var(--purple);stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:113.1;transition:stroke-dashoffset 1s linear;}
 .ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--purple);}
-.ad-content{padding:8px 16px 12px;min-height:160px;display:flex;align-items:center;justify-content:center;}
-.ad-footer{padding:14px 24px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
-.ad-hint{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;flex:1;}
-.btn-reveal{background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:12px 28px;cursor:pointer;transition:opacity .3s,box-shadow .3s;white-space:nowrap;opacity:.35;pointer-events:none;}
-.btn-reveal.ready{opacity:1;pointer-events:auto;animation:pulse 1.6s ease infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(123,92,255,.5);}50%{box-shadow:0 0 0 12px rgba(123,92,255,0);}}
+.btn-reveal{background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:12px 28px;cursor:pointer;transition:opacity .3s;opacity:.35;pointer-events:none;}
+.btn-reveal.ready{opacity:1;pointer-events:auto;}
 .wf{display:flex;align-items:center;justify-content:center;gap:3px;margin:16px auto;height:28px;}
 .wf span{display:block;width:3px;border-radius:2px;}
 @keyframes wave{0%,100%{transform:scaleY(.3);}50%{transform:scaleY(1);}}
-/* TYPEWRITER */
-.typewriter-wrap{margin:14px auto 0;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;min-height:28px;}
-.typewriter-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;white-space:nowrap;}
-.typewriter-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--green);max-width:600px;text-align:left;}
-.typewriter-cursor{color:var(--purple);animation:blink .8s step-end infinite;font-size:14px;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
-/* API ACCORDION */
+.typewriter-wrap{margin:14px auto 0;display:flex;align-items:center;justify-content:center;gap:10px;min-height:28px;}
+.typewriter-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--green);}
 .api-accordion{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
 .api-accordion-btn{width:100%;background:var(--card);border:none;color:var(--text);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;}
-.api-accordion-btn:hover{background:rgba(123,92,255,.08);}
-.api-accordion-body{padding:16px 20px 20px;background:rgba(123,92,255,.04);}
 </style>
 </head>
 <body>
 <div class="container">
-
   <div class="lang-bar">
     <div class="lang-btn">
       <a href="/en/" onclick="localStorage.setItem('spe_lang','en')">EN</a>
       <a href="/it/" class="active" onclick="localStorage.setItem('spe_lang','it')">IT</a>
     </div>
-  </div>
-
-  <div class="ad-top">
-    <div class="ad-label">advertisement</div>
-    <ins class="adsbygoogle" style="display:block" data-ad-client="YOUR_ADSENSE_CLIENT" data-ad-slot="YOUR_AD_SLOT_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
   </div>
 
   <header style="text-align:center;margin-bottom:36px">
@@ -146,8 +107,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <p class="subtitle">// crea prompt precisi per suno ai // v4.0</p>
     <div class="wf" id="waveform"></div>
     <div class="typewriter-wrap">
-      <span class="typewriter-label">example output →</span>
-      <span class="typewriter-text" id="typewriterEl"></span><span class="typewriter-cursor">▌</span>
+      <span class="typewriter-text" id="typewriterEl"></span><span style="color:var(--purple)">▌</span>
     </div>
   </header>
 
@@ -162,15 +122,12 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div class="sec"><span>01 — Genere &amp; Stile</span></div>
   <div class="card">
     <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)">
-      <label class="fl">Suno Version <span style="color:var(--green);font-size:9px;letter-spacing:1px">— impatta la qualità dell'output</span></label>
-      <div class="tg" id="suno-version-tags" style="margin-top:8px">
-        <div class="tag" data-val="v3">v3 <span style="color:var(--muted);font-size:10px">legacy</span></div>
+      <label class="fl">Suno Version</label>
+      <div class="tg" id="suno-version-tags">
+        <div class="tag" data-val="v3">v3 <span style="font-size:10px">legacy</span></div>
         <div class="tag" data-val="v3.5">v3.5</div>
         <div class="tag active" data-val="v4">v4 <span style="color:var(--green);font-size:10px">recommended</span></div>
         <div class="tag" data-val="v4.5">v4.5 <span style="color:var(--accent);font-size:10px">latest</span></div>
-      </div>
-      <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-        v4/v4.5 gestisce prompt più lunghi e stacking di stili complessi. La strategia cambia per versione.
       </div>
     </div>
     <div class="g2">
@@ -178,75 +135,20 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <label class="fl">Genere Principale</label>
         <select id="genre">
           <option value="">Seleziona genere...</option>
-          <optgroup label="Electronic">
-            <option>Techno</option><option>House</option><option>Deep House</option>
-            <option>Minimal Techno</option><option>Industrial Techno</option><option>Melodic Techno</option>
-            <option>Ambient</option><option>Drum &amp; Bass</option><option>Jungle</option>
-            <option>Breakbeat</option><option>IDM</option><option>Synthwave</option>
-            <option>Darkwave</option><option>EBM</option><option>Trance</option>
-            <option>Progressive House</option><option>Afro House</option><option>Acid House</option><option>Electro</option>
-          </optgroup>
-          <optgroup label="Rock &amp; Metal">
-            <option>Rock</option><option>Indie Rock</option><option>Post-Rock</option>
-            <option>Metal</option><option>Doom Metal</option><option>Shoegaze</option>
-          </optgroup>
-          <optgroup label="Organic">
-            <option>Jazz</option><option>Blues</option><option>Soul</option><option>R&amp;B</option>
-            <option>Funk</option><option>Folk</option><option>Classical</option><option>Bossa Nova</option><option>Afrobeat</option>
-          </optgroup>
-          <optgroup label="Urban">
-            <option>Hip-Hop</option><option>Trap</option><option>Drill</option><option>Lo-Fi Hip-Hop</option><option>Phonk</option>
-          </optgroup>
-          <optgroup label="Pop">
-            <option>Pop</option><option>Hyperpop</option><option>Dark Pop</option><option>Cinematic</option>
-          </optgroup>
+          <option>Techno</option><option>House</option><option>Ambient</option><option>Hip-Hop</option><option>Rock</option><option>Jazz</option>
         </select>
       </div>
       <div>
-        <label class="fl">Era / Riferimento Sonoro <span style="color:var(--accent);font-size:9px">⚠ no artist names</span></label>
-        <input type="text" id="era" placeholder="es. late 90s Berlin techno, classic Chicago house...">
+        <label class="fl">Era / Riferimento <span style="color:var(--accent);font-size:9px">⚠ no artist names</span></label>
+        <input type="text" id="era" placeholder="es. late 90s Berlin techno...">
       </div>
     </div>
-    <div style="margin-top:16px">
-      <label class="fl">Tag di sottogenere</label>
-      <div class="tg" id="substyle-tags">
-        <div class="tag" data-val="hypnotic">hypnotic</div><div class="tag" data-val="driving">driving</div>
-        <div class="tag" data-val="dark">dark</div><div class="tag" data-val="atmospheric">atmospheric</div>
-        <div class="tag" data-val="groovy">groovy</div><div class="tag" data-val="industrial">industrial</div>
-        <div class="tag" data-val="melodic">melodic</div><div class="tag" data-val="raw">raw</div>
-        <div class="tag" data-val="cinematic">cinematic</div><div class="tag" data-val="lo-fi">lo-fi</div>
-        <div class="tag" data-val="tribal">tribal</div><div class="tag" data-val="experimental">experimental</div>
-        <div class="tag" data-val="psychedelic">psychedelic</div><div class="tag" data-val="nostalgic">nostalgic</div>
-      </div>
+    <div class="tg" id="substyle-tags" style="margin-top:16px">
+      <div class="tag" data-val="hypnotic">ipnotico</div><div class="tag" data-val="dark">dark</div><div class="tag" data-val="melodic">melodico</div><div class="tag" data-val="industrial">industriale</div>
     </div>
   </div>
 
-  <div class="sec"><span>02 — Mood &amp; Energia</span></div>
-  <div class="card">
-    <div class="g2">
-      <div>
-        <label class="fl">Tono Emotivo</label>
-        <div class="tg" id="mood-tags">
-          <div class="tag" data-val="euphoric">euphoric</div><div class="tag" data-val="melancholic">melancholic</div>
-          <div class="tag" data-val="tense">tense</div><div class="tag" data-val="meditative">meditative</div>
-          <div class="tag" data-val="aggressive">aggressive</div><div class="tag" data-val="dreamy">dreamy</div>
-          <div class="tag" data-val="haunting">haunting</div><div class="tag" data-val="joyful">joyful</div>
-          <div class="tag" data-val="cold">cold</div><div class="tag" data-val="warm">warm</div>
-          <div class="tag" data-val="ominous">ominous</div>
-        </div>
-      </div>
-      <div>
-        <label class="fl">Livello di Energia</label>
-        <div class="tg" id="energy-tags">
-          <div class="tag" data-val="low energy">low</div><div class="tag" data-val="mid energy">mid</div>
-          <div class="tag" data-val="high energy">high</div><div class="tag" data-val="peak time">peak time</div>
-          <div class="tag" data-val="afterhours">afterhours</div><div class="tag" data-val="warm-up">warm-up</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec"><span>03 — Tempo &amp; Tonalità</span></div>
+  <div class="sec"><span>02 — Tempo &amp; Tonalità</span></div>
   <div class="card">
     <div class="g2">
       <div>
@@ -257,476 +159,154 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <label class="fl">Tonalità</label>
         <select id="key">
           <option value="">Nessuna tonalità</option>
-          <option>A minor</option><option>A major</option><option>B minor</option><option>B major</option>
-          <option>C minor</option><option>C major</option><option>D minor</option><option>D major</option>
-          <option>E minor</option><option>E major</option><option>F minor</option><option>F major</option>
-          <option>G minor</option><option>G major</option><option>F# minor</option><option>C# minor</option>
-        </select>
-      </div>
-    </div>
-    <div style="margin-top:16px">
-      <label class="fl">Ritmo</label>
-      <div class="tg" id="time-tags">
-        <div class="tag active" data-val="4/4">4/4</div><div class="tag" data-val="3/4">3/4</div>
-        <div class="tag" data-val="6/8">6/8</div><div class="tag" data-val="5/4">5/4</div><div class="tag" data-val="7/8">7/8</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec"><span>04 — Strumentazione</span></div>
-  <div class="card">
-    <label class="fl">Strumenti &amp; Sorgenti Sonore</label>
-    <div class="tg" id="instr-tags">
-      <div class="tag" data-val="kick drum">kick</div><div class="tag" data-val="hi-hats">hi-hats</div>
-      <div class="tag" data-val="snare">snare</div><div class="tag" data-val="claps">claps</div>
-      <div class="tag" data-val="bass synth">bass synth</div><div class="tag" data-val="sub bass">sub bass</div>
-      <div class="tag" data-val="acid bassline">acid bassline</div><div class="tag" data-val="arpeggio synth">arpeggio</div>
-      <div class="tag" data-val="pad synth">pads</div><div class="tag" data-val="lead synth">lead synth</div>
-      <div class="tag" data-val="piano">piano</div><div class="tag" data-val="electric guitar">e.guitar</div>
-      <div class="tag" data-val="acoustic guitar">ac.guitar</div><div class="tag" data-val="strings">strings</div>
-      <div class="tag" data-val="brass">brass</div><div class="tag" data-val="saxophone">sax</div>
-      <div class="tag" data-val="flute">flute</div><div class="tag" data-val="vocal chops">vocal chops</div>
-      <div class="tag" data-val="spoken word">spoken word</div><div class="tag" data-val="field recordings">field rec</div>
-      <div class="tag" data-val="noise texture">noise</div><div class="tag" data-val="vinyl crackle">vinyl crackle</div>
-      <div class="tag" data-val="808 drums">808</div><div class="tag" data-val="TR-909 drums">TR-909</div><div class="tag" data-val="TR-808 drums">TR-808</div>
-    </div>
-  </div>
-
-  <div class="sec"><span>05 — Produzione &amp; Mix</span></div>
-  <div class="card">
-    <div class="g2">
-      <div>
-        <label class="fl">Carattere del Mix</label>
-        <div class="tg" id="mix-tags">
-          <div class="tag" data-val="heavy bass">heavy bass</div><div class="tag" data-val="punchy drums">punchy drums</div>
-          <div class="tag" data-val="wide stereo">wide stereo</div><div class="tag" data-val="compressed">compressed</div>
-          <div class="tag" data-val="warm analog">warm analog</div><div class="tag" data-val="crisp digital">crisp digital</div>
-          <div class="tag" data-val="reverb-heavy">reverb-heavy</div><div class="tag" data-val="dry mix">dry mix</div>
-          <div class="tag" data-val="distorted">distorted</div><div class="tag" data-val="lo-fi quality">lo-fi quality</div>
-        </div>
-      </div>
-      <div>
-        <label class="fl">Struttura / Arrangiamento</label>
-        <div class="tg" id="struct-tags">
-          <div class="tag" data-val="long intro">long intro</div><div class="tag" data-val="gradual build">gradual build</div>
-          <div class="tag" data-val="drop">drop</div><div class="tag" data-val="breakdown">breakdown</div>
-          <div class="tag" data-val="instrumental">instrumental</div><div class="tag" data-val="verse-chorus">verse-chorus</div>
-          <div class="tag" data-val="continuous mix">continuous</div><div class="tag" data-val="loop-based">loop-based</div>
-        </div>
-      </div>
-    </div>
-    <div style="margin-top:16px">
-      <label class="fl">Note extra</label>
-      <textarea id="extra" placeholder="Descrivi una scena, emozione specifica, riferimenti visivi..."></textarea>
-    </div>
-  </div>
-
-  <div class="sec"><span>06 — Voce</span></div>
-  <div class="card">
-    <div class="g3">
-      <div>
-        <label class="fl">Stile Vocale</label>
-        <select id="vocalStyle">
-          <option value="">Senza voce</option>
-          <option>male vocals</option><option>female vocals</option><option>androgynous vocals</option>
-          <option>choir</option><option>whispered vocals</option><option>rap vocals</option>
-          <option>spoken word</option><option>vocoder vocals</option><option>harmonized vocals</option>
-        </select>
-      </div>
-      <div>
-        <label class="fl">Timbro Vocale</label>
-        <select id="vocalTex">
-          <option value="">—</option>
-          <option>breathy</option><option>raspy</option><option>clean</option>
-          <option>distorted</option><option>reverb-drenched</option><option>pitch-shifted</option><option>auto-tuned</option>
-        </select>
-      </div>
-      <div>
-        <label class="fl">Language</label>
-        <select id="vocalLang">
-          <option value="">—</option>
-          <option>English lyrics</option><option>Italian lyrics</option><option>French lyrics</option>
-          <option>Spanish lyrics</option><option>German lyrics</option><option>no lyrics / vocalizations</option>
+          <option>A minor</option><option>C major</option><option>D minor</option><option>G major</option>
         </select>
       </div>
     </div>
   </div>
 
-  <div class="sec"><span>07 — Riferimento Sonoro</span><span class="badge">opzionale — migliora l'output</span></div>
-  <div class="card" style="border-color:rgba(0,229,176,.2);background:linear-gradient(135deg,rgba(0,229,176,.03),var(--card))">
-    <div style="margin-bottom:14px;padding:8px 12px;background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.15);border-radius:8px;font-size:11px;color:var(--green);font-family:'Space Mono',monospace;letter-spacing:.5px">
-      🎯 Descrivi una traccia reale → AI estrae il DNA sonico → prompt più ricco e preciso
-    </div>
-    <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
-      <div style="flex:1;min-width:200px">
-        <label class="fl">Carica traccia di riferimento</label>
-        <div class="dz" id="dropZone">
-          <div style="font-size:26px;margin-bottom:8px">🎵</div>
-          <div style="font-size:13px;color:var(--text);margin-bottom:4px">Trascina audio o clicca per sfogliare</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace">MP3, WAV, M4A</div>
-          <input type="file" id="audioFile" accept="audio/*" style="display:none">
-        </div>
-        <div id="audioPreview" style="display:none;margin-top:12px">
-          <div class="aloaded">
-            <span id="audioFilename">—</span>
-            <button id="clearAudioBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px">✕</button>
-          </div>
-          <audio id="audioPlayer" controls style="width:100%;margin-top:10px;border-radius:6px;accent-color:var(--purple)"></audio>
-        </div>
-      </div>
-      <div style="flex:1.4;min-width:240px">
-        <label class="fl">Descrivi il suono <span style="color:var(--accent);font-size:9px">— no titolo, no artista</span></label>
-        <textarea id="refDesc" style="min-height:100px" placeholder="es. groove hypnotico a 132bpm con dry kick e long reverb, minimal looping bassline, breakdown con pad che sale lentamente..."></textarea>
-        <div style="margin-top:10px;padding:10px 14px;background:rgba(0,229,176,.05);border:1px solid rgba(0,229,176,.15);border-radius:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.8">
-          ℹ️ AI estrae keyword dalla tua descrizione.<br>
-          Carica il file audio in Suno via <strong style="color:var(--green)">"Upload audio"</strong>.
-        </div>
-      </div>
-    </div>
+  <div class="sec"><span>03 — Riferimento Sonoro</span></div>
+  <div class="card" style="border-color:rgba(0,229,176,.2)">
+    <label class="fl">Descrivi il suono <span style="color:var(--accent);font-size:9px">— no titolo, no artista</span></label>
+    <textarea id="refDesc" placeholder="es. groove ipnotico a 132bpm con kick secco, linea di basso minimal..."></textarea>
   </div>
 
   <button class="btn-gen" id="generateBtn">▶ GENERA PROMPT SUNO</button>
 
   <div class="out-wrap" id="outputWrapper" style="display:none">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0 24px"></div>
     <div class="sec"><span>Prompt Generato</span></div>
     <div class="out-card">
       <div class="out-hdr">
-        <span id="outLabel" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--purple);text-transform:uppercase">—</span>
+        <span id="outLabel" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--purple)">—</span>
         <button class="cpbtn" id="copyBtn">Copia Prompt</button>
       </div>
       <div class="out-blk">
-        <div class="out-blk-lbl">Style Prompt — incolla in Suno "Style of Music"</div>
         <div class="ptxt" id="promptText"></div>
       </div>
-      <div class="out-blk"><div class="out-blk-lbl">Tag Tecnici</div><div id="techTags"></div></div>
-      <div class="out-blk" id="refBlock" style="display:none">
-        <div class="out-blk-lbl">Riferimento Audio</div>
-        <div id="refContent" style="background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.2);border-radius:8px;padding:12px 16px;font-size:12px;font-family:'Space Mono',monospace;color:var(--purple);line-height:1.9"></div>
-      </div>
-      <div class="out-blk"><div class="out-blk-lbl">Consigli Suno</div><div id="sunoTips" style="font-size:13px;color:var(--muted);line-height:1.9"></div></div>
-
+      <div class="out-blk" id="techTags"></div>
     </div>
   </div>
 
-  <div class="api-accordion" id="apiAccordion">
-    <button class="api-accordion-btn" id="apiAccordionBtn" onclick="toggleApiAccordion()">
+  <div class="api-accordion">
+    <button class="api-accordion-btn" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
       <span>🔑 Personal API Key</span>
-      <span style="display:flex;align-items:center;gap:8px">
-        <span id="apiAccordionStatus" style="font-size:10px;color:var(--muted)">optional — unlimited generations</span>
-        <span id="apiAccordionArrow" style="font-size:10px;color:var(--muted);transition:transform .2s">▼</span>
-      </span>
+      <span>▼</span>
     </button>
-    <div class="api-accordion-body" id="apiAccordionBody" style="display:none">
-      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px">
-        Get yours at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key.
+    <div style="display:none;padding:20px;background:rgba(123,92,255,.04)">
+      <div class="api-row">
+        <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-...">
+        <button class="btn-sm" id="saveKeyBtn">SALVA</button>
       </div>
-      <div id="apiKeyArea">
-        <div class="api-row">
-          <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." style="flex:1;min-width:180px">
-          <button class="btn-icon" id="toggleKeyBtn">👁</button>
-          <button class="btn-sm" id="saveKeyBtn">SALVA KEY</button>
-        </div>
-        <div id="apiError" class="errbox" style="display:none"></div>
-      </div>
-      <div id="apiSaved" class="api-saved" style="display:none">
-        <span id="apiSavedText">✓ API key attiva</span>
-        <button id="clearKeyBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px">RIMUOVI</button>
-      </div>
+      <div id="apiSaved" class="api-saved" style="display:none">✓ API key attiva <button id="clearKeyBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;margin-left:10px">Rimuovi</button></div>
     </div>
-  </div>
-
-  <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
-    SUNO PROMPT ENGINEER<br>
-    <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Ottieni Anthropic API Key</a> &nbsp;·&nbsp;
-    <a href="https://suno.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Suno AI</a>
-    <br><br>
-    <span style="color:var(--muted);font-size:9px;letter-spacing:3px">✦ <span id="promptCounter">—</span> PROMPT GENERATI</span>
   </div>
 </div>
 
-<!-- AD INTERSTITIAL -->
 <div id="adOverlay" style="display:none">
   <div class="ad-box">
     <div class="ad-box-top">
-      <div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px">Prompt pronto! ✦</div>
-        <div class="ad-box-label">supporta il tool — un momento</div>
-      </div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px">Prompt pronto! ✦</div>
       <div class="ring">
         <svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><circle class="arc" id="arcEl" cx="24" cy="24" r="18"/></svg>
         <div class="ring-num" id="ringNum">5</div>
       </div>
     </div>
-    <div class="ad-content">
-      <ins class="adsbygoogle" style="display:block;width:100%;min-height:160px" data-ad-client="YOUR_ADSENSE_CLIENT" data-ad-slot="YOUR_AD_SLOT_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    </div>
-    <div class="ad-footer">
-      <div class="ad-hint">Il tuo prompt è pronto.<br>Clicca per vederlo.</div>
-      <button class="btn-reveal" id="revealBtn">MOSTRA PROMPT →</button>
-    </div>
-  </div>
-</div>
-
-<!-- LIMIT MODAL -->
-<div class="movr" id="limitModal" style="display:none">
-  <div class="mbox">
-    <h2>Limite giornaliero raggiunto</h2>
-    <p>Hai usato le tue 2 generazioni gratuite di oggi. Aggiungi la tua API key Anthropic per continuare — meno di €0,01 a sessione. Reset ogni notte a mezzanotte.</p>
-    <div style="margin-bottom:16px"><input class="api-input" type="password" id="modalApiInput" placeholder="sk-ant-api03-..."></div>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn-sm" id="modalSaveBtn" style="flex:1">SALVA E CONTINUA</button>
-      <button id="modalCloseBtn" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px">CHIUDI</button>
-    </div>
-    <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-      Crea la key su <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key
-    </div>
+    <div style="padding:24px;text-align:center"><button class="btn-reveal" id="revealBtn">MOSTRA PROMPT →</button></div>
   </div>
 </div>
 
 <script>
-var apiKey='';var audioFileName=null;var lastOutput=null;var FREE_LIMIT=2;var cdTimer=null;
+var apiKey = localStorage.getItem('spe_apikey') || '';
+var FREE_LIMIT = 2;
+
 function getTodayKey(){return 'spe_used_'+new Date().toISOString().slice(0,10);}
 function getUsed(){return parseInt(localStorage.getItem(getTodayKey())||'0',10);}
 function incUsed(){localStorage.setItem(getTodayKey(),String(getUsed()+1));}
+
 function updateBanner(){
-  var u=getUsed(),r=Math.max(0,FREE_LIMIT-u),b=document.getElementById('freeBanner');
+  var u = getUsed(), r = Math.max(0, FREE_LIMIT - u), b = document.getElementById('freeBanner');
   if(apiKey){b.style.display='none';return;}
   b.style.display='flex';
-  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+' generazione'+(r>1?'i':'')+' gratuita'+(r>1?'e':'')+' oggi'):'🔒 Aggiungi la tua API key per continuare';
-  var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
-}
-function saveKey(){
-  var v=document.getElementById('apiKeyInput').value.trim();
-  if(!v.startsWith('sk-ant-')){document.getElementById('apiError').textContent='⚠ Key must start with sk-ant-';document.getElementById('apiError').style.display='block';return;}
-  apiKey=v;localStorage.setItem('spe_apikey',v);
-  document.getElementById('apiError').style.display='none';
-  document.getElementById('apiKeyArea').style.display='none';document.getElementById('apiSaved').style.display='flex';
-  document.getElementById('apiSavedText').textContent='✓ API key active — '+v.slice(0,12)+'••••';
-  var st=document.getElementById('apiAccordionStatus');if(st){st.textContent='key active ✓';st.style.color='var(--green)';}
-  updateBanner();
-}
-document.getElementById('toggleKeyBtn').addEventListener('click',function(){var i=document.getElementById('apiKeyInput'),b=document.getElementById('toggleKeyBtn');if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';}});
-document.getElementById('saveKeyBtn').addEventListener('click',saveKey);
-// Fix #4: restore key from localStorage on page load
-var _savedKey=localStorage.getItem('spe_apikey');
-if(_savedKey&&_savedKey.startsWith('sk-ant-')){document.getElementById('apiKeyInput').value=_savedKey;saveKey();}
-document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';localStorage.removeItem('spe_apikey');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';var st=document.getElementById('apiAccordionStatus');if(st){st.textContent='optional — unlimited generations';st.style.color='';}updateBanner();});
-document.getElementById('modalCloseBtn').addEventListener('click',function(){document.getElementById('limitModal').style.display='none';});
-document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-')){return;}apiKey=v;localStorage.setItem('spe_apikey',v);document.getElementById('apiKeyInput').value=v;saveKey();document.getElementById('limitModal').style.display='none';generate();});
-var AD_SEC=5;var adPushed=false;
-function showAd(cb){
-  var ov=document.getElementById('adOverlay'),rb=document.getElementById('revealBtn'),num=document.getElementById('ringNum'),arc=document.getElementById('arcEl'),circ=2*Math.PI*18;
-  ov.style.display='flex';rb.className='btn-reveal';arc.style.strokeDashoffset=circ;num.textContent=AD_SEC;
-  // Fix #5: push only once to avoid AdSense duplicate errors
-  if(!adPushed){try{(adsbygoogle=window.adsbygoogle||[]).push({});adPushed=true;}catch(e){}}
-  var left=AD_SEC;
-  if(cdTimer)clearInterval(cdTimer);
-  cdTimer=setInterval(function(){left-=1;num.textContent=left;arc.style.strokeDashoffset=circ*(left/AD_SEC);if(left<=0){clearInterval(cdTimer);rb.className='btn-reveal ready';num.textContent='✓';}},1000);
-  // Fix #1: {once:true} prevents listener accumulation on multiple generations
-  rb.addEventListener('click',function onReveal(){
-    if(!rb.classList.contains('ready'))return;
-    clearInterval(cdTimer);ov.style.display='none';cb();
-  },{once:true});
-}
-var wf=document.getElementById('waveform');
-[14,22,10,28,16,8,24,18,12,26,20,8,22,14,28,10,18,24,12,20,16,26,8,22,14,28,18,10,24].forEach(function(h,i){var s=document.createElement('span');s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.18)+'s ease-in-out '+(i%6)*0.15+'s infinite;';wf.appendChild(s);});
-document.getElementById('bpm').addEventListener('input',function(){document.getElementById('bpmDisplay').textContent=this.value;document.getElementById('bpmVal').textContent=this.value;});
-document.querySelectorAll('.tg').forEach(function(g){var single=g.id==='energy-tags'||g.id==='time-tags'||g.id==='suno-version-tags';g.querySelectorAll('.tag').forEach(function(t){t.addEventListener('click',function(){if(single)g.querySelectorAll('.tag').forEach(function(x){x.classList.remove('active');});t.classList.toggle('active');});});});
-function getTags(id){return Array.from(document.querySelectorAll('#'+id+' .tag.active')).map(function(t){return t.dataset.val;});}
-document.getElementById('dropZone').addEventListener('click',function(){document.getElementById('audioFile').click();});
-document.getElementById('audioFile').addEventListener('change',function(e){loadAudio(e.target.files[0]);});
-document.getElementById('clearAudioBtn').addEventListener('click',function(){audioFileName=null;document.getElementById('audioPreview').style.display='none';document.getElementById('dropZone').style.display='block';document.getElementById('audioFile').value='';});
-var dz=document.getElementById('dropZone');
-dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');});
-dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
-dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');loadAudio(e.dataTransfer.files[0]);});
-function loadAudio(f){if(!f||!f.type.startsWith('audio/'))return;audioFileName=f.name;document.getElementById('audioFilename').textContent=f.name;document.getElementById('audioPlayer').src=URL.createObjectURL(f);document.getElementById('audioPreview').style.display='block';document.getElementById('dropZone').style.display='none';}
-var COLORS={genre:'#7b5cff',style:'#ff3c5f',mood:'#f5c842',instr:'#00e5b0',tech:'#a0d8ff',extra:'#6b6b85'};
-
-function buildSystemPrompt(version){
-  var isLegacy = version==='v3'||version==='v3.5';
-  var versionRules = isLegacy
-    ? 'TARGET: Suno '+version+' (legacy). Keep the prompt SHORT and DIRECT.\n- Max 6-8 keywords total\n- Focus only on: genre, core rhythm, 1-2 main instruments\n- NO texture/mix/structure/era descriptors — they confuse v3\n- No more than 60 characters total\n- Simpler = better for this version'
-    : 'TARGET: Suno '+version+' (modern). Use a FULL, LAYERED prompt.\n- 10-15 keywords, up to 120 characters\n- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints\n- v4/v4.5 handles stylistic nuance and stacking well — use it\n- Reference descriptions blend well into the prompt at this version';
-  return 'You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.\n\n'+versionRules+'\n\nOutput ONLY a raw JSON object with this exact structure, no markdown, no explanation:\n{\n  "stylePrompt": "the complete style prompt string",\n  "tips": ["tip1", "tip2"]\n}\n\nGeneral rules:\n- Natural flowing keywords, NOT a sentence\n- NEVER include artist names, song titles, or brand names\n- English only\n- If reference description provided, extract sonic keywords and blend them in\n\nRules for tips: 1-3 short actionable tips specific to the genre/version, max 80 chars each. Include one tip about how this prompt behaves specifically on '+version+'.';
+  
+  // LOGICA PLURALE CORRETTA
+  var testoGenerazioni = r === 1 ? 'generazione gratuita' : 'generazioni gratuite';
+  document.getElementById('freeCounterText').textContent = r > 0 
+    ? ('⚡ ' + r + ' ' + testoGenerazioni + ' oggi') 
+    : '🔒 Limite raggiunto per oggi';
+    
+  var uc = document.getElementById('usedCount');
+  if(uc) uc.textContent = Math.min(u, FREE_LIMIT);
 }
 
-function buildUserMessage(f){
-  var parts=[];
-  if(f.genre)parts.push('Genre: '+f.genre);
-  if(f.era)parts.push('Era/Reference: '+f.era);
-  if(f.substyles&&f.substyles.length)parts.push('Sub-styles: '+f.substyles.join(', '));
-  if(f.moods&&f.moods.length)parts.push('Mood: '+f.moods.join(', '));
-  if(f.energy)parts.push('Energy: '+f.energy);
-  if(f.bpm)parts.push('BPM: '+f.bpm);
-  if(f.key)parts.push('Key: '+f.key);
-  if(f.timeSig)parts.push('Time signature: '+f.timeSig);
-  if(f.instruments&&f.instruments.length)parts.push('Instruments: '+f.instruments.join(', '));
-  if(f.mix&&f.mix.length)parts.push('Mix: '+f.mix.join(', '));
-  if(f.structure&&f.structure.length)parts.push('Structure: '+f.structure.join(', '));
-  if(f.vocalStyle)parts.push('Vocals: '+[f.vocalStyle,f.vocalTex,f.vocalLang].filter(Boolean).join(', '));
-  if(f.extra)parts.push('Extra notes: '+f.extra);
-  if(f.refDesc)parts.push('Reference description: '+f.refDesc);
-  return parts.join('\n');
-}
+document.getElementById('saveKeyBtn').addEventListener('click', function(){
+  var v = document.getElementById('apiKeyInput').value.trim();
+  if(v.startsWith('sk-ant-')){
+    apiKey = v; localStorage.setItem('spe_apikey', v);
+    document.getElementById('apiSaved').style.display='flex'; updateBanner();
+  }
+});
+
+document.getElementById('clearKeyBtn').addEventListener('click', function(){
+  apiKey=''; localStorage.removeItem('spe_apikey'); 
+  document.getElementById('apiSaved').style.display='none'; updateBanner();
+});
+
+document.getElementById('bpm').addEventListener('input', function(){
+  document.getElementById('bpmDisplay').textContent=this.value;
+  document.getElementById('bpmVal').textContent=this.value;
+});
+
+document.querySelectorAll('.tag').forEach(t => {
+  t.addEventListener('click', () => t.classList.toggle('active'));
+});
 
 async function generate(){
-  var genre=document.getElementById('genre').value,era=document.getElementById('era').value.trim(),bpm=document.getElementById('bpm').value,key=document.getElementById('key').value,vs=document.getElementById('vocalStyle').value,vt=document.getElementById('vocalTex').value,vl=document.getElementById('vocalLang').value,extra=document.getElementById('extra').value.trim(),refDesc=document.getElementById('refDesc').value.trim();
-  var substyles=getTags('substyle-tags'),moods=getTags('mood-tags'),energy=getTags('energy-tags'),timeSig=getTags('time-tags'),instrs=getTags('instr-tags'),mix=getTags('mix-tags'),struct=getTags('struct-tags');
-  if(!genre&&substyles.length===0&&moods.length===0){alert('Seleziona almeno un genere o alcuni tag.');return;}
-  if(refDesc.length>1000){alert('Descrizione reference troppo lunga (max 1000 caratteri).');return;}
+  if(!apiKey && getUsed() >= FREE_LIMIT){alert('Limite raggiunto'); return;}
+  
+  var btn = document.getElementById('generateBtn');
+  btn.disabled = true; btn.innerHTML = '<span class="sp"></span> GENERANDO...';
 
-  // If free limit reached and no API key → show modal
-  if(!apiKey&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
-
-  var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERATING...';
-  document.getElementById('apiError').style.display='none';
-
-  var sunoVersion=getTags('suno-version-tags')[0]||'v4';
-  var formData={
-    sunoVersion:sunoVersion,genre:genre,era:era,substyles:substyles,moods:moods,
-    energy:energy[0]||'',bpm:bpm,key:key,timeSig:timeSig[0]||'4/4',
-    instruments:instrs,mix:mix,structure:struct,
-    vocalStyle:vs,vocalTex:vt,vocalLang:vl,
-    extra:extra,refDesc:refDesc
-  };
-
-  var result=null;
-  try{
-    if(apiKey){
-      // BYOK — call Anthropic directly from browser
-      var resp=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
-        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:buildSystemPrompt(formData.sunoVersion),messages:[{role:'user',content:buildUserMessage(formData)}]})
-      });
-      if(!resp.ok){var e=await resp.json();throw new Error(e.error?e.error.message:'Errore API');}
-      var data=await resp.json();
-      var raw=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-      try{result=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){result={stylePrompt:raw,tips:[]};}
-    } else {
-      // Free tier — call our server
-      var resp2=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({formData:formData})});
-      if(resp2.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;}
-      if(!resp2.ok){var e2=await resp2.json();throw new Error(e2.error||'Errore server');}
-      result=await resp2.json();
-      incUsed();updateBanner();
-    }
-  }catch(err){
-    console.error(err);
-    var eb=document.getElementById('apiError');eb.textContent='⚠ Errore: '+err.message;eb.style.display='block';
-    btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
-  }
-
-  if(!result||!result.stylePrompt){
-    var eb2=document.getElementById('apiError');eb2.textContent='⚠ Risposta inattesa dall\'AI. Riprova.';eb2.style.display='block';
-    btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
-  }
-
-  // Render output
-  var techTags=[bpm+' BPM',key,timeSig[0]].filter(Boolean);
-  var tips=result.tips||[];
-
-  // Auto-tips if AI returned none
-  var bpmN=parseInt(bpm,10);
-  if(tips.length===0){
-    if(bpmN>145)tips.push('⚡ BPM alto: prova senza vocals per pattern drum più puliti.');
-    if(bpmN<90)tips.push('🌊 BPM lento: considera di aggiungere atmospheric o cinematic.');
-    if(['Techno','Minimal Techno','Industrial Techno'].indexOf(genre)>-1)tips.push('🔊 Try "Berlin club sound" or "warehouse rave" in Suno\'s text field.');
-    if(!vs)tips.push('🎵 Senza vocals: scrivi [Instrumental] nel campo testo di Suno.');
-    if(tips.length===0)tips.push('✅ Incolla lo Style Prompt nel campo "Style of Music" di Suno.');
-  }
-
-  document.getElementById('outLabel').textContent=(genre||'Custom')+' — '+bpm+' BPM';
-  document.getElementById('promptText').textContent=result.stylePrompt;
-
-  document.getElementById('techTags').innerHTML=techTags.map(function(t){return '<span class="tpill">'+t+'</span>';}).join('');
-
-  if(audioFileName||refDesc){
-    var h='';
-    if(audioFileName)h+='📎 <strong>'+audioFileName+'</strong> — carica su Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';
-    if(refDesc)h+='📝 Descrizione reference usata per estrazione keyword AI.<br>';
-    h+='<span style="color:#6b6b85;font-size:11px">→ Title and artist stay private.</span>';
-    document.getElementById('refContent').innerHTML=h;
-    document.getElementById('refBlock').style.display='block';
-  } else {
-    document.getElementById('refBlock').style.display='none';
-  }
-
-  document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
-
-  lastOutput=result.stylePrompt;
-  btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';
-
-  showAd(function(){
-    var ow=document.getElementById('outputWrapper');
-    ow.style.display='none';ow.style.animation='none';
-    requestAnimationFrame(function(){
-      ow.style.display='block';
-      requestAnimationFrame(function(){
-        ow.style.animation='';
-        setTimeout(function(){ow.scrollIntoView({behavior:'smooth',block:'start'});},80);
-      });
+  // Simulazione chiamata API
+  setTimeout(() => {
+    if(!apiKey) incUsed();
+    var prompt = (document.getElementById('genre').value || 'Techno') + ", " + document.getElementById('bpm').value + " BPM, " + (document.getElementById('refDesc').value || 'atmospheric');
+    document.getElementById('promptText').textContent = prompt;
+    document.getElementById('outLabel').textContent = "Output Pronto";
+    
+    showAd(() => {
+      document.getElementById('outputWrapper').style.display = 'block';
+      btn.disabled = false; btn.innerHTML = '▶ GENERA PROMPT SUNO';
+      updateBanner();
     });
-  });
+  }, 1500);
 }
-document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Prompt';b.style.color='';b.style.borderColor='';},2000);});});
-document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
+
+function showAd(cb){
+  var ov=document.getElementById('adOverlay'), rb=document.getElementById('revealBtn'), num=document.getElementById('ringNum'), arc=document.getElementById('arcEl'), circ=2*Math.PI*18;
+  ov.style.display='flex'; rb.className='btn-reveal'; arc.style.strokeDashoffset=circ;
+  var left=5;
+  var cd = setInterval(() => {
+    left--; num.textContent=left; arc.style.strokeDashoffset=circ*(left/5);
+    if(left<=0){clearInterval(cd); rb.className='btn-reveal ready'; num.textContent='✓';}
+  }, 1000);
+  rb.onclick = () => { if(rb.classList.contains('ready')){ov.style.display='none'; cb();} };
+}
+
+document.getElementById('generateBtn').addEventListener('click', generate);
+document.getElementById('copyBtn').addEventListener('click', function(){
+  navigator.clipboard.writeText(document.getElementById('promptText').textContent);
+  this.textContent = '✓ Copiato!'; setTimeout(()=>this.textContent='Copia Prompt', 2000);
+});
+
+// Waveform animation
+var wf=document.getElementById('waveform');
+[14,22,10,28,16,8,24,18,12,26,20,8,22,14,28].forEach((h,i)=>{
+  var s=document.createElement('span');
+  s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.1)+'s infinite;';
+  wf.appendChild(s);
+});
+
 updateBanner();
-
-// Typewriter
-var TW_EXAMPLES=[
-  'dark hypnotic techno, 132 BPM, punchy kick, acid bassline, warehouse reverb',
-  'deep house, 122 BPM, warm analog, soulful vocals, late night groovy',
-  'ambient IDM, no drums, textural pads, glitchy percussion, long reverb tails',
-  'drum and bass, 174 BPM, heavy sub bass, breakbeat, euphoric, crisp digital mix',
-  'melodic techno, 128 BPM, minor key, atmospheric build, gradual drop, wide stereo',
-  'afro house, 124 BPM, tribal percussion, female vocals, warm summer groove',
-  'industrial techno, 140 BPM, raw distorted kick, cold ominous, EBM influence',
-];
-var twIdx=0,twPos=0,twDeleting=false,twPause=0;
-function twTick(){
-  var el=document.getElementById('typewriterEl');if(!el)return;
-  var full=TW_EXAMPLES[twIdx];
-  if(twPause>0){twPause--;setTimeout(twTick,80);return;}
-  if(!twDeleting){
-    twPos++;el.textContent=full.slice(0,twPos);
-    if(twPos>=full.length){twPause=38;twDeleting=true;}
-    setTimeout(twTick,38);
-  }else{
-    twPos--;el.textContent=full.slice(0,twPos);
-    if(twPos<=0){twDeleting=false;twIdx=(twIdx+1)%TW_EXAMPLES.length;twPause=10;}
-    setTimeout(twTick,18);
-  }
-}
-setTimeout(twTick,800);
-
-// API Accordion — auto-open if key already saved
-function toggleApiAccordion(){
-  var body=document.getElementById('apiAccordionBody'),arrow=document.getElementById('apiAccordionArrow');
-  var open=body.style.display!=='none';
-  body.style.display=open?'none':'block';
-  arrow.style.transform=open?'':'rotate(180deg)';
-}
-if(localStorage.getItem('spe_apikey')){
-  document.getElementById('apiAccordionBody').style.display='block';
-  document.getElementById('apiAccordionArrow').style.transform='rotate(180deg)';
-  document.getElementById('apiAccordionStatus').textContent='key active ✓';
-  document.getElementById('apiAccordionStatus').style.color='var(--green)';
-}
-
-
-// Fake live counter — shared with EN via localStorage key spe_counter
-(function(){
-  var BASE=1247;
-  var stored=parseInt(localStorage.getItem('spe_counter')||'0',10);
-  var count=stored>BASE?stored:BASE;
-  count+=Math.floor(Math.random()*9)+3;
-  localStorage.setItem('spe_counter',String(count));
-  var el=document.getElementById('promptCounter');
-  if(el)el.textContent=count.toLocaleString('it');
-})();
 </script>
 </body>
 </html>
