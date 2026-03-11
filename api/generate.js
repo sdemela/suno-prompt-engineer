@@ -39,8 +39,6 @@ export default async function handler(req, res) {
     });
   }
 
-  // Build system prompt
-  const sysPrompt = buildSystemPrompt();
   const userMessage = buildUserMessage(formData);
 
   try {
@@ -54,7 +52,7 @@ export default async function handler(req, res) {
       body: JSON.stringify({
         model: "claude-haiku-4-5-20251001",
         max_tokens: 600,
-        system: sysPrompt,
+        system: buildSystemPrompt(formData.sunoVersion || "v4"),
         messages: [{ role: "user", content: userMessage }]
       })
     });
@@ -89,31 +87,43 @@ export default async function handler(req, res) {
   }
 }
 
-function buildSystemPrompt() {
-  return `You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt for Suno AI.
+function buildSystemPrompt(version) {
+  const isLegacy = version === 'v3' || version === 'v3.5';
+  const versionRules = isLegacy
+    ? `TARGET: Suno ${version} (legacy). Keep the prompt SHORT and DIRECT.
+- Max 6-8 keywords total
+- Focus only on: genre, core rhythm, 1-2 main instruments
+- NO texture/mix/structure/era descriptors — they confuse v3
+- No more than 60 characters total
+- Simpler = better for this version`
+    : `TARGET: Suno ${version} (modern). Use a FULL, LAYERED prompt.
+- 10-15 keywords, up to 120 characters
+- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints
+- v4/v4.5 handles stylistic nuance and stacking well — use it
+- Reference descriptions blend well into the prompt at this version`;
+
+  return `You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.
+
+${versionRules}
 
 Output ONLY a raw JSON object with this exact structure, no markdown, no explanation:
 {
-  "stylePrompt": "the complete style prompt string — max 120 chars, comma-separated keywords optimized for Suno",
+  "stylePrompt": "the complete style prompt string",
   "tips": ["tip1", "tip2"]
 }
 
-Rules for stylePrompt:
-- Write a natural, flowing sequence of style keywords — NOT a sentence, NOT a list of labels
-- Order: genre/era → mood/energy → instruments → production/mix → structure
+General rules:
+- Natural flowing keywords, NOT a sentence
 - NEVER include artist names, song titles, or brand names
-- Max 120 characters total
-- Use English only
-- If the user provided a reference description, extract sonic keywords from it and blend them in
+- English only
+- If reference description provided, extract sonic keywords and blend them in
 
-Rules for tips:
-- 1-3 short actionable tips specific to the genre/settings chosen
-- Each tip max 80 chars
-- Focus on how to use this prompt effectively in Suno`;
+Rules for tips: 1-3 short actionable tips specific to the genre/version, max 80 chars each. Include one tip about how this prompt behaves specifically on ${version}.`;
 }
 
 function buildUserMessage(f) {
   const parts = [];
+  if (f.sunoVersion) parts.push(`Suno version: ${f.sunoVersion}`);
   if (f.genre) parts.push(`Genre: ${f.genre}`);
   if (f.era) parts.push(`Era/Reference: ${f.era}`);
   if (f.substyles?.length) parts.push(`Sub-styles: ${f.substyles.join(', ')}`);
