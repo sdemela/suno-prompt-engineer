@@ -1,312 +1,69 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Suno Prompt Engineer — Tool AI per Musica</title>
-<meta name="description" content="Genera prompt precisi per Suno AI. Tool gratuito per producer e DJ.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous"></script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-:root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
-a{color:var(--purple);text-decoration:none;}a:hover{text-decoration:underline;}
-.container{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
-.lang-bar{display:flex;justify-content:flex-end;margin-bottom:16px;}
-.lang-btn{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.lang-btn a{padding:6px 14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted);transition:all .15s;}
-.lang-btn a.active{background:var(--purple);color:#fff;}
-.lang-btn a:hover:not(.active){background:var(--card);color:var(--text);}
-.ad-top{width:100%;background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.06);border-radius:8px;padding:8px;text-align:center;margin-bottom:20px;}
-.ad-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--border);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
-.logo-tag{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;}
-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,88px);line-height:.9;letter-spacing:2px;background:linear-gradient(135deg,#fff 0%,#c0b8ff 50%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.subtitle{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-top:12px;}
-.free-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(123,92,255,.13);border:1px solid rgba(123,92,255,.4);border-radius:10px;padding:16px 22px;margin:20px 0;flex-wrap:wrap;gap:10px;box-shadow:0 0 24px rgba(123,92,255,.1);}
-.free-counter{font-family:'Space Mono',monospace;font-size:14px;color:var(--purple);font-weight:700;}
-.free-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(123,92,255,.15);border:1px solid rgba(123,92,255,.3);border-radius:100px;padding:4px 12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--purple);}
-.free-pill .used-count{font-size:16px;font-weight:700;color:#fff;}
-.free-pill .total-count{color:var(--muted);}
-.api-box{background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.25);border-radius:12px;padding:20px;margin-bottom:24px;}
-.api-saved{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.25);border-radius:8px;padding:10px 16px;font-family:'Space Mono',monospace;font-size:12px;color:var(--green);}
-.api-input{width:100%;background:var(--black);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s;}
-.api-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(123,92,255,.12);}
-.api-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.btn-sm{background:var(--purple);border:none;color:#fff;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px;white-space:nowrap;}
-.btn-icon{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:13px;}
-.sec{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.sec span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--purple);text-transform:uppercase;}
-.sec::after{content:'';flex:1;height:1px;background:var(--border);}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:18px;}
-.fl{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-select,input[type="text"],textarea{width:100%;background:var(--deep);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b85' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
-textarea{resize:vertical;min-height:80px;line-height:1.7;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-@media(max-width:600px){.g2,.g3{grid-template-columns:1fr;}}
-.tg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-.tag{padding:6px 14px;border-radius:100px;border:1px solid var(--border);font-size:12px;cursor:pointer;transition:all .15s;background:var(--deep);color:var(--muted);user-select:none;white-space:nowrap;}
-.tag:hover{border-color:var(--purple);color:var(--text);}
-.tag.active{background:var(--purple);border-color:var(--purple);color:#fff;}
-.brow{display:flex;align-items:center;gap:16px;}
-input[type="range"]{flex:1;-webkit-appearance:none;height:4px;background:var(--border);border-radius:4px;outline:none;cursor:pointer;}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--purple);border-radius:50%;cursor:pointer;}
-.bval{font-family:'Space Mono',monospace;font-size:20px;color:var(--purple);min-width:52px;text-align:center;}
-.dz{border:2px dashed var(--border);border-radius:10px;padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--deep);}
-.dz:hover,.dz.over{border-color:var(--purple);background:rgba(123,92,255,.06);}
-.btn-gen{width:100%;padding:18px;background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:all .2s;margin-top:8px;}
-.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(123,92,255,.4);}
-.out-wrap{margin-top:32px;animation:fadeUp .4s ease;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.out-card{background:var(--deep);border:1px solid var(--purple);border-radius:12px;overflow:hidden;box-shadow:0 0 40px rgba(123,92,255,.1);}
-.out-hdr{background:linear-gradient(90deg,rgba(123,92,255,.15),transparent);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
-.out-blk{padding:20px;border-bottom:1px solid var(--border);}
-.ptxt{font-family:'Space Mono',monospace;font-size:14px;line-height:1.8;word-break:break-word;color:var(--text);letter-spacing:.3px;}
-.cpbtn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 16px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
-.cpbtn:hover{border-color:var(--green);color:var(--green);}
-.tpill{font-size:12px;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.2);color:var(--green);padding:4px 12px;border-radius:6px;font-family:'Space Mono',monospace;display:inline-block;margin:3px;}
-.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.errbox{background:rgba(255,60,95,.08);border:1px solid rgba(255,60,95,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--accent);font-family:'Space Mono',monospace;margin-top:10px;}
-.movr{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(4px);}
-.mbox{background:var(--card);border:1px solid var(--purple);border-radius:16px;padding:32px;max-width:480px;width:100%;}
-.mbox h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:12px;}
-#adOverlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(8px);}
-.ad-box{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:560px;width:100%;overflow:hidden;box-shadow:0 0 60px rgba(123,92,255,.15);}
-.ad-box-top{padding:16px 24px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
-.ring{position:relative;width:48px;height:48px;flex-shrink:0;}
-.ring circle{fill:none;stroke:var(--border);stroke-width:3;}
-.ring .arc{stroke:var(--purple);stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:113.1;transition:stroke-dashoffset 1s linear;}
-.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--purple);}
-.btn-reveal{background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:12px 28px;cursor:pointer;transition:opacity .3s;opacity:.35;pointer-events:none;}
-.btn-reveal.ready{opacity:1;pointer-events:auto;}
-.wf{display:flex;align-items:center;justify-content:center;gap:3px;margin:16px auto;height:28px;}
-.wf span{display:block;width:3px;border-radius:2px;}
-@keyframes wave{0%,100%{transform:scaleY(.3);}50%{transform:scaleY(1);}}
-.typewriter-wrap{margin:14px auto 0;display:flex;align-items:center;justify-content:center;gap:10px;min-height:28px;}
-.typewriter-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--green);}
-.api-accordion{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
-.api-accordion-btn{width:100%;background:var(--card);border:none;color:var(--text);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;}
-</style>
-</head>
-<body>
-<div class="container">
-  <div class="lang-bar">
-    <div class="lang-btn">
-      <a href="/en/" onclick="localStorage.setItem('spe_lang','en')">EN</a>
-      <a href="/it/" class="active" onclick="localStorage.setItem('spe_lang','it')">IT</a>
-    </div>
-  </div>
-
-  <header style="text-align:center;margin-bottom:36px">
-    <div class="logo-tag">✦ Tool AI per Musica</div>
-    <h1>SUNO PROMPT<br>ENGINEER</h1>
-    <p class="subtitle">// crea prompt precisi per suno ai // v4.0</p>
-    <div class="wf" id="waveform"></div>
-    <div class="typewriter-wrap">
-      <span class="typewriter-text" id="typewriterEl"></span><span style="color:var(--purple)">▌</span>
-    </div>
-  </header>
-
-  <div class="free-banner" id="freeBanner">
-    <div>
-      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni gratuite oggi</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Dalla 3ª aggiungi la tua API key — reset a mezzanotte</div>
-    </div>
-    <div class="free-pill"><span class="used-count" id="usedCount">0</span><span class="total-count">/ 2 gratis</span></div>
-  </div>
-
-  <div class="sec"><span>01 — Genere &amp; Stile</span></div>
-  <div class="card">
-    <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)">
-      <label class="fl">Suno Version</label>
-      <div class="tg" id="suno-version-tags">
-        <div class="tag" data-val="v3">v3 <span style="font-size:10px">legacy</span></div>
-        <div class="tag" data-val="v3.5">v3.5</div>
-        <div class="tag active" data-val="v4">v4 <span style="color:var(--green);font-size:10px">recommended</span></div>
-        <div class="tag" data-val="v4.5">v4.5 <span style="color:var(--accent);font-size:10px">latest</span></div>
-      </div>
-    </div>
-    <div class="g2">
-      <div>
-        <label class="fl">Genere Principale</label>
-        <select id="genre">
-          <option value="">Seleziona genere...</option>
-          <option>Techno</option><option>House</option><option>Ambient</option><option>Hip-Hop</option><option>Rock</option><option>Jazz</option>
-        </select>
-      </div>
-      <div>
-        <label class="fl">Era / Riferimento <span style="color:var(--accent);font-size:9px">⚠ no artist names</span></label>
-        <input type="text" id="era" placeholder="es. late 90s Berlin techno...">
-      </div>
-    </div>
-    <div class="tg" id="substyle-tags" style="margin-top:16px">
-      <div class="tag" data-val="hypnotic">ipnotico</div><div class="tag" data-val="dark">dark</div><div class="tag" data-val="melodic">melodico</div><div class="tag" data-val="industrial">industriale</div>
-    </div>
-  </div>
-
-  <div class="sec"><span>02 — Tempo &amp; Tonalità</span></div>
-  <div class="card">
-    <div class="g2">
-      <div>
-        <label class="fl">BPM — <span id="bpmDisplay">128</span></label>
-        <div class="brow"><input type="range" id="bpm" min="60" max="200" value="128"><div class="bval" id="bpmVal">128</div></div>
-      </div>
-      <div>
-        <label class="fl">Tonalità</label>
-        <select id="key">
-          <option value="">Nessuna tonalità</option>
-          <option>A minor</option><option>C major</option><option>D minor</option><option>G major</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec"><span>03 — Riferimento Sonoro</span></div>
-  <div class="card" style="border-color:rgba(0,229,176,.2)">
-    <label class="fl">Descrivi il suono <span style="color:var(--accent);font-size:9px">— no titolo, no artista</span></label>
-    <textarea id="refDesc" placeholder="es. groove ipnotico a 132bpm con kick secco, linea di basso minimal..."></textarea>
-  </div>
-
-  <button class="btn-gen" id="generateBtn">▶ GENERA PROMPT SUNO</button>
-
-  <div class="out-wrap" id="outputWrapper" style="display:none">
-    <div class="sec"><span>Prompt Generato</span></div>
-    <div class="out-card">
-      <div class="out-hdr">
-        <span id="outLabel" style="font-family:'Space Mono',monospace;font-size:11px;color:var(--purple)">—</span>
-        <button class="cpbtn" id="copyBtn">Copia Prompt</button>
-      </div>
-      <div class="out-blk">
-        <div class="ptxt" id="promptText"></div>
-      </div>
-      <div class="out-blk" id="techTags"></div>
-    </div>
-  </div>
-
-  <div class="api-accordion">
-    <button class="api-accordion-btn" onclick="this.nextElementSibling.style.display=this.nextElementSibling.style.display==='none'?'block':'none'">
-      <span>🔑 Personal API Key</span>
-      <span>▼</span>
-    </button>
-    <div style="display:none;padding:20px;background:rgba(123,92,255,.04)">
-      <div class="api-row">
-        <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-...">
-        <button class="btn-sm" id="saveKeyBtn">SALVA</button>
-      </div>
-      <div id="apiSaved" class="api-saved" style="display:none">✓ API key attiva <button id="clearKeyBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;margin-left:10px">Rimuovi</button></div>
-    </div>
-  </div>
-</div>
-
-<div id="adOverlay" style="display:none">
-  <div class="ad-box">
-    <div class="ad-box-top">
-      <div style="font-family:'Bebas Neue',sans-serif;font-size:24px">Prompt pronto! ✦</div>
-      <div class="ring">
-        <svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><circle class="arc" id="arcEl" cx="24" cy="24" r="18"/></svg>
-        <div class="ring-num" id="ringNum">5</div>
-      </div>
-    </div>
-    <div style="padding:24px;text-align:center"><button class="btn-reveal" id="revealBtn">MOSTRA PROMPT →</button></div>
-  </div>
-</div>
-
-<script>
-var apiKey = localStorage.getItem('spe_apikey') || '';
-var FREE_LIMIT = 2;
-
-function getTodayKey(){return 'spe_used_'+new Date().toISOString().slice(0,10);}
-function getUsed(){return parseInt(localStorage.getItem(getTodayKey())||'0',10);}
-function incUsed(){localStorage.setItem(getTodayKey(),String(getUsed()+1));}
-
+// CORREZIONE GRAMMATICALE DEFINITIVA
 function updateBanner(){
-  var u = getUsed(), r = Math.max(0, FREE_LIMIT - u), b = document.getElementById('freeBanner');
-  if(apiKey){b.style.display='none';return;}
+  var u = getUsed(), r = Math.max(0, FREE_LIMIT - u);
+  var b = document.getElementById('freeBanner');
+  
+  // Se c'è una chiave API salvata, nascondi il banner dei limiti
+  if(localStorage.getItem('spe_apikey')){ b.style.display='none'; return; }
+  
   b.style.display='flex';
   
-  // LOGICA PLURALE CORRETTA
-  var testoGenerazioni = r === 1 ? 'generazione gratuita' : 'generazioni gratuite';
-  document.getElementById('freeCounterText').textContent = r > 0 
-    ? ('⚡ ' + r + ' ' + testoGenerazioni + ' oggi') 
-    : '🔒 Limite raggiunto per oggi';
-    
-  var uc = document.getElementById('usedCount');
-  if(uc) uc.textContent = Math.min(u, FREE_LIMIT);
+  let messaggio;
+  if (r === 0) {
+    messaggio = '🔒 Limite gratuito raggiunto per oggi';
+  } else if (r === 1) {
+    messaggio = '⚡ 1 generazione gratuita oggi';
+  } else {
+    messaggio = '⚡ ' + r + ' generazioni gratuite oggi';
+  }
+  
+  document.getElementById('freeCounterText').textContent = messaggio;
+  document.getElementById('usedCount').textContent = Math.min(u, FREE_LIMIT);
 }
 
-document.getElementById('saveKeyBtn').addEventListener('click', function(){
-  var v = document.getElementById('apiKeyInput').value.trim();
-  if(v.startsWith('sk-ant-')){
-    apiKey = v; localStorage.setItem('spe_apikey', v);
-    document.getElementById('apiSaved').style.display='flex'; updateBanner();
+// CHIAMATA A VERCEL
+async function generate() {
+  const currentUsed = getUsed();
+  const userKey = localStorage.getItem('spe_apikey');
+
+  if(!userKey && currentUsed >= FREE_LIMIT){
+    alert('Hai esaurito i crediti gratuiti. Inserisci la tua API Key nel box sotto.');
+    return;
   }
-});
 
-document.getElementById('clearKeyBtn').addEventListener('click', function(){
-  apiKey=''; localStorage.removeItem('spe_apikey'); 
-  document.getElementById('apiSaved').style.display='none'; updateBanner();
-});
+  const btn = document.getElementById('generateBtn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="sp"></span> GENERANDO...';
 
-document.getElementById('bpm').addEventListener('input', function(){
-  document.getElementById('bpmDisplay').textContent=this.value;
-  document.getElementById('bpmVal').textContent=this.value;
-});
+  const payload = {
+    formData: {
+      genre: document.getElementById('genre').value,
+      bpm: document.getElementById('bpm').value,
+      description: document.getElementById('refDesc').value,
+      version: document.querySelector('.tag.active[data-val^="v"]')?.dataset.val || 'v4'
+    },
+    userApiKey: userKey // Se l'utente ha la sua, la funzione userà quella
+  };
 
-document.querySelectorAll('.tag').forEach(t => {
-  t.addEventListener('click', () => t.classList.toggle('active'));
-});
+  try {
+    const response = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
 
-async function generate(){
-  if(!apiKey && getUsed() >= FREE_LIMIT){alert('Limite raggiunto'); return;}
-  
-  var btn = document.getElementById('generateBtn');
-  btn.disabled = true; btn.innerHTML = '<span class="sp"></span> GENERANDO...';
+    const result = await response.json();
 
-  // Simulazione chiamata API
-  setTimeout(() => {
-    if(!apiKey) incUsed();
-    var prompt = (document.getElementById('genre').value || 'Techno') + ", " + document.getElementById('bpm').value + " BPM, " + (document.getElementById('refDesc').value || 'atmospheric');
-    document.getElementById('promptText').textContent = prompt;
-    document.getElementById('outLabel').textContent = "Output Pronto";
-    
     showAd(() => {
+      document.getElementById('promptText').textContent = result.stylePrompt;
       document.getElementById('outputWrapper').style.display = 'block';
-      btn.disabled = false; btn.innerHTML = '▶ GENERA PROMPT SUNO';
+      if(!userKey) incUsed(); 
       updateBanner();
     });
-  }, 1500);
+  } catch (e) {
+    alert("Errore di connessione.");
+  } finally {
+    btn.disabled = false;
+    btn.innerHTML = '▶ GENERA PROMPT SUNO';
+  }
 }
-
-function showAd(cb){
-  var ov=document.getElementById('adOverlay'), rb=document.getElementById('revealBtn'), num=document.getElementById('ringNum'), arc=document.getElementById('arcEl'), circ=2*Math.PI*18;
-  ov.style.display='flex'; rb.className='btn-reveal'; arc.style.strokeDashoffset=circ;
-  var left=5;
-  var cd = setInterval(() => {
-    left--; num.textContent=left; arc.style.strokeDashoffset=circ*(left/5);
-    if(left<=0){clearInterval(cd); rb.className='btn-reveal ready'; num.textContent='✓';}
-  }, 1000);
-  rb.onclick = () => { if(rb.classList.contains('ready')){ov.style.display='none'; cb();} };
-}
-
-document.getElementById('generateBtn').addEventListener('click', generate);
-document.getElementById('copyBtn').addEventListener('click', function(){
-  navigator.clipboard.writeText(document.getElementById('promptText').textContent);
-  this.textContent = '✓ Copiato!'; setTimeout(()=>this.textContent='Copia Prompt', 2000);
-});
-
-// Waveform animation
-var wf=document.getElementById('waveform');
-[14,22,10,28,16,8,24,18,12,26,20,8,22,14,28].forEach((h,i)=>{
-  var s=document.createElement('span');
-  s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.1)+'s infinite;';
-  wf.appendChild(s);
-});
-
-updateBanner();
-</script>
-</body>
-</html>
