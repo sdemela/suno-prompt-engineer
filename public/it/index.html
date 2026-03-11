@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Suno Prompt Engineer — Tool AI per Musica</title>
 <meta name="description" content="Genera prompt precisi per Suno AI. Tool gratuito per producer e DJ.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -27,8 +28,8 @@ a{color:var(--purple);text-decoration:none;}a:hover{text-decoration:underline;}
 h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,88px);line-height:.9;letter-spacing:2px;background:linear-gradient(135deg,#fff 0%,#c0b8ff 50%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
 .subtitle{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-top:12px;}
 /* FREE BANNER */
-.free-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(123,92,255,.08);border:1px solid rgba(123,92,255,.25);border-radius:10px;padding:12px 18px;margin:20px 0;flex-wrap:wrap;gap:10px;}
-.free-counter{font-family:'Space Mono',monospace;font-size:12px;color:var(--purple);}
+.free-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(123,92,255,.13);border:1px solid rgba(123,92,255,.4);border-radius:10px;padding:16px 22px;margin:20px 0;flex-wrap:wrap;gap:10px;box-shadow:0 0 24px rgba(123,92,255,.1);}
+.free-counter{font-family:'Space Mono',monospace;font-size:14px;color:var(--purple);font-weight:700;}
 .free-dots{display:flex;gap:6px;}
 .free-dot{width:12px;height:12px;border-radius:50%;background:var(--purple);transition:all .3s;}
 .free-dot.used{background:var(--border);}
@@ -107,6 +108,17 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .wf{display:flex;align-items:center;justify-content:center;gap:3px;margin:16px auto;height:28px;}
 .wf span{display:block;width:3px;border-radius:2px;}
 @keyframes wave{0%,100%{transform:scaleY(.3);}50%{transform:scaleY(1);}}
+/* TYPEWRITER */
+.typewriter-wrap{margin:14px auto 0;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;min-height:28px;}
+.typewriter-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;white-space:nowrap;}
+.typewriter-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--green);max-width:600px;text-align:left;}
+.typewriter-cursor{color:var(--purple);animation:blink .8s step-end infinite;font-size:14px;}
+@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
+/* API ACCORDION */
+.api-accordion{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
+.api-accordion-btn{width:100%;background:var(--card);border:none;color:var(--text);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+.api-accordion-btn:hover{background:rgba(123,92,255,.08);}
+.api-accordion-body{padding:16px 20px 20px;background:rgba(123,92,255,.04);}
 </style>
 </head>
 <body>
@@ -130,6 +142,10 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     <h1>SUNO PROMPT<br>ENGINEER</h1>
     <p class="subtitle">// crea prompt precisi per suno ai // v4.0</p>
     <div class="wf" id="waveform"></div>
+    <div class="typewriter-wrap">
+      <span class="typewriter-label">esempio di output →</span>
+      <span class="typewriter-text" id="typewriterEl"></span><span class="typewriter-cursor">▌</span>
+    </div>
   </header>
 
   <div class="free-banner" id="freeBanner">
@@ -138,27 +154,6 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Dalla 3ª aggiungi la tua API key — reset a mezzanotte</div>
     </div>
     <div class="free-dots"><div class="free-dot" id="dot0"></div><div class="free-dot" id="dot1"></div></div>
-  </div>
-
-  <div class="api-box">
-    <div style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--purple);text-transform:uppercase;margin-bottom:10px">
-      🔑 API Key Personale — <span style="color:var(--muted)">generazioni illimitate</span>
-    </div>
-    <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:4px">
-      Opzionale. Ottienila su <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key.
-    </div>
-    <div id="apiKeyArea">
-      <div class="api-row">
-        <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." style="flex:1;min-width:180px">
-        <button class="btn-icon" id="toggleKeyBtn">👁</button>
-        <button class="btn-sm" id="saveKeyBtn">SALVA KEY</button>
-      </div>
-      <div id="apiError" class="errbox" style="display:none"></div>
-    </div>
-    <div id="apiSaved" class="api-saved" style="display:none">
-      <span id="apiSavedText">✓ API key attiva</span>
-      <button id="clearKeyBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px">RIMUOVI</button>
-    </div>
   </div>
 
   <div class="sec"><span>01 — Genere &amp; Stile</span></div>
@@ -396,6 +391,33 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
+  <div class="api-accordion" id="apiAccordion">
+    <button class="api-accordion-btn" id="apiAccordionBtn" onclick="toggleApiAccordion()">
+      <span>🔑 API Key Personale</span>
+      <span style="display:flex;align-items:center;gap:8px">
+        <span id="apiAccordionStatus" style="font-size:10px;color:var(--muted)">opzionale — generazioni illimitate</span>
+        <span id="apiAccordionArrow" style="font-size:10px;color:var(--muted);transition:transform .2s">▼</span>
+      </span>
+    </button>
+    <div class="api-accordion-body" id="apiAccordionBody" style="display:none">
+      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px">
+        Ottienila su <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key.
+      </div>
+      <div id="apiKeyArea">
+        <div class="api-row">
+          <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." style="flex:1;min-width:180px">
+          <button class="btn-icon" id="toggleKeyBtn">👁</button>
+          <button class="btn-sm" id="saveKeyBtn">SALVA KEY</button>
+        </div>
+        <div id="apiError" class="errbox" style="display:none"></div>
+      </div>
+      <div id="apiSaved" class="api-saved" style="display:none">
+        <span id="apiSavedText">✓ API key attiva</span>
+        <button id="clearKeyBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px">RIMUOVI</button>
+      </div>
+    </div>
+  </div>
+
   <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
     SUNO PROMPT ENGINEER<br>
     <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Ottieni Anthropic API Key</a> &nbsp;·&nbsp;
@@ -458,17 +480,19 @@ function updateBanner(){
 function saveKey(){
   var v=document.getElementById('apiKeyInput').value.trim();
   if(!v.startsWith('sk-ant-')){document.getElementById('apiError').textContent='⚠ Key must start with sk-ant-';document.getElementById('apiError').style.display='block';return;}
-  apiKey=v;localStorage.setItem('spe_apikey',v); // Fix #4: persist key
+  apiKey=v;localStorage.setItem('spe_apikey',v);
   document.getElementById('apiError').style.display='none';
   document.getElementById('apiKeyArea').style.display='none';document.getElementById('apiSaved').style.display='flex';
-  document.getElementById('apiSavedText').textContent='✓ API key active — '+v.slice(0,12)+'••••';updateBanner();
+  document.getElementById('apiSavedText').textContent='✓ API key active — '+v.slice(0,12)+'••••';
+  var st=document.getElementById('apiAccordionStatus');if(st){st.textContent='key attiva ✓';st.style.color='var(--green)';}
+  updateBanner();
 }
 document.getElementById('toggleKeyBtn').addEventListener('click',function(){var i=document.getElementById('apiKeyInput'),b=document.getElementById('toggleKeyBtn');if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';}});
 document.getElementById('saveKeyBtn').addEventListener('click',saveKey);
 // Fix #4: restore key from localStorage on page load
 var _savedKey=localStorage.getItem('spe_apikey');
 if(_savedKey&&_savedKey.startsWith('sk-ant-')){document.getElementById('apiKeyInput').value=_savedKey;saveKey();}
-document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';localStorage.removeItem('spe_apikey');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';updateBanner();});
+document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';localStorage.removeItem('spe_apikey');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';var st=document.getElementById('apiAccordionStatus');if(st){st.textContent='opzionale — generazioni illimitate';st.style.color='';}updateBanner();});
 document.getElementById('modalCloseBtn').addEventListener('click',function(){document.getElementById('limitModal').style.display='none';});
 document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-')){return;}apiKey=v;localStorage.setItem('spe_apikey',v);document.getElementById('apiKeyInput').value=v;saveKey();document.getElementById('limitModal').style.display='none';generate();});
 var AD_SEC=5;var adPushed=false;
@@ -585,7 +609,7 @@ async function generate(){
   if(tips.length===0){
     if(bpmN>145)tips.push('⚡ BPM alto: prova senza vocals per pattern drum più puliti.');
     if(bpmN<90)tips.push('🌊 BPM lento: considera di aggiungere atmospheric o cinematic.');
-    if(['Techno','Minimal Techno','Industrial Techno'].indexOf(genre)>-1)tips.push('🔊 Prova "Berlin club sound" o "warehouse rave" nel campo testo di Suno.');
+    if(['Techno','Minimal Techno','Industrial Techno'].indexOf(genre)>-1)tips.push('🔊 Try "Berlin club sound" or "warehouse rave" in Suno\'s text field.');
     if(!vs)tips.push('🎵 Senza vocals: scrivi [Instrumental] nel campo testo di Suno.');
     if(tips.length===0)tips.push('✅ Incolla lo Style Prompt nel campo "Style of Music" di Suno.');
   }
@@ -626,6 +650,47 @@ async function generate(){
 document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Prompt';b.style.color='';b.style.borderColor='';},2000);});});
 document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
 updateBanner();
+
+// Typewriter
+var TW_EXAMPLES=[
+  'dark hypnotic techno, 132 BPM, punchy kick, acid bassline, warehouse reverb',
+  'deep house, 122 BPM, warm analog, soulful vocals, late night groovy',
+  'ambient IDM, no drums, textural pads, glitchy percussion, long reverb tails',
+  'drum and bass, 174 BPM, heavy sub bass, breakbeat, euphoric, crisp digital mix',
+  'melodic techno, 128 BPM, minor key, atmospheric build, gradual drop, wide stereo',
+  'afro house, 124 BPM, tribal percussion, female vocals, warm summer groove',
+  'industrial techno, 140 BPM, raw distorted kick, cold ominous, EBM influence',
+];
+var twIdx=0,twPos=0,twDeleting=false,twPause=0;
+function twTick(){
+  var el=document.getElementById('typewriterEl');if(!el)return;
+  var full=TW_EXAMPLES[twIdx];
+  if(twPause>0){twPause--;setTimeout(twTick,80);return;}
+  if(!twDeleting){
+    twPos++;el.textContent=full.slice(0,twPos);
+    if(twPos>=full.length){twPause=38;twDeleting=true;}
+    setTimeout(twTick,38);
+  }else{
+    twPos--;el.textContent=full.slice(0,twPos);
+    if(twPos<=0){twDeleting=false;twIdx=(twIdx+1)%TW_EXAMPLES.length;twPause=10;}
+    setTimeout(twTick,18);
+  }
+}
+setTimeout(twTick,800);
+
+// API Accordion — auto-open if key already saved
+function toggleApiAccordion(){
+  var body=document.getElementById('apiAccordionBody'),arrow=document.getElementById('apiAccordionArrow');
+  var open=body.style.display!=='none';
+  body.style.display=open?'none':'block';
+  arrow.style.transform=open?'':'rotate(180deg)';
+}
+if(localStorage.getItem('spe_apikey')){
+  document.getElementById('apiAccordionBody').style.display='block';
+  document.getElementById('apiAccordionArrow').style.transform='rotate(180deg)';
+  document.getElementById('apiAccordionStatus').textContent='key active ✓';
+  document.getElementById('apiAccordionStatus').style.color='var(--green)';
+}
 </script>
 </body>
 </html>
