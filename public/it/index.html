@@ -585,9 +585,9 @@ async function generate(){
   if(tips.length===0){
     if(bpmN>145)tips.push('⚡ BPM alto: prova senza vocals per pattern drum più puliti.');
     if(bpmN<90)tips.push('🌊 BPM lento: considera di aggiungere atmospheric o cinematic.');
-    if(['Techno','Minimal Techno','Industrial Techno'].indexOf(genre)>-1)tips.push('🔊 Try "Berlin club sound" or "warehouse rave" in Suno's text field.');
-    if(!vs)tips.push('🎵 No vocals: write [Instrumental] in Suno's text field.');
-    if(tips.length===0)tips.push('✅ Paste the Style Prompt into Suno's Style of Music field.');
+    if(['Techno','Minimal Techno','Industrial Techno'].indexOf(genre)>-1)tips.push('🔊 Prova "Berlin club sound" o "warehouse rave" nel campo testo di Suno.');
+    if(!vs)tips.push('🎵 Senza vocals: scrivi [Instrumental] nel campo testo di Suno.');
+    if(tips.length===0)tips.push('✅ Incolla lo Style Prompt nel campo "Style of Music" di Suno.');
   }
 
   document.getElementById('outLabel').textContent=(genre||'Custom')+' — '+bpm+' BPM';
