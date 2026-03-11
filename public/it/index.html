@@ -1,48 +1,49 @@
-// CORREZIONE GRAMMATICALE DEFINITIVA
+<script>
+var apiKey = localStorage.getItem('spe_apikey') || '';
+var FREE_LIMIT = 2;
+
+function getTodayKey(){ return 'spe_used_' + new Date().toISOString().slice(0,10); }
+function getUsed(){ return parseInt(localStorage.getItem(getTodayKey())||'0',10); }
+function incUsed(){ localStorage.setItem(getTodayKey(), String(getUsed()+1)); }
+
 function updateBanner(){
   var u = getUsed(), r = Math.max(0, FREE_LIMIT - u);
   var b = document.getElementById('freeBanner');
-  
-  // Se c'è una chiave API salvata, nascondi il banner dei limiti
   if(localStorage.getItem('spe_apikey')){ b.style.display='none'; return; }
-  
   b.style.display='flex';
   
-  let messaggio;
+  // CORREZIONE GRAMMATICALE:
+  let testo;
   if (r === 0) {
-    messaggio = '🔒 Limite gratuito raggiunto per oggi';
+    testo = '🔒 Limite gratuito raggiunto per oggi';
   } else if (r === 1) {
-    messaggio = '⚡ 1 generazione gratuita oggi';
+    testo = '⚡ 1 generazione gratuita oggi';
   } else {
-    messaggio = '⚡ ' + r + ' generazioni gratuite oggi';
+    testo = '⚡ ' + r + ' generazioni gratuite oggi';
   }
   
-  document.getElementById('freeCounterText').textContent = messaggio;
+  document.getElementById('freeCounterText').textContent = testo;
   document.getElementById('usedCount').textContent = Math.min(u, FREE_LIMIT);
 }
 
-// CHIAMATA A VERCEL
 async function generate() {
-  const currentUsed = getUsed();
   const userKey = localStorage.getItem('spe_apikey');
-
-  if(!userKey && currentUsed >= FREE_LIMIT){
-    alert('Hai esaurito i crediti gratuiti. Inserisci la tua API Key nel box sotto.');
+  if(!userKey && getUsed() >= FREE_LIMIT) {
+    alert('Limite raggiunto. Inserisci la tua API Key.');
     return;
   }
 
   const btn = document.getElementById('generateBtn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="sp"></span> GENERANDO...';
+  btn.disabled = true; btn.innerHTML = '<span class="sp"></span> GENERANDO...';
 
   const payload = {
     formData: {
+      version: document.querySelector('.tag.active[data-val^="v"]')?.dataset.val || 'v4',
       genre: document.getElementById('genre').value,
       bpm: document.getElementById('bpm').value,
-      description: document.getElementById('refDesc').value,
-      version: document.querySelector('.tag.active[data-val^="v"]')?.dataset.val || 'v4'
+      description: document.getElementById('refDesc').value
     },
-    userApiKey: userKey // Se l'utente ha la sua, la funzione userà quella
+    userApiKey: userKey
   };
 
   try {
@@ -53,17 +54,20 @@ async function generate() {
     });
 
     const result = await response.json();
-
     showAd(() => {
       document.getElementById('promptText').textContent = result.stylePrompt;
       document.getElementById('outputWrapper').style.display = 'block';
-      if(!userKey) incUsed(); 
+      if(!userKey) incUsed();
       updateBanner();
     });
   } catch (e) {
-    alert("Errore di connessione.");
+    alert("Errore generazione.");
   } finally {
-    btn.disabled = false;
-    btn.innerHTML = '▶ GENERA PROMPT SUNO';
+    btn.disabled = false; btn.innerHTML = '▶ GENERA PROMPT SUNO';
   }
 }
+
+// Inizializzazione
+document.getElementById('generateBtn').addEventListener('click', generate);
+updateBanner();
+</script>
