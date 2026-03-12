@@ -1,16 +1,6 @@
-// api/webhook.js — Stripe webhook handler
-// Receives payment events, assigns credits, sends confirmation email via Resend
+// api/webhook.js — Stripe webhook handler (no SDK, pure fetch)
+import crypto from 'crypto';
 
-import Stripe from 'stripe';
-import { Redis } from '@upstash/redis';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
-// Credit packages — must match Stripe Price IDs
 const PACKAGES = {
   [process.env.STRIPE_PRICE_STARTER]: { credits: 50,  label: 'Starter',  price: '1.99' },
   [process.env.STRIPE_PRICE_PRO]:     { credits: 150, label: 'Pro',      price: '3.99' },
@@ -28,6 +18,35 @@ async function getRawBody(req) {
   });
 }
 
+// Stripe webhook signature verification (no SDK)
+function verifyStripeSignature(rawBody, sig, secret) {
+  const parts = sig.split(',').reduce((acc, p) => {
+    const [k, v] = p.split('=');
+    acc[k] = v;
+    return acc;
+  }, {});
+  const timestamp = parts['t'];
+  const expected = parts['v1'];
+  if (!timestamp || !expected) throw new Error('Invalid signature header');
+
+  const payload = `${timestamp}.${rawBody.toString('utf8')}`;
+  const hmac = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  if (hmac !== expected) throw new Error('Signature mismatch');
+
+  // Reject events older than 5 minutes
+  if (Math.abs(Date.now() / 1000 - parseInt(timestamp)) > 300) throw new Error('Timestamp too old');
+  return true;
+}
+
+// Upstash REST: incrby
+async function redisIncrby(key, amount) {
+  const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${key}/${amount}`, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
+  const d = await r.json();
+  return d.result;
+}
+
 export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).end();
 
@@ -36,23 +55,29 @@ export default async function handler(req, res) {
 
   let event;
   try {
-    event = stripe.webhooks.constructEvent(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    verifyStripeSignature(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = JSON.parse(rawBody.toString('utf8'));
   } catch (err) {
-    console.error('Webhook signature failed:', err.message);
-    return res.status(400).json({ error: `Webhook Error: ${err.message}` });
+    console.error('Webhook error:', err.message);
+    return res.status(400).json({ error: err.message });
   }
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const uuid = session.metadata?.uuid;
     const email = session.customer_details?.email;
-    const priceId = session.line_items?.data?.[0]?.price?.id;
 
-    // Fetch line items if not expanded
-    let resolvedPriceId = priceId;
-    if (!resolvedPriceId) {
-      const lineItems = await stripe.checkout.sessions.listLineItems(session.id);
-      resolvedPriceId = lineItems.data?.[0]?.price?.id;
+    // Fetch line items from Stripe REST to get price ID
+    let resolvedPriceId = null;
+    try {
+      const liResp = await fetch(
+        `https://api.stripe.com/v1/checkout/sessions/${session.id}/line_items`,
+        { headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` } }
+      );
+      const liData = await liResp.json();
+      resolvedPriceId = liData.data?.[0]?.price?.id;
+    } catch(e) {
+      console.error('Line items fetch failed:', e.message);
     }
 
     const pkg = PACKAGES[resolvedPriceId];
@@ -61,13 +86,11 @@ export default async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
-    // Add credits to Redis (persist forever — no expiry)
-    const newCredits = await redis.incrby(`credits:${uuid}`, pkg.credits);
+    // Add credits via Upstash REST
+    const newCredits = await redisIncrby(`credits:${uuid}`, pkg.credits);
 
     // Send confirmation email via Resend
-    if (email) {
-      await sendEmail(email, pkg, newCredits, uuid);
-    }
+    if (email) await sendEmail(email, pkg, newCredits, uuid);
 
     console.log(`✅ ${pkg.credits} credits added for ${uuid} (${email}). Total: ${newCredits}`);
   }

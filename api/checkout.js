@@ -1,8 +1,4 @@
-// api/checkout.js — creates a Stripe Checkout session
-import Stripe from 'stripe';
-
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
+// api/checkout.js — creates a Stripe Checkout session (no SDK, pure fetch)
 const PACKAGES = {
   starter: process.env.STRIPE_PRICE_STARTER,
   pro:     process.env.STRIPE_PRICE_PRO,
@@ -17,26 +13,36 @@ export default async function handler(req, res) {
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
   const { pkg, uuid, lang } = req.body || {};
-
   if (!pkg || !PACKAGES[pkg]) return res.status(400).json({ error: 'Invalid package' });
   if (!uuid || uuid.length < 10) return res.status(400).json({ error: 'Invalid UUID' });
 
   const origin = lang === 'it' ? 'https://supre.online/it' : 'https://supre.online/en';
 
-  try {
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [{ price: PACKAGES[pkg], quantity: 1 }],
-      metadata: { uuid },
-      customer_email: undefined, // Stripe will ask for email at checkout
-      success_url: `${origin}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${origin}/?payment=cancelled`,
-      locale: lang === 'it' ? 'it' : 'en',
-      payment_method_types: ['card'],
-      allow_promotion_codes: true,
-    });
+  // Build URL-encoded body for Stripe API
+  const params = new URLSearchParams({
+    mode: 'payment',
+    'line_items[0][price]': PACKAGES[pkg],
+    'line_items[0][quantity]': '1',
+    'metadata[uuid]': uuid,
+    success_url: `${origin}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}/?payment=cancelled`,
+    locale: lang === 'it' ? 'it' : 'en',
+    'payment_method_types[0]': 'card',
+    allow_promotion_codes: 'true',
+  });
 
-    return res.status(200).json({ url: session.url });
+  try {
+    const r = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: params.toString(),
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error.message);
+    return res.status(200).json({ url: d.url });
   } catch(e) {
     console.error('Stripe checkout error:', e.message);
     return res.status(500).json({ error: e.message });

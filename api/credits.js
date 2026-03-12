@@ -1,11 +1,4 @@
-// api/credits.js — check remaining credits for a user UUID
-import { Redis } from '@upstash/redis';
-
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
-
+// api/credits.js — check remaining credits for a user UUID (Upstash REST, no SDK)
 export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
@@ -16,9 +9,16 @@ export default async function handler(req, res) {
   const { uuid } = req.body || {};
   if (!uuid || uuid.length < 10) return res.status(400).json({ error: 'Invalid UUID' });
 
+  const UPSTASH_URL   = process.env.UPSTASH_REDIS_REST_URL;
+  const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+
   try {
-    const credits = await redis.get(`credits:${uuid}`) || 0;
-    return res.status(200).json({ credits: parseInt(credits) });
+    const r = await fetch(`${UPSTASH_URL}/get/credits:${uuid}`, {
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` }
+    });
+    const d = await r.json();
+    const credits = parseInt(d.result) || 0;
+    return res.status(200).json({ credits });
   } catch(e) {
     return res.status(500).json({ error: e.message });
   }
