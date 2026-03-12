@@ -564,6 +564,13 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <div class="ptxt" id="promptText"></div>
       </div>
       <div class="out-blk"><div class="out-blk-lbl">Technical Tags</div><div id="techTags"></div></div>
+      <div class="out-blk" id="lyricsBlock" style="display:none">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+          <div class="out-blk-lbl" style="margin-bottom:0">Lyrics Structure — paste in Suno "Lyrics" field</div>
+          <button class="cpbtn" id="copyLyricsBtn">Copy Lyrics</button>
+        </div>
+        <div class="ptxt" id="lyricsContent" style="white-space:pre-wrap;line-height:2"></div>
+      </div>
       <div class="out-blk" id="refBlock" style="display:none">
         <div class="out-blk-lbl">Audio Reference</div>
         <div id="refContent" style="background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.2);border-radius:8px;padding:12px 16px;font-size:12px;font-family:'Space Mono',monospace;color:var(--purple);line-height:1.9"></div>
@@ -702,9 +709,9 @@ var COLORS={genre:'#7b5cff',style:'#ff3c5f',mood:'#f5c842',instr:'#00e5b0',tech:
 function buildSystemPrompt(version){
   var isLegacy = version==='v3'||version==='v3.5';
   var versionRules = isLegacy
-    ? 'TARGET: Suno '+version+' (legacy). Keep the prompt SHORT and DIRECT.\n- Max 6-8 keywords total\n- Focus only on: genre, core rhythm, 1-2 main instruments\n- NO texture/mix/structure/era descriptors — they confuse v3\n- No more than 60 characters total\n- Simpler = better for this version'
-    : 'TARGET: Suno '+version+' (modern). Use a FULL, LAYERED prompt.\n- 10-15 keywords, up to 120 characters\n- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints\n- v4/v4.5 handles stylistic nuance and stacking well — use it\n- Reference descriptions blend well into the prompt at this version';
-  return 'You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.\n\n'+versionRules+'\n\nOutput ONLY a raw JSON object with this exact structure, no markdown, no explanation:\n{\n  "stylePrompt": "the complete style prompt string",\n  "tips": ["tip1", "tip2"]\n}\n\nGeneral rules:\n- Natural flowing keywords, NOT a sentence\n- NEVER include artist names, song titles, or brand names\n- English only\n- If reference description provided, extract sonic keywords and blend them in\n\nRules for tips: 1-3 short actionable tips specific to the genre/version, max 80 chars each. Include one tip about how this prompt behaves specifically on '+version+'.';
+    ? 'TARGET: Suno '+version+' (legacy). Keep the prompt SHORT and DIRECT.\n- Max 6-8 keywords total\n- Focus only on: genre, core rhythm, 1-2 main instruments\n- NO texture/mix/structure/era descriptors — they confuse v3\n- No more than 60 characters total\n- Simpler = better for this version\n- lyricsPrompt: leave empty string ""'
+    : 'TARGET: Suno '+version+' (modern). Use a RICH, DESCRIPTIVE style prompt.\n- Write 2-3 flowing sentences (not just keywords) that paint a vivid sonic picture\n- Cover: genre/era → mood/energy → instrumentation → production texture → mix character → arrangement feel\n- Be evocative and specific — e.g. "pulsing acid bassline cutting through a haze of reverb-drenched pads" not just "acid bassline, pads"\n- Max 200 characters\n- If vocals are requested, also generate a lyricsPrompt with proper Suno metatags\n- lyricsPrompt format: use Suno metatags like [Intro], [Verse], [Chorus], [Bridge], [Outro], [Female vocals], [Male vocals], [Rap], [Spoken word], [Instrumental break], [Build up], [Drop] etc. Each section on its own line followed by 2-4 lines of placeholder lyrics in the requested language that match the genre mood. If no vocals selected, leave lyricsPrompt as empty string "".';
+  return 'You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized output calibrated for the target Suno version.\n\n'+versionRules+'\n\nOutput ONLY a raw JSON object with this exact structure, no markdown, no explanation:\n{\n  "stylePrompt": "the complete style prompt string",\n  "lyricsPrompt": "structured lyrics with metatags, or empty string if no vocals",\n  "tips": ["tip1", "tip2"]\n}\n\nGeneral rules for stylePrompt:\n- NEVER include artist names, song titles, or brand names\n- English only\n- If reference description provided, extract sonic descriptors and weave them naturally into the prose\n\nGeneral rules for lyricsPrompt:\n- Each metatag on its own line: [Verse], [Chorus] etc.\n- Lyrics lines follow immediately below each metatag\n- Match language requested by user (Italian, English, French, Spanish etc.)\n- Match genre mood and energy precisely\n- Placeholder lyrics should feel authentic to the genre\n\nRules for tips: 1-3 short actionable tips specific to the genre/version, max 80 chars each. Include one tip about how this prompt behaves specifically on '+version+'.';
 }
 
 function buildUserMessage(f){
@@ -798,6 +805,17 @@ async function generate(){
 
   document.getElementById('techTags').innerHTML=techTags.map(function(t){return '<span class="tpill">'+t+'</span>';}).join('');
 
+  // Lyrics block
+  var lyricsBlock=document.getElementById('lyricsBlock');
+  var lyricsContent=document.getElementById('lyricsContent');
+  if(result.lyricsPrompt&&result.lyricsPrompt.trim().length>0){
+    var lyricsHtml=result.lyricsPrompt.replace(/\[([^\]]+)\]/g,'<span style="color:var(--accent);font-weight:bold">[$1]</span>');
+    lyricsContent.innerHTML=lyricsHtml.replace(/\n/g,'<br>');
+    lyricsBlock.style.display='block';
+  } else {
+    lyricsBlock.style.display='none';
+  }
+
   if(audioFileName||refDesc){
     var h='';
     if(audioFileName)h+='📎 <strong>'+audioFileName+'</strong> — upload in Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';
@@ -811,7 +829,7 @@ async function generate(){
 
   document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
 
-  lastOutput=result.stylePrompt;
+  lastOutput=result.stylePrompt+(result.lyricsPrompt&&result.lyricsPrompt.trim()?'\n\n'+result.lyricsPrompt:'');
   btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';
 
   showAd(function(){
@@ -827,6 +845,7 @@ async function generate(){
   });
 }
 document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copied!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copy Prompt';b.style.color='';b.style.borderColor='';},2000);});});
+document.getElementById('copyLyricsBtn').addEventListener('click',function(){var el=document.getElementById('lyricsContent');if(!el)return;var txt=el.innerText||el.textContent;navigator.clipboard.writeText(txt).then(function(){var b=document.getElementById('copyLyricsBtn');b.textContent='✓ Copied!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copy Lyrics';b.style.color='';b.style.borderColor='';},2000);});});
 document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
 updateBanner();
 
