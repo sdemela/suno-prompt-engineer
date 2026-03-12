@@ -493,7 +493,7 @@ function updateBanner(){
   var u=getUsed(),r=Math.max(0,FREE_LIMIT-u),b=document.getElementById('freeBanner');
   if(apiKey){b.style.display='none';return;}
   b.style.display='flex';
-  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+' generazione'+(r>1?'i':'')+' gratuita'+(r>1?'e':'')+' oggi'):'🔒 Aggiungi la tua API key per continuare';
+  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' generazioni gratuite':' generazione gratuita')+' oggi'):'🔒 Aggiungi la tua API key per continuare';
   var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
 }
 function saveKey(){
