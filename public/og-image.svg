@@ -1,0 +1,57 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0a0a0a"/>
+      <stop offset="100%" stop-color="#111118"/>
+    </linearGradient>
+    <linearGradient id="title" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="50%" stop-color="#c0b8ff"/>
+      <stop offset="100%" stop-color="#ff3c5f"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <!-- Subtle grid -->
+  <line x1="0" y1="315" x2="1200" y2="315" stroke="#2a2a3a" stroke-width="1" opacity="0.4"/>
+  <line x1="600" y1="0" x2="600" y2="630" stroke="#2a2a3a" stroke-width="1" opacity="0.4"/>
+  <!-- Accent border top -->
+  <rect x="0" y="0" width="1200" height="4" fill="#7b5cff"/>
+  <!-- Logo tag -->
+  <text x="600" y="200" text-anchor="middle" font-family="monospace" font-size="18" letter-spacing="8" fill="#ff3c5f" text-transform="uppercase">✦ TOOL AI PER MUSICA</text>
+  <!-- Main title -->
+  <text x="600" y="330" text-anchor="middle" font-family="Georgia, serif" font-size="110" font-weight="700" letter-spacing="4" fill="url(#title)">SUNO PROMPT</text>
+  <text x="600" y="440" text-anchor="middle" font-family="Georgia, serif" font-size="110" font-weight="700" letter-spacing="4" fill="url(#title)">ENGINEER</text>
+  <!-- Subtitle -->
+  <text x="600" y="520" text-anchor="middle" font-family="monospace" font-size="20" fill="#6b6b85" letter-spacing="3">// genera prompt precisi per suno ai // supre.online</text>
+  <!-- Waveform decoration -->
+  <rect x="460" y="565" width="4" height="20" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="470" y="558" width="4" height="34" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="480" y="562" width="4" height="26" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="490" y="555" width="4" height="40" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="500" y="560" width="4" height="30" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="510" y="568" width="4" height="14" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="520" y="556" width="4" height="38" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="530" y="563" width="4" height="24" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="540" y="558" width="4" height="34" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="550" y="565" width="4" height="20" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="560" y="560" width="4" height="30" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="570" y="554" width="4" height="42" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="580" y="562" width="4" height="26" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="590" y="568" width="4" height="14" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="600" y="555" width="4" height="40" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="610" y="560" width="4" height="30" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="620" y="566" width="4" height="18" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="630" y="557" width="4" height="36" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="640" y="563" width="4" height="24" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="650" y="558" width="4" height="34" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="660" y="565" width="4" height="20" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="670" y="556" width="4" height="38" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="680" y="562" width="4" height="26" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="690" y="568" width="4" height="14" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="700" y="560" width="4" height="30" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="710" y="553" width="4" height="44" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="720" y="562" width="4" height="26" rx="2" fill="#7b5cff" opacity="0.7"/>
+  <rect x="730" y="567" width="4" height="16" rx="2" fill="#ff3c5f" opacity="0.7"/>
+  <rect x="740" y="558" width="4" height="34" rx="2" fill="#7b5cff" opacity="0.7"/>
+</svg>
