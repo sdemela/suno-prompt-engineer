@@ -330,10 +330,11 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <div class="tag" data-val="v3">v3 <span style="color:var(--muted);font-size:10px">legacy</span></div>
         <div class="tag" data-val="v3.5">v3.5</div>
         <div class="tag active" data-val="v4">v4 <span style="color:var(--green);font-size:10px">recommended</span></div>
-        <div class="tag" data-val="v4.5">v4.5 <span style="color:var(--accent);font-size:10px">latest</span></div>
+        <div class="tag" data-val="v4.5">v4.5</div>
+        <div class="tag" data-val="v5">v5 <span style="color:var(--accent);font-size:10px">latest</span></div>
       </div>
       <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-        v4/v4.5 handles longer prompts and complex style stacking better. Prompt strategy changes by version.
+        v5 supports richer detail and narrative prompts. v4/v4.5 for layered style stacking. Strategy changes by version.
       </div>
     </div>
     <div class="g2">
@@ -752,8 +753,8 @@ async function generate(){
 
   var result=null;
   try{
-    if(apiKey){
-      // BYOK — call Anthropic directly from browser
+    if(false){
+      // BYOK disabled — always use server with uuid
       var resp=await fetch('https://api.anthropic.com/v1/messages',{
         method:'POST',
         headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
