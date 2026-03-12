@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="it">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Suno Prompt Engineer — Tool AI per Musica</title>
+<title>Suno Prompt Engineer — AI Music Prompt Tool</title>
 <meta name="description" content="Generate precise prompts for Suno AI. Free tool for producers and DJs.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous"></script>
@@ -59,11 +59,11 @@ async function startCheckout(){
   btn.disabled = true;
   btn.textContent = 'Loading...';
   try {
-    var r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pkg: selectedPkg, uuid: userUuid, lang: 'it'})});
+    var r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pkg: selectedPkg, uuid: userUuid, lang: 'en'})});
     var d = await r.json();
     if(d.url){ window.location.href = d.url; }
-    else { alert('Error: '+JSON.stringify(d)); btn.disabled=false; btn.textContent='PAGA E ATTIVA →'; }
-  } catch(e){ alert('Error: '+e.message); btn.disabled=false; btn.textContent='PAGA E ATTIVA →'; }
+    else { alert('Error: '+JSON.stringify(d)); btn.disabled=false; btn.textContent='PAY & ACTIVATE →'; }
+  } catch(e){ alert('Error: '+e.message); btn.disabled=false; btn.textContent='PAY & ACTIVATE →'; }
 }
 
 function toggleRestore(){
@@ -73,7 +73,7 @@ function toggleRestore(){
 
 async function restoreCredits(){
   var id = document.getElementById('restoreInput').value.trim();
-  if(!id || id.length < 10){ alert('Inserisci un session ID valido.'); return; }
+  if(!id || id.length < 10){ alert('Enter a valid session ID.'); return; }
   try {
     var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: id})});
     var d = await r.json();
@@ -84,24 +84,24 @@ async function restoreCredits(){
       updateCreditsUI();
       document.getElementById('sessionIdDisplay').textContent = userUuid;
       closePricing();
-      alert('✓ Ripristinati! ' + d.credits + ' crediti disponibili.');
+      alert('✓ Restored! ' + d.credits + ' credits available.');
     } else {
-      alert('Nessun credito trovato per questo session ID.');
+      alert('No credits found for that session ID.');
     }
-  } catch(e){ alert('Errore nel ripristino crediti.'); }
+  } catch(e){ alert('Error restoring credits.'); }
 }
 
 function copySessionId(){
   navigator.clipboard.writeText(userUuid).then(function(){
     var btn = document.getElementById('copySessionBtn');
-    btn.textContent = '✓ Copiato!';
-    setTimeout(function(){ btn.textContent = 'Copia ID'; }, 2000);
+    btn.textContent = '✓ Copied!';
+    setTimeout(function(){ btn.textContent = 'Copy ID'; }, 2000);
   });
 }
 
 async function saveEmail(){
   var email = document.getElementById('emailInput').value.trim();
-  if(!email || !email.includes('@')){ alert('Inserisci un email valida.'); return; }
+  if(!email || !email.includes('@')){ alert('Please enter a valid email.'); return; }
   try {
     var r = await fetch('/api/save-email', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid, email: email})});
     var d = await r.json();
@@ -265,7 +265,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
   <div class="lang-bar">
     <div class="lang-btn">
-      <a href="/en/" onclick="localStorage.setItem('spe_lang','en')">EN</a>
+      <a href="/en/" class="active" onclick="localStorage.setItem('spe_lang','en')">EN</a>
       <a href="/it/" onclick="localStorage.setItem('spe_lang','it')">IT</a>
     </div>
   </div>
@@ -277,9 +277,9 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   </div>
 
   <header style="text-align:center;margin-bottom:36px">
-    <div class="logo-tag">✦ Tool AI per Musica</div>
+    <div class="logo-tag">✦ AI Music Prompt Tool</div>
     <h1>SUNO PROMPT<br>ENGINEER</h1>
-    <p class="subtitle">// crea prompt precisi per suno ai // v4.0</p>
+    <p class="subtitle">// craft precise prompts for suno ai // v4.0</p>
     <div class="wf" id="waveform"></div>
     <div class="typewriter-wrap">
       <span class="typewriter-label">example output →</span>
@@ -289,40 +289,40 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
   <div class="free-banner" id="freeBanner">
     <div>
-      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni gratuite oggi</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Dalla 3ª aggiungi API key o acquista crediti — reset a mezzanotte</div>
+      <div class="free-counter" id="freeCounterText">⚡ 2 free generations today</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">From the 3rd, buy credits — resets at midnight</div>
     </div>
     <div class="free-pill"><span class="used-count" id="usedCount">0</span><span class="total-count">/ 2 free</span></div>
   </div>
   <div class="credits-bar" id="creditsBar" style="display:none">
     <div>
-      <div class="credits-count">⚡ <span id="creditsCount">0</span> crediti</div>
-      <div class="credits-label">non scadono · legati a questo browser</div>
+      <div class="credits-count">⚡ <span id="creditsCount">0</span> credits</div>
+      <div class="credits-label">never expire · linked to this browser</div>
     </div>
-    <button class="buy-btn" onclick="openPricing()">+ Acquista</button>
+    <button class="buy-btn" onclick="openPricing()">+ Buy more</button>
   </div>
   <div id="sessionIdRow" style="display:none;background:#111118;border:1px solid #2a2a3a;border-radius:8px;padding:14px 16px;margin-top:6px">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
       <div>
-        <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:3px">Il tuo Session ID — salvalo per ripristinare i crediti su altri browser</div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:3px">Your Session ID — save this to restore credits on other browsers</div>
         <div style="font-family:'Space Mono',monospace;font-size:11px;color:#7b5cff;word-break:break-all" id="sessionIdDisplay"></div>
       </div>
-      <button onclick="copySessionId()" style="background:none;border:1px solid #2a2a3a;color:#6b6b85;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;white-space:nowrap" id="copySessionBtn">Copia ID</button>
+      <button onclick="copySessionId()" style="background:none;border:1px solid #2a2a3a;color:#6b6b85;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;white-space:nowrap" id="copySessionBtn">Copy ID</button>
     </div>
     <div style="border-top:1px solid #1c1c28;padding-top:12px">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:8px">🔐 Salva i tuoi crediti via email — opzionale</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:8px">🔐 Save your credits via email — optional</div>
       <div id="emailSaveArea">
         <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input type="email" id="emailInput" placeholder="tua@email.com" style="flex:1;min-width:180px;background:#0a0a0a;border:1px solid #2a2a3a;border-radius:6px;color:#e8e8f0;font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none">
-          <button onclick="saveEmail()" style="background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap">Invia ID via email</button>
+          <input type="email" id="emailInput" placeholder="your@email.com" style="flex:1;min-width:180px;background:#0a0a0a;border:1px solid #2a2a3a;border-radius:6px;color:#e8e8f0;font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none">
+          <button onclick="saveEmail()" style="background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap">Send ID to email</button>
         </div>
-        <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b6b85;margin-top:6px">Ti manderemo il Session ID così potrai ripristinare i crediti su qualsiasi dispositivo.</div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b6b85;margin-top:6px">We'll email you your Session ID so you can restore credits on any device.</div>
       </div>
-      <div id="emailSaved" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:#00e5b0">✓ Session ID inviato alla tua email.</div>
+      <div id="emailSaved" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:#00e5b0">✓ Session ID sent to your email.</div>
     </div>
   </div>
 
-  <div class="sec"><span>01 — Genere &amp; Stile</span></div>
+  <div class="sec"><span>01 — Genre &amp; Style</span></div>
   <div class="card">
     <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)">
       <label class="fl">Suno Version <span style="color:var(--green);font-size:9px;letter-spacing:1px">— affects output quality</span></label>
@@ -334,14 +334,14 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <div class="tag" data-val="v5">v5 <span style="color:var(--accent);font-size:10px">latest</span></div>
       </div>
       <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-        v4/v4.5 handles longer prompts and complex style stacking better. Prompt strategy changes by version.
+        v5 supports richer detail and narrative prompts. v4/v4.5 for layered style stacking. Strategy changes by version.
       </div>
     </div>
     <div class="g2">
       <div>
-        <label class="fl">Genere Principale</label>
+        <label class="fl">Primary Genre</label>
         <select id="genre">
-          <option value="">Seleziona genere...</option>
+          <option value="">Select genre...</option>
           <optgroup label="Electronic">
             <option>Techno</option><option>House</option><option>Deep House</option>
             <option>Minimal Techno</option><option>Industrial Techno</option><option>Melodic Techno</option>
@@ -385,7 +385,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="sec"><span>02 — Mood &amp; Energia</span></div>
+  <div class="sec"><span>02 — Mood &amp; Energy</span></div>
   <div class="card">
     <div class="g2">
       <div>
@@ -400,7 +400,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         </div>
       </div>
       <div>
-        <label class="fl">Livello di Energia</label>
+        <label class="fl">Energy Level</label>
         <div class="tg" id="energy-tags">
           <div class="tag" data-val="low energy">low</div><div class="tag" data-val="mid energy">mid</div>
           <div class="tag" data-val="high energy">high</div><div class="tag" data-val="peak time">peak time</div>
@@ -410,7 +410,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="sec"><span>03 — Tempo &amp; Tonalità</span></div>
+  <div class="sec"><span>03 — Tempo &amp; Key</span></div>
   <div class="card">
     <div class="g2">
       <div>
@@ -418,9 +418,9 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <div class="brow"><input type="range" id="bpm" min="60" max="200" value="128"><div class="bval" id="bpmVal">128</div></div>
       </div>
       <div>
-        <label class="fl">Tonalità</label>
+        <label class="fl">Musical Key</label>
         <select id="key">
-          <option value="">Nessuna tonalità</option>
+          <option value="">No specific key</option>
           <option>A minor</option><option>A major</option><option>B minor</option><option>B major</option>
           <option>C minor</option><option>C major</option><option>D minor</option><option>D major</option>
           <option>E minor</option><option>E major</option><option>F minor</option><option>F major</option>
@@ -429,7 +429,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       </div>
     </div>
     <div style="margin-top:16px">
-      <label class="fl">Ritmo</label>
+      <label class="fl">Time Signature</label>
       <div class="tg" id="time-tags">
         <div class="tag active" data-val="4/4">4/4</div><div class="tag" data-val="3/4">3/4</div>
         <div class="tag" data-val="6/8">6/8</div><div class="tag" data-val="5/4">5/4</div><div class="tag" data-val="7/8">7/8</div>
@@ -437,7 +437,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="sec"><span>04 — Strumentazione</span></div>
+  <div class="sec"><span>04 — Instrumentation</span></div>
   <div class="card">
     <label class="fl">Instruments &amp; Sound Sources</label>
     <div class="tg" id="instr-tags">
@@ -456,11 +456,11 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="sec"><span>05 — Produzione &amp; Mix</span></div>
+  <div class="sec"><span>05 — Production &amp; Mix</span></div>
   <div class="card">
     <div class="g2">
       <div>
-        <label class="fl">Carattere del Mix</label>
+        <label class="fl">Mix Character</label>
         <div class="tg" id="mix-tags">
           <div class="tag" data-val="heavy bass">heavy bass</div><div class="tag" data-val="punchy drums">punchy drums</div>
           <div class="tag" data-val="wide stereo">wide stereo</div><div class="tag" data-val="compressed">compressed</div>
@@ -485,20 +485,20 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="sec"><span>06 — Voce</span></div>
+  <div class="sec"><span>06 — Vocals</span></div>
   <div class="card">
     <div class="g3">
       <div>
-        <label class="fl">Stile Vocale</label>
+        <label class="fl">Vocal Style</label>
         <select id="vocalStyle">
-          <option value="">Senza voce</option>
+          <option value="">No vocals</option>
           <option>male vocals</option><option>female vocals</option><option>androgynous vocals</option>
           <option>choir</option><option>whispered vocals</option><option>rap vocals</option>
           <option>spoken word</option><option>vocoder vocals</option><option>harmonized vocals</option>
         </select>
       </div>
       <div>
-        <label class="fl">Timbro Vocale</label>
+        <label class="fl">Vocal Texture</label>
         <select id="vocalTex">
           <option value="">—</option>
           <option>breathy</option><option>raspy</option><option>clean</option>
@@ -516,7 +516,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="sec"><span>07 — Riferimento Sonoro</span><span class="badge">optional — enhances output</span></div>
+  <div class="sec"><span>07 — Sound Reference</span><span class="badge">optional — enhances output</span></div>
   <div class="card" style="border-color:rgba(0,229,176,.2);background:linear-gradient(135deg,rgba(0,229,176,.03),var(--card))">
     <div style="margin-bottom:14px;padding:8px 12px;background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.15);border-radius:8px;font-size:11px;color:var(--green);font-family:'Space Mono',monospace;letter-spacing:.5px">
       🎯 Describe the sound of a reference track → AI extracts sonic keywords and blends them into your prompt
@@ -549,15 +549,15 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <button class="btn-gen" id="generateBtn">▶ GENERA PROMPT SUNO</button>
+  <button class="btn-gen" id="generateBtn">▶ GENERATE SUNO PROMPT</button>
 
   <div class="out-wrap" id="outputWrapper" style="display:none">
     <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0 24px"></div>
-    <div class="sec"><span>Prompt Generato</span></div>
+    <div class="sec"><span>Generated Prompt</span></div>
     <div class="out-card">
       <div class="out-hdr">
         <span id="outLabel" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--purple);text-transform:uppercase">—</span>
-        <button class="cpbtn" id="copyBtn">Copia Prompt</button>
+        <button class="cpbtn" id="copyBtn">Copy Prompt</button>
       </div>
       <div class="out-blk">
         <div class="out-blk-lbl">Style Prompt — paste in Suno "Style of Music"</div>
@@ -577,7 +577,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 
   <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
     SUNO PROMPT ENGINEER<br>
-    <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Get Anthropic API Key</a> &nbsp;·&nbsp;
+    
     <a href="https://suno.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Suno AI</a>
     <br><br>
     <span style="color:var(--muted);font-size:9px;letter-spacing:3px">✦ <span id="promptCounter">—</span> PROMPTS GENERATED</span>
@@ -588,8 +588,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <div class="pricing-movr" id="pricingModal" style="display:none">
   <div class="pricing-box" style="position:relative">
     <button class="pricing-close" onclick="closePricing()">✕</button>
-    <h2>Acquista Crediti</h2>
-    <p>I crediti non scadono e sono legati a questo browser. Ogni generazione usa 1 credito.</p>
+    <h2>Buy Credits</h2>
+    <p>Credits never expire and are linked to this browser. Each generation uses 1 credit.</p>
     <div class="pkg-grid">
       <div class="pkg" id="pkg-starter" onclick="selectPkg('starter')">
         <div class="pkg-name">Starter</div>
@@ -610,12 +610,12 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
         <div class="pkg-cpp">€0.02 / gen</div>
       </div>
     </div>
-    <button class="btn-pay" id="payBtn" onclick="startCheckout()">PAGA E ATTIVA →</button>
+    <button class="btn-pay" id="payBtn" onclick="startCheckout()">PAY & ACTIVATE →</button>
     <div class="restore-row">
-      Cambiato browser? <a onclick="toggleRestore()">Ripristina crediti con session ID</a>
+      Switched browser? <a onclick="toggleRestore()">Restore credits with session ID</a>
     </div>
     <div class="uuid-restore" id="uuidRestore">
-      <input type="text" id="restoreInput" placeholder="Incolla il tuo session ID qui...">
+      <input type="text" id="restoreInput" placeholder="Paste your session ID here...">
       <button onclick="restoreCredits()">RESTORE CREDITS</button>
     </div>
   </div>
@@ -647,16 +647,11 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <!-- LIMIT MODAL -->
 <div class="movr" id="limitModal" style="display:none">
   <div class="mbox">
-    <h2>Limite giornaliero raggiunto</h2>
-    <p>You've used your 2 generazioni gratuite oggi. Buy credits to continue, or add your own Anthropic API key for unlimited access. Resets at midnight.</p>
-    <button class="btn-pay" style="margin-bottom:16px" onclick="closeLimitModal();openPricing()">⚡ ACQUISTA CREDITI →</button>
-    <div style="margin-bottom:16px"><input class="api-input" type="password" id="modalApiInput" placeholder="sk-ant-api03-..."></div>
+    <h2>Daily limit reached</h2>
+    <p>You've used your 2 free generations today. Buy credits to continue. Resets at midnight.</p>
+    <button class="btn-pay" style="margin-bottom:16px" onclick="closeLimitModal();openPricing()">⚡ BUY CREDITS →</button>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button class="btn-sm" id="modalSaveBtn" style="flex:1">SAVE &amp; CONTINUE</button>
-      <button id="modalCloseBtn" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px">CHIUDI</button>
-    </div>
-    <div style="margin-top:14px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-      Get your key at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key
+      <button id="modalCloseBtn" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px">CLOSE</button>
     </div>
   </div>
 </div>
@@ -670,7 +665,7 @@ function updateBanner(){
   var u=getUsed(),r=Math.max(0,FREE_LIMIT-u),b=document.getElementById('freeBanner');
   if(userCredits>0){b.style.display='none';return;}
   b.style.display='flex';
-  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' free generations':' free generation')+' today'):'🔒 Add your API key to continue';
+  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' free generations':' free generation')+' today'):'🔒 Daily limit reached — buy credits';
   var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
 }
 
@@ -734,13 +729,13 @@ function buildUserMessage(f){
 async function generate(){
   var genre=document.getElementById('genre').value,era=document.getElementById('era').value.trim(),bpm=document.getElementById('bpm').value,key=document.getElementById('key').value,vs=document.getElementById('vocalStyle').value,vt=document.getElementById('vocalTex').value,vl=document.getElementById('vocalLang').value,extra=document.getElementById('extra').value.trim(),refDesc=document.getElementById('refDesc').value.trim();
   var substyles=getTags('substyle-tags'),moods=getTags('mood-tags'),energy=getTags('energy-tags'),timeSig=getTags('time-tags'),instrs=getTags('instr-tags'),mix=getTags('mix-tags'),struct=getTags('struct-tags');
-  if(!genre&&substyles.length===0&&moods.length===0){alert('Seleziona almeno un genere o alcuni tag.');return;}
+  if(!genre&&substyles.length===0&&moods.length===0){alert('Select at least a genre or some tags.');return;}
   if(refDesc.length>1000){alert('Reference description is too long (max 1000 characters).');return;}
 
   // If free limit reached and no API key → show modal
   if(userCredits<=0&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
 
-  var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERAZIONE IN CORSO...';
+  var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERATING...';
 
   var sunoVersion=getTags('suno-version-tags')[0]||'v4';
   var formData={
@@ -767,8 +762,8 @@ async function generate(){
     } else {
       // Free tier — call our server
       var resp2=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({formData:formData,uuid:userUuid})});
-      if(resp2.status===402){ openPricing(); btn.innerHTML='▶ GENERA PROMPT SUNO'; return; }
-      if(resp2.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;}
+      if(resp2.status===402){ openPricing(); btn.innerHTML='▶ GENERATE SUNO PROMPT'; return; }
+      if(resp2.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;}
       if(!resp2.ok){var e2=await resp2.json();throw new Error(e2.error||'Server error');}
       result=await resp2.json();
       incUsed();updateBanner();
@@ -776,12 +771,12 @@ async function generate(){
   }catch(err){
     console.error(err);
     document.getElementById('promptText').textContent='⚠ Error: '+err.message;
-    btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;
+    btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
   }
 
   if(!result||!result.stylePrompt){
     document.getElementById('promptText').textContent='⚠ Unexpected response from AI. Try again.';
-    btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;
+    btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
   }
 
   // Render output
@@ -817,7 +812,7 @@ async function generate(){
   document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
 
   lastOutput=result.stylePrompt;
-  btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';
+  btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';
 
   showAd(function(){
     var ow=document.getElementById('outputWrapper');
@@ -831,7 +826,7 @@ async function generate(){
     });
   });
 }
-document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Prompt';b.style.color='';b.style.borderColor='';},2000);});});
+document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copied!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copy Prompt';b.style.color='';b.style.borderColor='';},2000);});});
 document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
 updateBanner();
 
@@ -883,7 +878,7 @@ document.addEventListener('DOMContentLoaded', function(){
   var params = new URLSearchParams(window.location.search);
   if(params.get('payment') === 'success'){
     history.replaceState(null, '', window.location.pathname);
-    setTimeout(async function(){ await loadCredits(); alert('✓ Pagamento completato! ' + userCredits + ' crediti attivati. Controlla la tua email.'); }, 1200);
+    setTimeout(async function(){ await loadCredits(); alert('✓ Payment successful! ' + userCredits + ' credits activated. Check your email.'); }, 1200);
   }
 });
 </script>
