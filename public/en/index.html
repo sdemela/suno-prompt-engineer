@@ -6,7 +6,115 @@
 <title>Suno Prompt Engineer — AI Music Prompt Tool</title>
 <meta name="description" content="Generate precise prompts for Suno AI. Free tool for producers and DJs.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous"></script>
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous">
+// ══════════ CREDITS SYSTEM ══════════
+var userUuid = localStorage.getItem('spe_uuid');
+if(!userUuid){ userUuid = 'spe-'+Date.now()+'-'+Math.random().toString(36).slice(2,9); localStorage.setItem('spe_uuid', userUuid); }
+
+var userCredits = 0;
+var selectedPkg = 'pro';
+
+async async function loadCredits(){
+  try {
+    var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid})});
+    var d = await r.json();
+    userCredits = d.credits || 0;
+    updateCreditsUI();
+  } catch(e){ console.log('Credits fetch failed:', e); }
+  // Always show session row
+  document.getElementById('sessionIdRow').style.display = 'block';
+  document.getElementById('sessionIdDisplay').textContent = userUuid;
+}
+
+function updateCreditsUI(){
+  if(userCredits > 0){
+    document.getElementById('creditsBar').style.display = 'flex';
+    document.getElementById('creditsCount').textContent = userCredits;
+    document.getElementById('freeBanner').style.display = 'none';
+  } else {
+    document.getElementById('creditsBar').style.display = 'none';
+    document.getElementById('freeBanner').style.display = 'flex';
+  }
+}
+
+
+function closeLimitModal(){ document.getElementById('limitModal').style.display='none'; }
+function openPricing(){
+  document.getElementById('pricingModal').style.display = 'flex';
+}
+
+function closePricing(){
+  document.getElementById('pricingModal').style.display = 'none';
+}
+
+function selectPkg(pkg){
+  selectedPkg = pkg;
+  document.querySelectorAll('.pkg').forEach(function(el){ el.classList.remove('selected'); });
+  document.getElementById('pkg-'+pkg).classList.add('selected');
+}
+
+async function startCheckout(){
+  var btn = document.getElementById('payBtn');
+  btn.disabled = true;
+  btn.textContent = 'Loading...';
+  try {
+    var r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pkg: selectedPkg, uuid: userUuid, lang: 'en'})});
+    var d = await r.json();
+    if(d.url){ window.location.href = d.url; }
+    else { alert('Error: '+JSON.stringify(d)); btn.disabled=false; btn.textContent='PAY & ACTIVATE →'; }
+  } catch(e){ alert('Error: '+e.message); btn.disabled=false; btn.textContent='PAY & ACTIVATE →'; }
+}
+
+function toggleRestore(){
+  var el = document.getElementById('uuidRestore');
+  el.style.display = el.style.display === 'none' ? 'block' : 'none';
+}
+
+async function restoreCredits(){
+  var id = document.getElementById('restoreInput').value.trim();
+  if(!id || id.length < 10){ alert('Enter a valid session ID.'); return; }
+  try {
+    var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: id})});
+    var d = await r.json();
+    if(d.credits > 0){
+      localStorage.setItem('spe_uuid', id);
+      userUuid = id;
+      userCredits = d.credits;
+      updateCreditsUI();
+      document.getElementById('sessionIdDisplay').textContent = userUuid;
+      closePricing();
+      alert('✓ Restored! ' + d.credits + ' credits available.');
+    } else {
+      alert('No credits found for that session ID.');
+    }
+  } catch(e){ alert('Error restoring credits.'); }
+}
+
+function copySessionId(){
+  navigator.clipboard.writeText(userUuid).then(function(){
+    var btn = document.getElementById('copySessionBtn');
+    btn.textContent = '✓ Copied!';
+    setTimeout(function(){ btn.textContent = 'Copy ID'; }, 2000);
+  });
+}
+
+async function saveEmail(){
+  var email = document.getElementById('emailInput').value.trim();
+  if(!email || !email.includes('@')){ alert('Please enter a valid email.'); return; }
+  try {
+    var r = await fetch('/api/save-email', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid, email: email})});
+    var d = await r.json();
+    if(d.ok){
+      document.getElementById('emailSaveArea').style.display = 'none';
+      document.getElementById('emailSaved').style.display = 'block';
+    }
+  } catch(e){ alert('Error: '+e.message); }
+}
+
+// Handle payment success/cancel from Stripe redirect
+
+
+</script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
@@ -33,36 +141,6 @@ h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,88px);line-heig
 .free-dots{display:flex;gap:6px;}
 .free-dot{width:12px;height:12px;border-radius:50%;background:var(--purple);transition:all .3s;}
 .free-dot.used{background:var(--border);}
-/* CREDITS SYSTEM */
-.credits-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.2);border-radius:10px;padding:12px 18px;margin:12px 0 0;flex-wrap:wrap;gap:10px;}
-.credits-count{font-family:'Space Mono',monospace;font-size:13px;color:var(--green);font-weight:bold;}
-.credits-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;}
-.buy-btn{background:linear-gradient(135deg,var(--green),#00b389);border:none;color:#0a0a0a;border-radius:8px;padding:8px 18px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;font-weight:bold;white-space:nowrap;transition:opacity .2s;}
-.buy-btn:hover{opacity:.85;}
-/* PRICING MODAL */
-.pricing-movr{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;backdrop-filter:blur(6px);}
-.pricing-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:520px;width:100%;}
-.pricing-box h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;margin-bottom:6px;}
-.pricing-box p{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
-.pkg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
-@media(max-width:500px){.pkg-grid{grid-template-columns:1fr;}}
-.pkg{background:var(--deep);border:1px solid var(--border);border-radius:12px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-.pkg:hover,.pkg.selected{border-color:var(--purple);background:rgba(123,92,255,.08);}
-.pkg.popular::before{content:'POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--purple);color:#fff;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;padding:3px 10px;border-radius:20px;}
-.pkg-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:4px;}
-.pkg-price{font-family:'Space Mono',monospace;font-size:22px;color:var(--purple);font-weight:bold;}
-.pkg-credits{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
-.pkg-cpp{font-size:10px;color:var(--green);margin-top:2px;font-family:'Space Mono',monospace;}
-.btn-pay{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all .2s;margin-top:4px;}
-.btn-pay:hover{opacity:.9;}
-.btn-pay:disabled{opacity:.5;cursor:not-allowed;}
-.pricing-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
-.restore-row{text-align:center;margin-top:14px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
-.restore-row a{color:var(--purple);cursor:pointer;}
-.uuid-restore{background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;display:none;}
-.uuid-restore input{width:100%;background:var(--black);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none;margin-bottom:8px;}
-.uuid-restore button{background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;width:100%;}
-
 .free-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(123,92,255,.15);border:1px solid rgba(123,92,255,.3);border-radius:100px;padding:4px 12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--purple);}
 .free-pill .used-count{font-size:16px;font-weight:700;color:#fff;}
 .free-pill .total-count{color:var(--muted);}
@@ -152,6 +230,35 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .api-accordion-btn{width:100%;background:var(--card);border:none;color:var(--text);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;}
 .api-accordion-btn:hover{background:rgba(123,92,255,.08);}
 .api-accordion-body{padding:16px 20px 20px;background:rgba(123,92,255,.04);}
+
+/* CREDITS SYSTEM */
+.credits-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.2);border-radius:10px;padding:12px 18px;margin:6px 0 0;flex-wrap:wrap;gap:10px;}
+.credits-count{font-family:'Space Mono',monospace;font-size:13px;color:var(--green);font-weight:bold;}
+.credits-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;}
+.buy-btn{background:linear-gradient(135deg,var(--green),#00b389);border:none;color:#0a0a0a;border-radius:8px;padding:8px 18px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;font-weight:bold;white-space:nowrap;transition:opacity .2s;}
+.buy-btn:hover{opacity:.85;}
+.pricing-movr{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;backdrop-filter:blur(6px);}
+.pricing-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:520px;width:100%;}
+.pricing-box h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;margin-bottom:6px;}
+.pricing-box p{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
+.pkg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
+@media(max-width:500px){.pkg-grid{grid-template-columns:1fr;}}
+.pkg{background:var(--deep);border:1px solid var(--border);border-radius:12px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
+.pkg:hover,.pkg.selected{border-color:var(--purple);background:rgba(123,92,255,.08);}
+.pkg.popular::before{content:'POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--purple);color:#fff;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;padding:3px 10px;border-radius:20px;}
+.pkg-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:4px;}
+.pkg-price{font-family:'Space Mono',monospace;font-size:22px;color:var(--purple);font-weight:bold;}
+.pkg-credits{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
+.pkg-cpp{font-size:10px;color:var(--green);margin-top:2px;font-family:'Space Mono',monospace;}
+.btn-pay{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all .2s;margin-top:4px;}
+.btn-pay:hover{opacity:.9;}
+.btn-pay:disabled{opacity:.5;cursor:not-allowed;}
+.pricing-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
+.restore-row{text-align:center;margin-top:14px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
+.restore-row a{color:var(--purple);cursor:pointer;text-decoration:underline;}
+.uuid-restore{background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;display:none;}
+.uuid-restore input{width:100%;background:var(--black);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none;margin-bottom:8px;box-sizing:border-box;}
+.uuid-restore button{background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;width:100%;}
 </style>
 </head>
 <body>
@@ -184,7 +291,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
   <div class="free-banner" id="freeBanner">
     <div>
       <div class="free-counter" id="freeCounterText">⚡ 2 free generations today</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">From the 3rd, add your API key — resets at midnight</div>
+      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">From the 3rd, add your API key or buy credits — resets at midnight</div>
     </div>
     <div class="free-pill"><span class="used-count" id="usedCount">0</span><span class="total-count">/ 2 free</span></div>
   </div>
@@ -194,6 +301,26 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
       <div class="credits-label">never expire · linked to this browser</div>
     </div>
     <button class="buy-btn" onclick="openPricing()">+ Buy more</button>
+  </div>
+  <div id="sessionIdRow" style="display:none;background:#111118;border:1px solid #2a2a3a;border-radius:8px;padding:14px 16px;margin-top:6px">
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
+      <div>
+        <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:3px">Your Session ID — save this to restore credits on other browsers</div>
+        <div style="font-family:'Space Mono',monospace;font-size:11px;color:#7b5cff;word-break:break-all" id="sessionIdDisplay"></div>
+      </div>
+      <button onclick="copySessionId()" style="background:none;border:1px solid #2a2a3a;color:#6b6b85;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;white-space:nowrap" id="copySessionBtn">Copy ID</button>
+    </div>
+    <div style="border-top:1px solid #1c1c28;padding-top:12px">
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:8px">🔐 Save your credits via email — optional</div>
+      <div id="emailSaveArea">
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          <input type="email" id="emailInput" placeholder="your@email.com" style="flex:1;min-width:180px;background:#0a0a0a;border:1px solid #2a2a3a;border-radius:6px;color:#e8e8f0;font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none">
+          <button onclick="saveEmail()" style="background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap">Send ID to email</button>
+        </div>
+        <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b6b85;margin-top:6px">We'll email you your Session ID so you can restore credits on any device.</div>
+      </div>
+      <div id="emailSaved" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:#00e5b0">✓ Session ID sent to your email.</div>
+    </div>
   </div>
 
   <div class="sec"><span>01 — Genre &amp; Style</span></div>
@@ -446,32 +573,7 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
     </div>
   </div>
 
-  <div class="api-accordion" id="apiAccordion">
-    <button class="api-accordion-btn" id="apiAccordionBtn" onclick="toggleApiAccordion()">
-      <span>🔑 Personal API Key</span>
-      <span style="display:flex;align-items:center;gap:8px">
-        <span id="apiAccordionStatus" style="font-size:10px;color:var(--muted)">optional — unlimited generations</span>
-        <span id="apiAccordionArrow" style="font-size:10px;color:var(--muted);transition:transform .2s">▼</span>
-      </span>
-    </button>
-    <div class="api-accordion-body" id="apiAccordionBody" style="display:none">
-      <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:12px">
-        Get yours at <a href="https://console.anthropic.com" target="_blank" rel="noopener noreferrer">console.anthropic.com</a> → Settings → API Keys → Create Key.
-      </div>
-      <div id="apiKeyArea">
-        <div class="api-row">
-          <input class="api-input" type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." style="flex:1;min-width:180px">
-          <button class="btn-icon" id="toggleKeyBtn">👁</button>
-          <button class="btn-sm" id="saveKeyBtn">SAVE KEY</button>
-        </div>
-        <div id="apiError" class="errbox" style="display:none"></div>
-      </div>
-      <div id="apiSaved" class="api-saved" style="display:none">
-        <span id="apiSavedText">✓ API key active</span>
-        <button id="clearKeyBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;font-family:'Space Mono',monospace;font-size:11px">REMOVE</button>
-      </div>
-    </div>
-  </div>
+
 
   <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
     SUNO PROMPT ENGINEER<br>
@@ -546,9 +648,8 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 <div class="movr" id="limitModal" style="display:none">
   <div class="mbox">
     <h2>Daily limit reached</h2>
-    <p>You've used your 2 free generations today. Buy credits to continue — or add your own Anthropic API key for unlimited access.</p>
-    <button class="btn-gen" style="font-size:16px;padding:14px;margin-bottom:12px" onclick="document.getElementById('limitModal').style.display='none';openPricing()">⚡ BUY CREDITS →</button>
-    <div style="text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:12px">— or use your own Anthropic API key —</div>
+    <p>You've used your 2 free generations today. Buy credits to continue, or add your own Anthropic API key for unlimited access. Resets at midnight.</p>
+    <button class="btn-pay" style="margin-bottom:16px" onclick="closeLimitModal();openPricing()">⚡ BUY CREDITS →</button>
     <div style="margin-bottom:16px"><input class="api-input" type="password" id="modalApiInput" placeholder="sk-ant-api03-..."></div>
     <div style="display:flex;gap:10px;flex-wrap:wrap">
       <button class="btn-sm" id="modalSaveBtn" style="flex:1">SAVE &amp; CONTINUE</button>
@@ -575,22 +676,17 @@ function updateBanner(){
 function saveKey(){
   var v=document.getElementById('apiKeyInput').value.trim();
   if(!v.startsWith('sk-ant-')){document.getElementById('apiError').textContent='⚠ Key must start with sk-ant-';document.getElementById('apiError').style.display='block';return;}
-  apiKey=v;localStorage.setItem('spe_apikey',v);
-  document.getElementById('apiError').style.display='none';
+  apiKey=v;  document.getElementById('apiError').style.display='none';
   document.getElementById('apiKeyArea').style.display='none';document.getElementById('apiSaved').style.display='flex';
   document.getElementById('apiSavedText').textContent='✓ API key active — '+v.slice(0,12)+'••••';
-  var st=document.getElementById('apiAccordionStatus');if(st){st.textContent='key active ✓';st.style.color='var(--green)';}
-  updateBanner();
+    updateBanner();
 }
 document.getElementById('toggleKeyBtn').addEventListener('click',function(){var i=document.getElementById('apiKeyInput'),b=document.getElementById('toggleKeyBtn');if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';}});
 document.getElementById('saveKeyBtn').addEventListener('click',saveKey);
 // Fix #4: restore key from localStorage on page load
 var _savedKey=localStorage.getItem('spe_apikey');
 if(_savedKey&&_savedKey.startsWith('sk-ant-')){document.getElementById('apiKeyInput').value=_savedKey;saveKey();}
-document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';localStorage.removeItem('spe_apikey');document.getElementById('apiKeyInput').value='';document.getElementById('apiKeyArea').style.display='block';document.getElementById('apiSaved').style.display='none';var st=document.getElementById('apiAccordionStatus');if(st){st.textContent='optional — unlimited generations';st.style.color='';}updateBanner();});
-document.getElementById('modalCloseBtn').addEventListener('click',function(){document.getElementById('limitModal').style.display='none';});
-document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-')){return;}apiKey=v;localStorage.setItem('spe_apikey',v);document.getElementById('apiKeyInput').value=v;saveKey();document.getElementById('limitModal').style.display='none';generate();});
-var AD_SEC=5;var adPushed=false;
+document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-')){return;}apiKey=v;var AD_SEC=5;var adPushed=false;
 function showAd(cb){
   var ov=document.getElementById('adOverlay'),rb=document.getElementById('revealBtn'),num=document.getElementById('ringNum'),arc=document.getElementById('arcEl'),circ=2*Math.PI*18;
   ov.style.display='flex';rb.className='btn-reveal';arc.style.strokeDashoffset=circ;num.textContent=AD_SEC;
@@ -653,8 +749,8 @@ async function generate(){
   if(!genre&&substyles.length===0&&moods.length===0){alert('Select at least a genre or some tags.');return;}
   if(refDesc.length>1000){alert('Reference description is too long (max 1000 characters).');return;}
 
-  // If free limit reached, no credits, and no API key → show modal
-  if(!apiKey&&userCredits<=0&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
+  // If free limit reached and no API key → show modal
+  if(!apiKey&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
 
   var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERATING...';
   document.getElementById('apiError').style.display='none';
@@ -682,17 +778,13 @@ async function generate(){
       var raw=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
       try{result=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){result={stylePrompt:raw,tips:[]};}
     } else {
-      // Credits or free tier — call our server
-      var resp2=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({formData:formData,uuid:userCredits>0?userUUID:null})});
-      if(resp2.status===429||resp2.status===402){
-        if(userCredits>0){userCredits=0;updateCreditsUI();}
-        document.getElementById('limitModal').style.display='flex';
-        btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
-      }
+      // Free tier — call our server
+      var resp2=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({formData:formData,uuid:userUuid})});
+      if(resp2.status===402){ openPricing(); btn.innerHTML='▶ GENERATE SUNO PROMPT'; return; }
+      if(resp2.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;}
       if(!resp2.ok){var e2=await resp2.json();throw new Error(e2.error||'Server error');}
       result=await resp2.json();
-      if(result.tier==='credits'){userCredits=result.creditsRemaining||0;updateCreditsUI();}
-      else{incUsed();updateBanner();}
+      incUsed();updateBanner();
     }
   }catch(err){
     console.error(err);
@@ -754,132 +846,7 @@ async function generate(){
 }
 document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copied!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copy Prompt';b.style.color='';b.style.borderColor='';},2000);});});
 document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
-
-// ─── CREDITS SYSTEM ───────────────────────────────────────────
-var userUUID = null;
-var userCredits = 0;
-var selectedPkg = 'pro';
-
-function getOrCreateUUID() {
-  var id = localStorage.getItem('spe_uuid');
-  if (!id) {
-    id = 'spe-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
-    localStorage.setItem('spe_uuid', id);
-  }
-  return id;
-}
-
-async function loadCredits() {
-  userUUID = getOrCreateUUID();
-  try {
-    var r = await fetch('/api/credits', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({uuid: userUUID})
-    });
-    var d = await r.json();
-    userCredits = d.credits || 0;
-    updateCreditsUI();
-  } catch(e) { userCredits = 0; }
-}
-
-function updateCreditsUI() {
-  var bar = document.getElementById('creditsBar');
-  var cnt = document.getElementById('creditsCount');
-  if (userCredits > 0) {
-    bar.style.display = 'flex';
-    cnt.textContent = userCredits;
-  } else {
-    bar.style.display = 'none';
-  }
-}
-
-function openPricing() { document.getElementById('pricingModal').style.display = 'flex'; }
-function closePricing() { document.getElementById('pricingModal').style.display = 'none'; }
-
-function selectPkg(pkg) {
-  selectedPkg = pkg;
-  ['starter','pro','studio'].forEach(function(p) {
-    var el = document.getElementById('pkg-'+p);
-    el.classList.toggle('selected', p === pkg);
-  });
-}
-
-function toggleRestore() {
-  var el = document.getElementById('uuidRestore');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-async function restoreCredits() {
-  var input = document.getElementById('restoreInput').value.trim();
-  if (!input || input.length < 10) { alert('Invalid session ID'); return; }
-  try {
-    var r = await fetch('/api/credits', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({uuid: input})
-    });
-    var d = await r.json();
-    if (d.credits > 0) {
-      localStorage.setItem('spe_uuid', input);
-      userUUID = input;
-      userCredits = d.credits;
-      updateCreditsUI();
-      closePricing();
-      alert('✓ Restored! ' + d.credits + ' credits available.');
-    } else {
-      alert('No credits found for that session ID.');
-    }
-  } catch(e) { alert('Error restoring credits.'); }
-}
-
-async function startCheckout() {
-  var btn = document.getElementById('payBtn');
-  btn.disabled = true;
-  btn.textContent = 'REDIRECTING...';
-  try {
-    var r = await fetch('/api/checkout', {
-      method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({pkg: selectedPkg, uuid: userUUID, lang: 'en'})
-    });
-    var d = await r.json();
-    if (d.url) {
-      window.location.href = d.url;
-    } else {
-      alert('Error: ' + (d.error || 'Could not start checkout'));
-      btn.disabled = false;
-      btn.textContent = 'PAY & ACTIVATE →';
-    }
-  } catch(e) {
-    alert('Error: ' + e.message);
-    btn.disabled = false;
-    btn.textContent = 'PAY & ACTIVATE →';
-  }
-}
-
-// Handle return from Stripe
-(function checkPaymentReturn() {
-  var params = new URLSearchParams(window.location.search);
-  if (params.get('payment') === 'success') {
-    setTimeout(function() {
-      loadCredits().then(function() {
-        if (userCredits > 0) {
-          alert('✓ Payment successful! ' + userCredits + ' credits activated. Check your email for details.');
-        }
-      });
-      // Clean URL
-      history.replaceState({}, '', window.location.pathname);
-    }, 1500);
-  } else if (params.get('payment') === 'cancelled') {
-    history.replaceState({}, '', window.location.pathname);
-  }
-})();
-// ─────────────────────────────────────────────────────────────
-
 updateBanner();
-loadCredits();
-
 
 // Typewriter
 var TW_EXAMPLES=[
@@ -909,18 +876,8 @@ function twTick(){
 setTimeout(twTick,800);
 
 // API Accordion — auto-open if key already saved
-function toggleApiAccordion(){
-  var body=document.getElementById('apiAccordionBody'),arrow=document.getElementById('apiAccordionArrow');
-  var open=body.style.display!=='none';
-  body.style.display=open?'none':'block';
-  arrow.style.transform=open?'':'rotate(180deg)';
-}
-if(localStorage.getItem('spe_apikey')){
-  document.getElementById('apiAccordionBody').style.display='block';
-  document.getElementById('apiAccordionArrow').style.transform='rotate(180deg)';
-  document.getElementById('apiAccordionStatus').textContent='key active ✓';
-  document.getElementById('apiAccordionStatus').style.color='var(--green)';
-}
+
+
 
 // Fake live counter — base 1247, grows 3-11 per page load, persists in localStorage
 (function(){
@@ -935,3 +892,17 @@ if(localStorage.getItem('spe_apikey')){
 </script>
 </body>
 </html>
+
+// ── Bootstrap on page load ──
+document.addEventListener('DOMContentLoaded', function(){
+  loadCredits();
+  // Handle Stripe payment return
+  var params = new URLSearchParams(window.location.search);
+  if(params.get('payment') === 'success'){
+    history.replaceState(null, '', window.location.pathname);
+    setTimeout(async function(){
+      await loadCredits();
+      alert('✓ Payment successful! ' + userCredits + ' credits activated. Check your email for details.');
+    }, 1200);
+  }
+});
