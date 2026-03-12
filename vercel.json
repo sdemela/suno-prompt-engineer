@@ -9,6 +9,7 @@
     { "src": "/api/checkout", "dest": "/api/checkout.js" },
     { "src": "/api/webhook", "dest": "/api/webhook.js" },
     { "src": "/api/credits", "dest": "/api/credits.js" },
+    { "src": "/api/save-email", "dest": "/api/save-email.js" },
     { "src": "/en", "dest": "/public/en/index.html" },
     { "src": "/en/", "dest": "/public/en/index.html" },
     { "src": "/it", "dest": "/public/it/index.html" },
