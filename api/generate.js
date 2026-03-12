@@ -1,17 +1,27 @@
 // api/generate.js — Vercel serverless function
-// Free tier: 2/day per IP
-// Credits tier: paid credits stored in Upstash Redis per UUID
-// BYOK: user's own Anthropic key (handled client-side, not here)
-
-import { Redis } from '@upstash/redis';
+// Free tier: 2/day per IP (in-memory)
+// Credits tier: paid credits in Upstash Redis per UUID (via REST API, no SDK)
 
 const FREE_LIMIT = 2;
-const ipStore = new Map(); // in-memory free tier (resets on cold start)
+const ipStore = new Map();
 
-const redis = new Redis({
-  url: process.env.UPSTASH_REDIS_REST_URL,
-  token: process.env.UPSTASH_REDIS_REST_TOKEN,
-});
+async function redisGet(key) {
+  const url = `${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`;
+  const r = await fetch(url, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
+  const d = await r.json();
+  return d.result;
+}
+
+async function redisDecrby(key, n) {
+  const url = `${process.env.UPSTASH_REDIS_REST_URL}/decrby/${encodeURIComponent(key)}/${n}`;
+  const r = await fetch(url, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
+  const d = await r.json();
+  return d.result;
+}
 
 function getTodayKey(ip) {
   const today = new Date().toISOString().slice(0, 10);
@@ -34,15 +44,16 @@ export default async function handler(req, res) {
   // --- CREDITS TIER (paid) ---
   if (uuid && uuid.length >= 10) {
     try {
-      const credits = parseInt(await redis.get(`credits:${uuid}`)) || 0;
+      const raw = await redisGet(`credits:${uuid}`);
+      const credits = parseInt(raw) || 0;
       if (credits <= 0) {
-        return res.status(402).json({ error: 'no_credits', message: 'No credits remaining. Buy more to continue.' });
+        return res.status(402).json({ error: 'no_credits', message: 'No credits remaining.' });
       }
-      // Deduct 1 credit
-      await redis.decrby(`credits:${uuid}`, 1);
+      const newCredits = await redisDecrby(`credits:${uuid}`, 1);
       const result = await callAnthropic(formData);
-      return res.status(200).json({ ...result, creditsRemaining: credits - 1, tier: 'credits' });
+      return res.status(200).json({ ...result, creditsRemaining: newCredits, tier: 'credits' });
     } catch(e) {
+      console.error('Credits tier error:', e.message);
       return res.status(500).json({ error: e.message });
     }
   }
@@ -56,8 +67,7 @@ export default async function handler(req, res) {
     return res.status(429).json({
       error: 'free_limit_reached',
       message: `You've used your ${FREE_LIMIT} free generations today.`,
-      used,
-      limit: FREE_LIMIT,
+      used, limit: FREE_LIMIT,
     });
   }
 
@@ -112,8 +122,11 @@ async function callAnthropic(formData) {
 
 function buildSystemPrompt(version) {
   const isLegacy = version === 'v3' || version === 'v3.5';
+  const isV5 = version === 'v5';
   const versionRules = isLegacy
     ? `TARGET: Suno ${version} (legacy). Keep the prompt SHORT and DIRECT.\n- Max 6-8 keywords total\n- Focus only on: genre, core rhythm, 1-2 main instruments\n- NO texture/mix/structure/era descriptors\n- No more than 60 characters total`
+    : isV5
+    ? `TARGET: Suno v5 (latest). Use a RICH, DESCRIPTIVE prompt.\n- 15-20 keywords, up to 150 characters\n- v5 understands natural language better — use descriptive phrases\n- Include: genre/era → mood/narrative feel → instruments → production texture → mix character → vocal direction\n- Can reference sonic atmospheres, emotional arcs, and production eras more freely`
     : `TARGET: Suno ${version} (modern). Use a FULL, LAYERED prompt.\n- 10-15 keywords, up to 120 characters\n- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints`;
 
   return `You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.\n\n${versionRules}\n\nOutput ONLY a raw JSON object, no markdown:\n{\n  "stylePrompt": "the complete style prompt string",\n  "tips": ["tip1", "tip2"]\n}\n\nRules:\n- Natural flowing keywords, NOT a sentence\n- NEVER include artist names, song titles, or brand names\n- English only\n- Tips: 1-3 short actionable tips, max 80 chars each`;
