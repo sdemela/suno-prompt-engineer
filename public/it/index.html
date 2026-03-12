@@ -673,6 +673,7 @@ function updateBanner(){
   var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
 }
 
+var AD_SEC=5;var adPushed=false;
 function showAd(cb){
   var ov=document.getElementById('adOverlay'),rb=document.getElementById('revealBtn'),num=document.getElementById('ringNum'),arc=document.getElementById('arcEl'),circ=2*Math.PI*18;
   ov.style.display='flex';rb.className='btn-reveal';arc.style.strokeDashoffset=circ;num.textContent=AD_SEC;
