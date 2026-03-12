@@ -876,20 +876,18 @@ setTimeout(twTick,800);
   var el=document.getElementById('promptCounter');
   if(el)el.textContent=count.toLocaleString('en');
 })();
-</script>
 
-// ── Bootstrap on page load ──
+// ── Bootstrap ──
 document.addEventListener('DOMContentLoaded', function(){
   loadCredits();
   var params = new URLSearchParams(window.location.search);
   if(params.get('payment') === 'success'){
     history.replaceState(null, '', window.location.pathname);
-    setTimeout(async function(){
-      await loadCredits();
-      alert('✓ Pagamento completato! ' + userCredits + ' crediti attivati. Controlla la tua email.');
-    }, 1200);
+    setTimeout(async function(){ await loadCredits(); alert('✓ Pagamento completato! ' + userCredits + ' crediti attivati. Controlla la tua email.'); }, 1200);
   }
 });
+</script>
+
 
 </body>
 </html>
