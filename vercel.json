@@ -5,7 +5,10 @@
     { "src": "public/**", "use": "@vercel/static" }
   ],
   "routes": [
-    { "src": "/api/(.*)", "dest": "/api/$1" },
+    { "src": "/api/generate", "dest": "/api/generate.js" },
+    { "src": "/api/checkout", "dest": "/api/checkout.js" },
+    { "src": "/api/webhook", "dest": "/api/webhook.js" },
+    { "src": "/api/credits", "dest": "/api/credits.js" },
     { "src": "/en", "dest": "/public/en/index.html" },
     { "src": "/en/", "dest": "/public/en/index.html" },
     { "src": "/it", "dest": "/public/it/index.html" },
