@@ -1,5 +1,9 @@
 {
   "name": "suno-prompt-engineer",
   "version": "1.0.0",
-  "type": "module"
+  "private": true,
+  "dependencies": {
+    "@upstash/redis": "^1.34.0",
+    "stripe": "^14.0.0"
+  }
 }
