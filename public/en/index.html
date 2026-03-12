@@ -6,7 +6,8 @@
 <title>Suno Prompt Engineer — AI Music Prompt Tool</title>
 <meta name="description" content="Generate precise prompts for Suno AI. Free tool for producers and DJs.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous">
+<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous"></script>
+<script>
 // ══════════ CREDITS SYSTEM ══════════
 var userUuid = localStorage.getItem('spe_uuid');
 if(!userUuid){ userUuid = 'spe-'+Date.now()+'-'+Math.random().toString(36).slice(2,9); localStorage.setItem('spe_uuid', userUuid); }
@@ -14,7 +15,7 @@ if(!userUuid){ userUuid = 'spe-'+Date.now()+'-'+Math.random().toString(36).slice
 var userCredits = 0;
 var selectedPkg = 'pro';
 
-async async function loadCredits(){
+async function loadCredits(){
   try {
     var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid})});
     var d = await r.json();
@@ -112,8 +113,6 @@ async function saveEmail(){
 }
 
 // Handle payment success/cancel from Stripe redirect
-
-
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -668,25 +667,12 @@ function getUsed(){return parseInt(localStorage.getItem(getTodayKey())||'0',10);
 function incUsed(){localStorage.setItem(getTodayKey(),String(getUsed()+1));}
 function updateBanner(){
   var u=getUsed(),r=Math.max(0,FREE_LIMIT-u),b=document.getElementById('freeBanner');
-  if(apiKey){b.style.display='none';return;}
+  if(userCredits>0){b.style.display='none';return;}
   b.style.display='flex';
   document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' free generations':' free generation')+' today'):'🔒 Add your API key to continue';
   var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
 }
-function saveKey(){
-  var v=document.getElementById('apiKeyInput').value.trim();
-  if(!v.startsWith('sk-ant-')){document.getElementById('apiError').textContent='⚠ Key must start with sk-ant-';document.getElementById('apiError').style.display='block';return;}
-  apiKey=v;  document.getElementById('apiError').style.display='none';
-  document.getElementById('apiKeyArea').style.display='none';document.getElementById('apiSaved').style.display='flex';
-  document.getElementById('apiSavedText').textContent='✓ API key active — '+v.slice(0,12)+'••••';
-    updateBanner();
-}
-document.getElementById('toggleKeyBtn').addEventListener('click',function(){var i=document.getElementById('apiKeyInput'),b=document.getElementById('toggleKeyBtn');if(i.type==='password'){i.type='text';b.textContent='🙈';}else{i.type='password';b.textContent='👁';}});
-document.getElementById('saveKeyBtn').addEventListener('click',saveKey);
-// Fix #4: restore key from localStorage on page load
-var _savedKey=localStorage.getItem('spe_apikey');
-if(_savedKey&&_savedKey.startsWith('sk-ant-')){document.getElementById('apiKeyInput').value=_savedKey;saveKey();}
-document.getElementById('clearKeyBtn').addEventListener('click',function(){apiKey='';document.getElementById('modalSaveBtn').addEventListener('click',function(){var v=document.getElementById('modalApiInput').value.trim();if(!v.startsWith('sk-ant-')){return;}apiKey=v;var AD_SEC=5;var adPushed=false;
+
 function showAd(cb){
   var ov=document.getElementById('adOverlay'),rb=document.getElementById('revealBtn'),num=document.getElementById('ringNum'),arc=document.getElementById('arcEl'),circ=2*Math.PI*18;
   ov.style.display='flex';rb.className='btn-reveal';arc.style.strokeDashoffset=circ;num.textContent=AD_SEC;
@@ -753,7 +739,6 @@ async function generate(){
   if(!apiKey&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
 
   var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERATING...';
-  document.getElementById('apiError').style.display='none';
 
   var sunoVersion=getTags('suno-version-tags')[0]||'v4';
   var formData={
@@ -788,12 +773,12 @@ async function generate(){
     }
   }catch(err){
     console.error(err);
-    var eb=document.getElementById('apiError');eb.textContent='⚠ Error: '+err.message;eb.style.display='block';
+    document.getElementById('promptText').textContent='⚠ Error: '+err.message;
     btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
   }
 
   if(!result||!result.stylePrompt){
-    var eb2=document.getElementById('apiError');eb2.textContent='⚠ Unexpected response from AI. Try again.';eb2.style.display='block';
+    document.getElementById('promptText').textContent='⚠ Unexpected response from AI. Try again.';
     btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';return;
   }
 
@@ -890,13 +875,10 @@ setTimeout(twTick,800);
   if(el)el.textContent=count.toLocaleString('en');
 })();
 </script>
-</body>
-</html>
 
 // ── Bootstrap on page load ──
 document.addEventListener('DOMContentLoaded', function(){
   loadCredits();
-  // Handle Stripe payment return
   var params = new URLSearchParams(window.location.search);
   if(params.get('payment') === 'success'){
     history.replaceState(null, '', window.location.pathname);
@@ -906,3 +888,6 @@ document.addEventListener('DOMContentLoaded', function(){
     }, 1200);
   }
 });
+
+</body>
+</html>
