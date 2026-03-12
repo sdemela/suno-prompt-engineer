@@ -1,9 +1,17 @@
 // api/generate.js — Vercel serverless function
-// Handles free-tier AI calls (max 2/day per IP)
-// From 3rd use onward, user must provide their own API key (BYOK)
+// Free tier: 2/day per IP
+// Credits tier: paid credits stored in Upstash Redis per UUID
+// BYOK: user's own Anthropic key (handled client-side, not here)
+
+import { Redis } from '@upstash/redis';
 
 const FREE_LIMIT = 2;
-const ipStore = new Map();
+const ipStore = new Map(); // in-memory free tier (resets on cold start)
+
+const redis = new Redis({
+  url: process.env.UPSTASH_REDIS_REST_URL,
+  token: process.env.UPSTASH_REDIS_REST_TOKEN,
+});
 
 function getTodayKey(ip) {
   const today = new Date().toISOString().slice(0, 10);
@@ -11,114 +19,104 @@ function getTodayKey(ip) {
 }
 
 export default async function handler(req, res) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  if (req.method === "OPTIONS") return res.status(200).end();
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  if (req.method === 'OPTIONS') return res.status(200).end();
+  if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
-  const ip = req.headers["x-forwarded-for"]?.split(",")[0] || req.socket.remoteAddress || "unknown";
+  const { formData, uuid } = req.body || {};
+  if (!formData) return res.status(400).json({ error: 'Missing formData' });
+
+  const totalLen = JSON.stringify(formData).length;
+  if (totalLen > 3000) return res.status(400).json({ error: 'Input too long' });
+
+  // --- CREDITS TIER (paid) ---
+  if (uuid && uuid.length >= 10) {
+    try {
+      const credits = parseInt(await redis.get(`credits:${uuid}`)) || 0;
+      if (credits <= 0) {
+        return res.status(402).json({ error: 'no_credits', message: 'No credits remaining. Buy more to continue.' });
+      }
+      // Deduct 1 credit
+      await redis.decrby(`credits:${uuid}`, 1);
+      const result = await callAnthropic(formData);
+      return res.status(200).json({ ...result, creditsRemaining: credits - 1, tier: 'credits' });
+    } catch(e) {
+      return res.status(500).json({ error: e.message });
+    }
+  }
+
+  // --- FREE TIER (IP-based, 2/day) ---
+  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || 'unknown';
   const key = getTodayKey(ip);
   const used = ipStore.get(key) || 0;
 
-  const { formData } = req.body || {};
-
-  if (!formData) return res.status(400).json({ error: "Missing formData" });
-
-  // Validate input length
-  const totalLen = JSON.stringify(formData).length;
-  if (totalLen > 3000) return res.status(400).json({ error: "Input too long" });
-
-  // Check rate limit
   if (used >= FREE_LIMIT) {
     return res.status(429).json({
-      error: "free_limit_reached",
-      message: `You've used your ${FREE_LIMIT} free generations today. Add your Anthropic API key to continue.`,
+      error: 'free_limit_reached',
+      message: `You've used your ${FREE_LIMIT} free generations today.`,
       used,
-      limit: FREE_LIMIT
+      limit: FREE_LIMIT,
     });
   }
 
-  const userMessage = buildUserMessage(formData);
-
   try {
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-api-key": process.env.ANTHROPIC_API_KEY,
-        "anthropic-version": "2023-06-01"
-      },
-      body: JSON.stringify({
-        model: "claude-haiku-4-5-20251001",
-        max_tokens: 600,
-        system: buildSystemPrompt(formData.sunoVersion || "v4"),
-        messages: [{ role: "user", content: userMessage }]
-      })
-    });
-
-    if (!resp.ok) {
-      const err = await resp.json();
-      return res.status(500).json({ error: err.error?.message || "Anthropic API error" });
-    }
-
-    const data = await resp.json();
-    const raw = (data.content || []).find(b => b.type === "text")?.text || "{}";
-
-    let result;
-    try {
-      result = JSON.parse(raw.replace(/```json|```/g, "").trim());
-      if (!result.stylePrompt) result = { stylePrompt: raw, tips: [] };
-    } catch(e) {
-      result = { stylePrompt: raw, tips: [] };
-    }
-
+    const result = await callAnthropic(formData);
     ipStore.set(key, used + 1);
-
     return res.status(200).json({
       ...result,
       used: used + 1,
       limit: FREE_LIMIT,
-      remaining: Math.max(0, FREE_LIMIT - used - 1)
+      remaining: Math.max(0, FREE_LIMIT - used - 1),
+      tier: 'free',
     });
-
-  } catch (e) {
+  } catch(e) {
     return res.status(500).json({ error: e.message });
   }
+}
+
+async function callAnthropic(formData) {
+  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': process.env.ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5-20251001',
+      max_tokens: 600,
+      system: buildSystemPrompt(formData.sunoVersion || 'v4'),
+      messages: [{ role: 'user', content: buildUserMessage(formData) }],
+    }),
+  });
+
+  if (!resp.ok) {
+    const err = await resp.json();
+    throw new Error(err.error?.message || 'Anthropic API error');
+  }
+
+  const data = await resp.json();
+  const raw = (data.content || []).find(b => b.type === 'text')?.text || '{}';
+
+  let result;
+  try {
+    result = JSON.parse(raw.replace(/```json|```/g, '').trim());
+    if (!result.stylePrompt) result = { stylePrompt: raw, tips: [] };
+  } catch(e) {
+    result = { stylePrompt: raw, tips: [] };
+  }
+  return result;
 }
 
 function buildSystemPrompt(version) {
   const isLegacy = version === 'v3' || version === 'v3.5';
   const versionRules = isLegacy
-    ? `TARGET: Suno ${version} (legacy). Keep the prompt SHORT and DIRECT.
-- Max 6-8 keywords total
-- Focus only on: genre, core rhythm, 1-2 main instruments
-- NO texture/mix/structure/era descriptors — they confuse v3
-- No more than 60 characters total
-- Simpler = better for this version`
-    : `TARGET: Suno ${version} (modern). Use a FULL, LAYERED prompt.
-- 10-15 keywords, up to 120 characters
-- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints
-- v4/v4.5 handles stylistic nuance and stacking well — use it
-- Reference descriptions blend well into the prompt at this version`;
+    ? `TARGET: Suno ${version} (legacy). Keep the prompt SHORT and DIRECT.\n- Max 6-8 keywords total\n- Focus only on: genre, core rhythm, 1-2 main instruments\n- NO texture/mix/structure/era descriptors\n- No more than 60 characters total`
+    : `TARGET: Suno ${version} (modern). Use a FULL, LAYERED prompt.\n- 10-15 keywords, up to 120 characters\n- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints`;
 
-  return `You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.
-
-${versionRules}
-
-Output ONLY a raw JSON object with this exact structure, no markdown, no explanation:
-{
-  "stylePrompt": "the complete style prompt string",
-  "tips": ["tip1", "tip2"]
-}
-
-General rules:
-- Natural flowing keywords, NOT a sentence
-- NEVER include artist names, song titles, or brand names
-- English only
-- If reference description provided, extract sonic keywords and blend them in
-
-Rules for tips: 1-3 short actionable tips specific to the genre/version, max 80 chars each. Include one tip about how this prompt behaves specifically on ${version}.`;
+  return `You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.\n\n${versionRules}\n\nOutput ONLY a raw JSON object, no markdown:\n{\n  "stylePrompt": "the complete style prompt string",\n  "tips": ["tip1", "tip2"]\n}\n\nRules:\n- Natural flowing keywords, NOT a sentence\n- NEVER include artist names, song titles, or brand names\n- English only\n- Tips: 1-3 short actionable tips, max 80 chars each`;
 }
 
 function buildUserMessage(f) {
