@@ -1,888 +1,155 @@
+// api/webhook.js — Stripe webhook handler (no SDK, pure fetch)
+import crypto from 'crypto';
+
+const PACKAGES = {
+  [process.env.STRIPE_PRICE_STARTER]: { credits: 50,  label: 'Starter',  price: '1.99' },
+  [process.env.STRIPE_PRICE_PRO]:     { credits: 150, label: 'Pro',      price: '3.99' },
+  [process.env.STRIPE_PRICE_STUDIO]:  { credits: 400, label: 'Studio',   price: '7.99' },
+};
+
+export const config = { api: { bodyParser: false } };
+
+async function getRawBody(req) {
+  return new Promise((resolve, reject) => {
+    const chunks = [];
+    req.on('data', chunk => chunks.push(chunk));
+    req.on('end', () => resolve(Buffer.concat(chunks)));
+    req.on('error', reject);
+  });
+}
+
+// Stripe webhook signature verification (no SDK)
+function verifyStripeSignature(rawBody, sig, secret) {
+  const parts = sig.split(',').reduce((acc, p) => {
+    const [k, v] = p.split('=');
+    acc[k] = v;
+    return acc;
+  }, {});
+  const timestamp = parts['t'];
+  const expected = parts['v1'];
+  if (!timestamp || !expected) throw new Error('Invalid signature header');
+
+  const payload = `${timestamp}.${rawBody.toString('utf8')}`;
+  const hmac = crypto.createHmac('sha256', secret).update(payload).digest('hex');
+  if (hmac !== expected) throw new Error('Signature mismatch');
+
+  // Reject events older than 5 minutes
+  if (Math.abs(Date.now() / 1000 - parseInt(timestamp)) > 300) throw new Error('Timestamp too old');
+  return true;
+}
+
+// Upstash REST: incrby
+async function redisIncrby(key, amount) {
+  const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${key}/${amount}`, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
+  const d = await r.json();
+  return d.result;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'POST') return res.status(405).end();
+
+  const rawBody = await getRawBody(req);
+  const sig = req.headers['stripe-signature'];
+
+  let event;
+  try {
+    verifyStripeSignature(rawBody, sig, process.env.STRIPE_WEBHOOK_SECRET);
+    event = JSON.parse(rawBody.toString('utf8'));
+  } catch (err) {
+    console.error('Webhook error:', err.message);
+    return res.status(400).json({ error: err.message });
+  }
+
+  if (event.type === 'checkout.session.completed') {
+    const session = event.data.object;
+    const uuid = session.metadata?.uuid;
+    const email = session.customer_details?.email;
+
+    // Fetch line items from Stripe REST to get price ID
+    let resolvedPriceId = null;
+    try {
+      const liResp = await fetch(
+        `https://api.stripe.com/v1/checkout/sessions/${session.id}/line_items`,
+        { headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` } }
+      );
+      const liData = await liResp.json();
+      resolvedPriceId = liData.data?.[0]?.price?.id;
+    } catch(e) {
+      console.error('Line items fetch failed:', e.message);
+    }
+
+    const pkg = PACKAGES[resolvedPriceId];
+    if (!uuid || !pkg) {
+      console.error('Missing uuid or unknown price:', resolvedPriceId, uuid);
+      return res.status(200).json({ received: true });
+    }
+
+    // Add credits via Upstash REST
+    const newCredits = await redisIncrby(`credits:${uuid}`, pkg.credits);
+
+    // Send confirmation email via Resend
+    if (email) await sendEmail(email, pkg, newCredits, uuid);
+
+    console.log(`✅ ${pkg.credits} credits added for ${uuid} (${email}). Total: ${newCredits}`);
+  }
+
+  return res.status(200).json({ received: true });
+}
+
+async function sendEmail(email, pkg, totalCredits, uuid) {
+  try {
+    await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        from: 'Suno Prompt Engineer <noreply@supre.online>',
+        to: email,
+        subject: `✦ ${pkg.credits} credits activated — Suno Prompt Engineer`,
+        html: `
 <!DOCTYPE html>
-<html lang="it">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Suno Prompt Engineer — Tool AI per Musica</title>
-<meta name="description" content="Generate precise prompts for Suno AI. Free tool for producers and DJs.">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous"></script>
-<script>
-// ══════════ CREDITS SYSTEM ══════════
-var userUuid = localStorage.getItem('spe_uuid');
-if(!userUuid){ userUuid = 'spe-'+Date.now()+'-'+Math.random().toString(36).slice(2,9); localStorage.setItem('spe_uuid', userUuid); }
-
-var userCredits = 0;
-var selectedPkg = 'pro';
-
-async function loadCredits(){
-  try {
-    var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid})});
-    var d = await r.json();
-    userCredits = d.credits || 0;
-    updateCreditsUI();
-  } catch(e){ console.log('Credits fetch failed:', e); }
-  // Always show session row
-  document.getElementById('sessionIdRow').style.display = 'block';
-  document.getElementById('sessionIdDisplay').textContent = userUuid;
-}
-
-function updateCreditsUI(){
-  if(userCredits > 0){
-    document.getElementById('creditsBar').style.display = 'flex';
-    document.getElementById('creditsCount').textContent = userCredits;
-    document.getElementById('freeBanner').style.display = 'none';
-  } else {
-    document.getElementById('creditsBar').style.display = 'none';
-    document.getElementById('freeBanner').style.display = 'flex';
-  }
-}
-
-
-function closeLimitModal(){ document.getElementById('limitModal').style.display='none'; }
-function openPricing(){
-  document.getElementById('pricingModal').style.display = 'flex';
-}
-
-function closePricing(){
-  document.getElementById('pricingModal').style.display = 'none';
-}
-
-function selectPkg(pkg){
-  selectedPkg = pkg;
-  document.querySelectorAll('.pkg').forEach(function(el){ el.classList.remove('selected'); });
-  document.getElementById('pkg-'+pkg).classList.add('selected');
-}
-
-async function startCheckout(){
-  var btn = document.getElementById('payBtn');
-  btn.disabled = true;
-  btn.textContent = 'Loading...';
-  try {
-    var r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pkg: selectedPkg, uuid: userUuid, lang: 'it'})});
-    var d = await r.json();
-    if(d.url){ window.location.href = d.url; }
-    else { alert('Error: '+JSON.stringify(d)); btn.disabled=false; btn.textContent='PAGA E ATTIVA →'; }
-  } catch(e){ alert('Error: '+e.message); btn.disabled=false; btn.textContent='PAGA E ATTIVA →'; }
-}
-
-function toggleRestore(){
-  var el = document.getElementById('uuidRestore');
-  el.style.display = el.style.display === 'none' ? 'block' : 'none';
-}
-
-async function restoreCredits(){
-  var id = document.getElementById('restoreInput').value.trim();
-  if(!id || id.length < 10){ alert('Inserisci un session ID valido.'); return; }
-  try {
-    var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: id})});
-    var d = await r.json();
-    if(d.credits > 0){
-      localStorage.setItem('spe_uuid', id);
-      userUuid = id;
-      userCredits = d.credits;
-      updateCreditsUI();
-      document.getElementById('sessionIdDisplay').textContent = userUuid;
-      closePricing();
-      alert('✓ Ripristinati! ' + d.credits + ' crediti disponibili.');
-    } else {
-      alert('Nessun credito trovato per questo session ID.');
-    }
-  } catch(e){ alert('Errore nel ripristino crediti.'); }
-}
-
-function copySessionId(){
-  navigator.clipboard.writeText(userUuid).then(function(){
-    var btn = document.getElementById('copySessionBtn');
-    btn.textContent = '✓ Copiato!';
-    setTimeout(function(){ btn.textContent = 'Copia ID'; }, 2000);
-  });
-}
-
-async function saveEmail(){
-  var email = document.getElementById('emailInput').value.trim();
-  if(!email || !email.includes('@')){ alert('Inserisci un email valida.'); return; }
-  try {
-    var r = await fetch('/api/save-email', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid, email: email})});
-    var d = await r.json();
-    if(d.ok){
-      document.getElementById('emailSaveArea').style.display = 'none';
-      document.getElementById('emailSaved').style.display = 'block';
-    }
-  } catch(e){ alert('Error: '+e.message); }
-}
-
-// Handle payment success/cancel from Stripe redirect
-</script>
-<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-<style>
-:root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
-*{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
-a{color:var(--purple);text-decoration:none;}a:hover{text-decoration:underline;}
-.container{max-width:900px;margin:0 auto;padding:32px 20px 80px;}
-/* LANG TOGGLE */
-.lang-bar{display:flex;justify-content:flex-end;margin-bottom:16px;}
-.lang-btn{display:flex;gap:0;border:1px solid var(--border);border-radius:8px;overflow:hidden;}
-.lang-btn a{padding:6px 14px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;color:var(--muted);transition:all .15s;}
-.lang-btn a.active{background:var(--purple);color:#fff;}
-.lang-btn a:hover:not(.active){background:var(--card);color:var(--text);}
-/* AD */
-.ad-top{width:100%;background:rgba(255,255,255,.02);border:1px dashed rgba(255,255,255,.06);border-radius:8px;padding:8px;text-align:center;margin-bottom:20px;}
-.ad-label{font-family:'Space Mono',monospace;font-size:9px;color:var(--border);letter-spacing:2px;text-transform:uppercase;margin-bottom:4px;}
-/* HEADER */
-.logo-tag{font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);letter-spacing:4px;text-transform:uppercase;margin-bottom:12px;}
-h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(48px,10vw,88px);line-height:.9;letter-spacing:2px;background:linear-gradient(135deg,#fff 0%,#c0b8ff 50%,var(--accent) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
-.subtitle{font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);margin-top:12px;}
-/* FREE BANNER */
-.free-banner{display:flex;align-items:center;justify-content:space-between;background:rgba(123,92,255,.13);border:1px solid rgba(123,92,255,.4);border-radius:10px;padding:16px 22px;margin:20px 0;flex-wrap:wrap;gap:10px;box-shadow:0 0 24px rgba(123,92,255,.1);}
-.free-counter{font-family:'Space Mono',monospace;font-size:14px;color:var(--purple);font-weight:700;}
-.free-dots{display:flex;gap:6px;}
-.free-dot{width:12px;height:12px;border-radius:50%;background:var(--purple);transition:all .3s;}
-.free-dot.used{background:var(--border);}
-.free-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(123,92,255,.15);border:1px solid rgba(123,92,255,.3);border-radius:100px;padding:4px 12px;font-family:'Space Mono',monospace;font-size:11px;color:var(--purple);}
-.free-pill .used-count{font-size:16px;font-weight:700;color:#fff;}
-.free-pill .total-count{color:var(--muted);}
-/* API BOX */
-.api-box{background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.25);border-radius:12px;padding:20px;margin-bottom:24px;}
-.api-saved{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.25);border-radius:8px;padding:10px 16px;font-family:'Space Mono',monospace;font-size:12px;color:var(--green);}
-.api-input{width:100%;background:var(--black);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:13px;padding:10px 14px;outline:none;transition:border-color .2s;}
-.api-input:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(123,92,255,.12);}
-.api-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:10px;}
-.btn-sm{background:var(--purple);border:none;color:#fff;border-radius:8px;padding:10px 20px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px;white-space:nowrap;}
-.btn-icon{background:var(--card);border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 14px;cursor:pointer;font-size:13px;}
-.sec{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
-.sec span{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--purple);text-transform:uppercase;}
-.sec .badge{color:var(--green);font-size:9px;}
-.sec::after{content:'';flex:1;height:1px;background:var(--border);}
-.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;margin-bottom:18px;}
-.fl{display:block;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px;}
-select,input[type="text"],textarea{width:100%;background:var(--deep);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;padding:10px 14px;outline:none;transition:border-color .2s;-webkit-appearance:none;}
-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%236b6b85' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:36px;}
-select:focus,input[type="text"]:focus,textarea:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(123,92,255,.12);}
-textarea{resize:vertical;min-height:80px;line-height:1.7;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
-.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;}
-@media(max-width:600px){.g2,.g3{grid-template-columns:1fr;}}
-.tg{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px;}
-.tag{padding:6px 14px;border-radius:100px;border:1px solid var(--border);font-size:12px;cursor:pointer;transition:all .15s;background:var(--deep);color:var(--muted);user-select:none;white-space:nowrap;}
-.tag:hover{border-color:var(--purple);color:var(--text);}
-.tag.active{background:var(--purple);border-color:var(--purple);color:#fff;}
-.brow{display:flex;align-items:center;gap:16px;}
-input[type="range"]{flex:1;-webkit-appearance:none;height:4px;background:var(--border);border-radius:4px;outline:none;cursor:pointer;}
-input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;background:var(--purple);border-radius:50%;box-shadow:0 0 8px rgba(123,92,255,.5);cursor:pointer;}
-.bval{font-family:'Space Mono',monospace;font-size:20px;color:var(--purple);min-width:52px;text-align:center;}
-.dz{border:2px dashed var(--border);border-radius:10px;padding:24px 20px;text-align:center;cursor:pointer;transition:all .2s;background:var(--deep);}
-.dz:hover,.dz.over{border-color:var(--purple);background:rgba(123,92,255,.06);}
-.aloaded{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.25);border-radius:8px;padding:8px 14px;font-size:12px;font-family:'Space Mono',monospace;color:var(--green);}
-.btn-gen{width:100%;padding:18px;background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:12px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;cursor:pointer;transition:all .2s;margin-top:8px;}
-.btn-gen:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(123,92,255,.4);}
-.btn-gen:disabled{opacity:.6;cursor:not-allowed;transform:none;}
-.out-wrap{margin-top:32px;animation:fadeUp .4s ease;}
-@keyframes fadeUp{from{opacity:0;transform:translateY(16px);}to{opacity:1;transform:translateY(0);}}
-.out-card{background:var(--deep);border:1px solid var(--purple);border-radius:12px;overflow:hidden;box-shadow:0 0 40px rgba(123,92,255,.1);}
-.out-hdr{background:linear-gradient(90deg,rgba(123,92,255,.15),transparent);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);}
-.out-blk{padding:20px;border-bottom:1px solid var(--border);}
-.out-blk:last-child{border-bottom:none;}
-.out-blk-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
-.ptxt{font-family:'Space Mono',monospace;font-size:14px;line-height:1.8;word-break:break-word;color:var(--text);letter-spacing:.3px;}
-.cpbtn{background:transparent;border:1px solid var(--border);color:var(--muted);padding:6px 16px;border-radius:6px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;cursor:pointer;transition:all .15s;text-transform:uppercase;}
-.cpbtn:hover{border-color:var(--green);color:var(--green);}
-.tpill{font-size:12px;background:rgba(0,229,176,.08);border:1px solid rgba(0,229,176,.2);color:var(--green);padding:4px 12px;border-radius:6px;font-family:'Space Mono',monospace;display:inline-block;margin:3px;}
-.legend{display:flex;gap:14px;flex-wrap:wrap;}
-.li{display:flex;align-items:center;gap:6px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;}
-.ld{width:8px;height:8px;border-radius:50%;}
-.sp{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;margin-right:8px;vertical-align:middle;}
-@keyframes spin{to{transform:rotate(360deg);}}
-.errbox{background:rgba(255,60,95,.08);border:1px solid rgba(255,60,95,.25);border-radius:8px;padding:10px 14px;font-size:12px;color:var(--accent);font-family:'Space Mono',monospace;margin-top:10px;}
-.movr{position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;z-index:100;padding:20px;backdrop-filter:blur(4px);}
-.mbox{background:var(--card);border:1px solid var(--purple);border-radius:16px;padding:32px;max-width:480px;width:100%;}
-.mbox h2{font-family:'Bebas Neue',sans-serif;font-size:32px;letter-spacing:2px;margin-bottom:12px;}
-.mbox p{font-size:14px;color:var(--muted);line-height:1.7;margin-bottom:20px;}
-/* AD INTERSTITIAL */
-#adOverlay{position:fixed;inset:0;background:rgba(0,0,0,.92);display:flex;align-items:center;justify-content:center;z-index:200;padding:20px;backdrop-filter:blur(8px);}
-.ad-box{background:var(--card);border:1px solid var(--border);border-radius:20px;max-width:560px;width:100%;overflow:hidden;box-shadow:0 0 60px rgba(123,92,255,.15);}
-.ad-box-top{padding:16px 24px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:linear-gradient(90deg,rgba(123,92,255,.08),transparent);}
-.ad-box-label{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
-.ring{position:relative;width:48px;height:48px;flex-shrink:0;}
-.ring svg{transform:rotate(-90deg);}
-.ring circle{fill:none;stroke:var(--border);stroke-width:3;}
-.ring .arc{stroke:var(--purple);stroke-linecap:round;stroke-dasharray:113.1;stroke-dashoffset:113.1;transition:stroke-dashoffset 1s linear;}
-.ring-num{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-family:'Space Mono',monospace;font-size:15px;font-weight:700;color:var(--purple);}
-.ad-content{padding:8px 16px 12px;min-height:160px;display:flex;align-items:center;justify-content:center;}
-.ad-footer{padding:14px 24px 18px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap;}
-.ad-hint{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.7;flex:1;}
-.btn-reveal{background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;padding:12px 28px;cursor:pointer;transition:opacity .3s,box-shadow .3s;white-space:nowrap;opacity:.35;pointer-events:none;}
-.btn-reveal.ready{opacity:1;pointer-events:auto;animation:pulse 1.6s ease infinite;}
-@keyframes pulse{0%,100%{box-shadow:0 0 0 0 rgba(123,92,255,.5);}50%{box-shadow:0 0 0 12px rgba(123,92,255,0);}}
-.wf{display:flex;align-items:center;justify-content:center;gap:3px;margin:16px auto;height:28px;}
-.wf span{display:block;width:3px;border-radius:2px;}
-@keyframes wave{0%,100%{transform:scaleY(.3);}50%{transform:scaleY(1);}}
-/* TYPEWRITER */
-.typewriter-wrap{margin:14px auto 0;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;min-height:28px;}
-.typewriter-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent);text-transform:uppercase;white-space:nowrap;}
-.typewriter-text{font-family:'Space Mono',monospace;font-size:12px;color:var(--green);max-width:600px;text-align:left;}
-.typewriter-cursor{color:var(--purple);animation:blink .8s step-end infinite;font-size:14px;}
-@keyframes blink{0%,100%{opacity:1;}50%{opacity:0;}}
-/* API ACCORDION */
-.api-accordion{border:1px solid var(--border);border-radius:12px;overflow:hidden;margin-bottom:24px;}
-.api-accordion-btn{width:100%;background:var(--card);border:none;color:var(--text);padding:14px 20px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;}
-.api-accordion-btn:hover{background:rgba(123,92,255,.08);}
-.api-accordion-body{padding:16px 20px 20px;background:rgba(123,92,255,.04);}
-
-/* CREDITS SYSTEM */
-.credits-bar{display:flex;align-items:center;justify-content:space-between;background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.2);border-radius:10px;padding:12px 18px;margin:6px 0 0;flex-wrap:wrap;gap:10px;}
-.credits-count{font-family:'Space Mono',monospace;font-size:13px;color:var(--green);font-weight:bold;}
-.credits-label{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;}
-.buy-btn{background:linear-gradient(135deg,var(--green),#00b389);border:none;color:#0a0a0a;border-radius:8px;padding:8px 18px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;font-weight:bold;white-space:nowrap;transition:opacity .2s;}
-.buy-btn:hover{opacity:.85;}
-.pricing-movr{position:fixed;inset:0;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;z-index:300;padding:20px;backdrop-filter:blur(6px);}
-.pricing-box{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:32px;max-width:520px;width:100%;}
-.pricing-box h2{font-family:'Bebas Neue',sans-serif;font-size:30px;letter-spacing:2px;margin-bottom:6px;}
-.pricing-box p{font-size:13px;color:var(--muted);margin-bottom:24px;line-height:1.6;}
-.pkg-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:20px;}
-@media(max-width:500px){.pkg-grid{grid-template-columns:1fr;}}
-.pkg{background:var(--deep);border:1px solid var(--border);border-radius:12px;padding:18px 14px;text-align:center;cursor:pointer;transition:all .2s;position:relative;}
-.pkg:hover,.pkg.selected{border-color:var(--purple);background:rgba(123,92,255,.08);}
-.pkg.popular::before{content:'POPULAR';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:var(--purple);color:#fff;font-family:'Space Mono',monospace;font-size:8px;letter-spacing:2px;padding:3px 10px;border-radius:20px;}
-.pkg-name{font-family:'Bebas Neue',sans-serif;font-size:20px;letter-spacing:1px;margin-bottom:4px;}
-.pkg-price{font-family:'Space Mono',monospace;font-size:22px;color:var(--purple);font-weight:bold;}
-.pkg-credits{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);margin-top:4px;}
-.pkg-cpp{font-size:10px;color:var(--green);margin-top:2px;font-family:'Space Mono',monospace;}
-.btn-pay{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:2px;cursor:pointer;transition:all .2s;margin-top:4px;}
-.btn-pay:hover{opacity:.9;}
-.btn-pay:disabled{opacity:.5;cursor:not-allowed;}
-.pricing-close{position:absolute;top:16px;right:20px;background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;}
-.restore-row{text-align:center;margin-top:14px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);}
-.restore-row a{color:var(--purple);cursor:pointer;text-decoration:underline;}
-.uuid-restore{background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:12px;display:none;}
-.uuid-restore input{width:100%;background:var(--black);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none;margin-bottom:8px;box-sizing:border-box;}
-.uuid-restore button{background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;width:100%;}
-</style>
-</head>
-<body>
-<div class="container">
-
-  <div class="lang-bar">
-    <div class="lang-btn">
-      <a href="/en/" onclick="localStorage.setItem('spe_lang','en')">EN</a>
-      <a href="/it/" onclick="localStorage.setItem('spe_lang','it')">IT</a>
+<html>
+<head><meta charset="UTF-8"></head>
+<body style="background:#0a0a0a;color:#e8e8f0;font-family:'Courier New',monospace;padding:40px 20px;max-width:560px;margin:0 auto">
+  <div style="text-align:center;margin-bottom:32px">
+    <div style="font-size:11px;letter-spacing:4px;color:#7b5cff;text-transform:uppercase;margin-bottom:8px">✦ Suno Prompt Engineer</div>
+    <h1 style="font-size:32px;margin:0;color:#fff;letter-spacing:2px">CREDITS ACTIVATED</h1>
+  </div>
+  <div style="background:#1c1c28;border:1px solid #2a2a3a;border-radius:12px;padding:24px;margin-bottom:24px">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #2a2a3a">
+      <span style="color:#6b6b85;font-size:12px;letter-spacing:2px;text-transform:uppercase">Package</span>
+      <span style="color:#fff;font-size:16px;font-weight:bold">${pkg.label}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid #2a2a3a">
+      <span style="color:#6b6b85;font-size:12px;letter-spacing:2px;text-transform:uppercase">Credits added</span>
+      <span style="color:#7b5cff;font-size:24px;font-weight:bold">+${pkg.credits}</span>
+    </div>
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <span style="color:#6b6b85;font-size:12px;letter-spacing:2px;text-transform:uppercase">Total available</span>
+      <span style="color:#00e5b0;font-size:20px;font-weight:bold">${totalCredits}</span>
     </div>
   </div>
-
-  <div class="ad-top">
-    <div class="ad-label">advertisement</div>
-    <ins class="adsbygoogle" style="display:block" data-ad-client="YOUR_ADSENSE_CLIENT" data-ad-slot="YOUR_AD_SLOT_1" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+  <div style="background:#111118;border:1px solid #2a2a3a;border-radius:8px;padding:16px;margin-bottom:24px">
+    <div style="font-size:10px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:8px">Your session ID</div>
+    <div style="font-size:11px;color:#7b5cff;word-break:break-all">${uuid}</div>
+    <div style="font-size:11px;color:#6b6b85;margin-top:8px;line-height:1.6">Credits are linked to this browser session. If you switch browser or device, enter this ID in the tool to restore your credits.</div>
   </div>
-
-  <header style="text-align:center;margin-bottom:36px">
-    <div class="logo-tag">✦ Tool AI per Musica</div>
-    <h1>SUNO PROMPT<br>ENGINEER</h1>
-    <p class="subtitle">// crea prompt precisi per suno ai // v4.0</p>
-    <div class="wf" id="waveform"></div>
-    <div class="typewriter-wrap">
-      <span class="typewriter-label">example output →</span>
-      <span class="typewriter-text" id="typewriterEl"></span><span class="typewriter-cursor">▌</span>
-    </div>
-  </header>
-
-  <div class="free-banner" id="freeBanner">
-    <div>
-      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni gratuite oggi</div>
-      <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Dalla 3ª acquista crediti — reset a mezzanotte</div>
-    </div>
-    <div class="free-pill"><span class="used-count" id="usedCount">0</span><span class="total-count">/ 2 free</span></div>
+  <div style="text-align:center">
+    <a href="https://supre.online" style="display:inline-block;background:linear-gradient(135deg,#7b5cff,#ff3c5f);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:bold">START GENERATING →</a>
   </div>
-  <div class="credits-bar" id="creditsBar" style="display:none">
-    <div>
-      <div class="credits-count">⚡ <span id="creditsCount">0</span> crediti</div>
-      <div class="credits-label">non scadono · legati a questo browser</div>
-    </div>
-    <button class="buy-btn" onclick="openPricing()">+ Acquista</button>
+  <div style="text-align:center;margin-top:32px;font-size:10px;color:#2a2a3a;letter-spacing:1px">
+    supre.online · Suno Prompt Engineer<br>
+    Credits never expire.
   </div>
-  <div id="sessionIdRow" style="display:none;background:#111118;border:1px solid #2a2a3a;border-radius:8px;padding:14px 16px;margin-top:6px">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
-      <div>
-        <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:3px">Il tuo Session ID — salvalo per ripristinare i crediti su altri browser</div>
-        <div style="font-family:'Space Mono',monospace;font-size:11px;color:#7b5cff;word-break:break-all" id="sessionIdDisplay"></div>
-      </div>
-      <button onclick="copySessionId()" style="background:none;border:1px solid #2a2a3a;color:#6b6b85;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;white-space:nowrap" id="copySessionBtn">Copia ID</button>
-    </div>
-    <div style="border-top:1px solid #1c1c28;padding-top:12px">
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:8px">🔐 Salva i tuoi crediti via email — opzionale</div>
-      <div id="emailSaveArea">
-        <div style="display:flex;gap:8px;flex-wrap:wrap">
-          <input type="email" id="emailInput" placeholder="tua@email.com" style="flex:1;min-width:180px;background:#0a0a0a;border:1px solid #2a2a3a;border-radius:6px;color:#e8e8f0;font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none">
-          <button onclick="saveEmail()" style="background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap">Invia ID via email</button>
-        </div>
-        <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b6b85;margin-top:6px">Ti manderemo il Session ID così potrai ripristinare i crediti su qualsiasi dispositivo.</div>
-      </div>
-      <div id="emailSaved" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:#00e5b0">✓ Session ID inviato alla tua email.</div>
-    </div>
-  </div>
-
-  <div class="sec"><span>01 — Genere &amp; Stile</span></div>
-  <div class="card">
-    <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)">
-      <label class="fl">Suno Version <span style="color:var(--green);font-size:9px;letter-spacing:1px">— affects output quality</span></label>
-      <div class="tg" id="suno-version-tags" style="margin-top:8px">
-        <div class="tag" data-val="v3">v3 <span style="color:var(--muted);font-size:10px">legacy</span></div>
-        <div class="tag" data-val="v3.5">v3.5</div>
-        <div class="tag active" data-val="v4">v4 <span style="color:var(--green);font-size:10px">recommended</span></div>
-        <div class="tag" data-val="v4.5">v4.5</div>
-        <div class="tag" data-val="v5">v5 <span style="color:var(--accent);font-size:10px">latest</span></div>
-      </div>
-      <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">
-        v4/v4.5 handles longer prompts and complex style stacking better. Prompt strategy changes by version.
-      </div>
-    </div>
-    <div class="g2">
-      <div>
-        <label class="fl">Genere Principale</label>
-        <select id="genre">
-          <option value="">Seleziona genere...</option>
-          <optgroup label="Electronic">
-            <option>Techno</option><option>House</option><option>Deep House</option>
-            <option>Minimal Techno</option><option>Industrial Techno</option><option>Melodic Techno</option>
-            <option>Ambient</option><option>Drum &amp; Bass</option><option>Jungle</option>
-            <option>Breakbeat</option><option>IDM</option><option>Synthwave</option>
-            <option>Darkwave</option><option>EBM</option><option>Trance</option>
-            <option>Progressive House</option><option>Afro House</option><option>Acid House</option><option>Electro</option>
-          </optgroup>
-          <optgroup label="Rock &amp; Metal">
-            <option>Rock</option><option>Indie Rock</option><option>Post-Rock</option>
-            <option>Metal</option><option>Doom Metal</option><option>Shoegaze</option>
-          </optgroup>
-          <optgroup label="Organic">
-            <option>Jazz</option><option>Blues</option><option>Soul</option><option>R&amp;B</option>
-            <option>Funk</option><option>Folk</option><option>Classical</option><option>Bossa Nova</option><option>Afrobeat</option>
-          </optgroup>
-          <optgroup label="Urban">
-            <option>Hip-Hop</option><option>Trap</option><option>Drill</option><option>Lo-Fi Hip-Hop</option><option>Phonk</option>
-          </optgroup>
-          <optgroup label="Pop">
-            <option>Pop</option><option>Hyperpop</option><option>Dark Pop</option><option>Cinematic</option>
-          </optgroup>
-        </select>
-      </div>
-      <div>
-        <label class="fl">Era / Sound Reference <span style="color:var(--accent);font-size:9px">⚠ no artist names</span></label>
-        <input type="text" id="era" placeholder="e.g. late 90s Berlin techno, classic Chicago house...">
-      </div>
-    </div>
-    <div style="margin-top:16px">
-      <label class="fl">Sub-style tags</label>
-      <div class="tg" id="substyle-tags">
-        <div class="tag" data-val="hypnotic">hypnotic</div><div class="tag" data-val="driving">driving</div>
-        <div class="tag" data-val="dark">dark</div><div class="tag" data-val="atmospheric">atmospheric</div>
-        <div class="tag" data-val="groovy">groovy</div><div class="tag" data-val="industrial">industrial</div>
-        <div class="tag" data-val="melodic">melodic</div><div class="tag" data-val="raw">raw</div>
-        <div class="tag" data-val="cinematic">cinematic</div><div class="tag" data-val="lo-fi">lo-fi</div>
-        <div class="tag" data-val="tribal">tribal</div><div class="tag" data-val="experimental">experimental</div>
-        <div class="tag" data-val="psychedelic">psychedelic</div><div class="tag" data-val="nostalgic">nostalgic</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec"><span>02 — Mood &amp; Energia</span></div>
-  <div class="card">
-    <div class="g2">
-      <div>
-        <label class="fl">Emotional Tone</label>
-        <div class="tg" id="mood-tags">
-          <div class="tag" data-val="euphoric">euphoric</div><div class="tag" data-val="melancholic">melancholic</div>
-          <div class="tag" data-val="tense">tense</div><div class="tag" data-val="meditative">meditative</div>
-          <div class="tag" data-val="aggressive">aggressive</div><div class="tag" data-val="dreamy">dreamy</div>
-          <div class="tag" data-val="haunting">haunting</div><div class="tag" data-val="joyful">joyful</div>
-          <div class="tag" data-val="cold">cold</div><div class="tag" data-val="warm">warm</div>
-          <div class="tag" data-val="ominous">ominous</div>
-        </div>
-      </div>
-      <div>
-        <label class="fl">Livello di Energia</label>
-        <div class="tg" id="energy-tags">
-          <div class="tag" data-val="low energy">low</div><div class="tag" data-val="mid energy">mid</div>
-          <div class="tag" data-val="high energy">high</div><div class="tag" data-val="peak time">peak time</div>
-          <div class="tag" data-val="afterhours">afterhours</div><div class="tag" data-val="warm-up">warm-up</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec"><span>03 — Tempo &amp; Tonalità</span></div>
-  <div class="card">
-    <div class="g2">
-      <div>
-        <label class="fl">BPM — <span id="bpmDisplay">128</span></label>
-        <div class="brow"><input type="range" id="bpm" min="60" max="200" value="128"><div class="bval" id="bpmVal">128</div></div>
-      </div>
-      <div>
-        <label class="fl">Tonalità</label>
-        <select id="key">
-          <option value="">Nessuna tonalità</option>
-          <option>A minor</option><option>A major</option><option>B minor</option><option>B major</option>
-          <option>C minor</option><option>C major</option><option>D minor</option><option>D major</option>
-          <option>E minor</option><option>E major</option><option>F minor</option><option>F major</option>
-          <option>G minor</option><option>G major</option><option>F# minor</option><option>C# minor</option>
-        </select>
-      </div>
-    </div>
-    <div style="margin-top:16px">
-      <label class="fl">Ritmo</label>
-      <div class="tg" id="time-tags">
-        <div class="tag active" data-val="4/4">4/4</div><div class="tag" data-val="3/4">3/4</div>
-        <div class="tag" data-val="6/8">6/8</div><div class="tag" data-val="5/4">5/4</div><div class="tag" data-val="7/8">7/8</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec"><span>04 — Strumentazione</span></div>
-  <div class="card">
-    <label class="fl">Instruments &amp; Sound Sources</label>
-    <div class="tg" id="instr-tags">
-      <div class="tag" data-val="kick drum">kick</div><div class="tag" data-val="hi-hats">hi-hats</div>
-      <div class="tag" data-val="snare">snare</div><div class="tag" data-val="claps">claps</div>
-      <div class="tag" data-val="bass synth">bass synth</div><div class="tag" data-val="sub bass">sub bass</div>
-      <div class="tag" data-val="acid bassline">acid bassline</div><div class="tag" data-val="arpeggio synth">arpeggio</div>
-      <div class="tag" data-val="pad synth">pads</div><div class="tag" data-val="lead synth">lead synth</div>
-      <div class="tag" data-val="piano">piano</div><div class="tag" data-val="electric guitar">e.guitar</div>
-      <div class="tag" data-val="acoustic guitar">ac.guitar</div><div class="tag" data-val="strings">strings</div>
-      <div class="tag" data-val="brass">brass</div><div class="tag" data-val="saxophone">sax</div>
-      <div class="tag" data-val="flute">flute</div><div class="tag" data-val="vocal chops">vocal chops</div>
-      <div class="tag" data-val="spoken word">spoken word</div><div class="tag" data-val="field recordings">field rec</div>
-      <div class="tag" data-val="noise texture">noise</div><div class="tag" data-val="vinyl crackle">vinyl crackle</div>
-      <div class="tag" data-val="808 drums">808</div><div class="tag" data-val="TR-909 drums">TR-909</div><div class="tag" data-val="TR-808 drums">TR-808</div>
-    </div>
-  </div>
-
-  <div class="sec"><span>05 — Produzione &amp; Mix</span></div>
-  <div class="card">
-    <div class="g2">
-      <div>
-        <label class="fl">Carattere del Mix</label>
-        <div class="tg" id="mix-tags">
-          <div class="tag" data-val="heavy bass">heavy bass</div><div class="tag" data-val="punchy drums">punchy drums</div>
-          <div class="tag" data-val="wide stereo">wide stereo</div><div class="tag" data-val="compressed">compressed</div>
-          <div class="tag" data-val="warm analog">warm analog</div><div class="tag" data-val="crisp digital">crisp digital</div>
-          <div class="tag" data-val="reverb-heavy">reverb-heavy</div><div class="tag" data-val="dry mix">dry mix</div>
-          <div class="tag" data-val="distorted">distorted</div><div class="tag" data-val="lo-fi quality">lo-fi quality</div>
-        </div>
-      </div>
-      <div>
-        <label class="fl">Structure / Arrangement</label>
-        <div class="tg" id="struct-tags">
-          <div class="tag" data-val="long intro">long intro</div><div class="tag" data-val="gradual build">gradual build</div>
-          <div class="tag" data-val="drop">drop</div><div class="tag" data-val="breakdown">breakdown</div>
-          <div class="tag" data-val="instrumental">instrumental</div><div class="tag" data-val="verse-chorus">verse-chorus</div>
-          <div class="tag" data-val="continuous mix">continuous</div><div class="tag" data-val="loop-based">loop-based</div>
-        </div>
-      </div>
-    </div>
-    <div style="margin-top:16px">
-      <label class="fl">Extra notes</label>
-      <textarea id="extra" placeholder="Describe a scene, specific emotion, visual references..."></textarea>
-    </div>
-  </div>
-
-  <div class="sec"><span>06 — Voce</span></div>
-  <div class="card">
-    <div class="g3">
-      <div>
-        <label class="fl">Stile Vocale</label>
-        <select id="vocalStyle">
-          <option value="">Senza voce</option>
-          <option>male vocals</option><option>female vocals</option><option>androgynous vocals</option>
-          <option>choir</option><option>whispered vocals</option><option>rap vocals</option>
-          <option>spoken word</option><option>vocoder vocals</option><option>harmonized vocals</option>
-        </select>
-      </div>
-      <div>
-        <label class="fl">Timbro Vocale</label>
-        <select id="vocalTex">
-          <option value="">—</option>
-          <option>breathy</option><option>raspy</option><option>clean</option>
-          <option>distorted</option><option>reverb-drenched</option><option>pitch-shifted</option><option>auto-tuned</option>
-        </select>
-      </div>
-      <div>
-        <label class="fl">Language</label>
-        <select id="vocalLang">
-          <option value="">—</option>
-          <option>English lyrics</option><option>Italian lyrics</option><option>French lyrics</option>
-          <option>Spanish lyrics</option><option>German lyrics</option><option>no lyrics / vocalizations</option>
-        </select>
-      </div>
-    </div>
-  </div>
-
-  <div class="sec"><span>07 — Riferimento Sonoro</span><span class="badge">optional — enhances output</span></div>
-  <div class="card" style="border-color:rgba(0,229,176,.2);background:linear-gradient(135deg,rgba(0,229,176,.03),var(--card))">
-    <div style="margin-bottom:14px;padding:8px 12px;background:rgba(0,229,176,.07);border:1px solid rgba(0,229,176,.15);border-radius:8px;font-size:11px;color:var(--green);font-family:'Space Mono',monospace;letter-spacing:.5px">
-      🎯 Describe the sound of a reference track → AI extracts sonic keywords and blends them into your prompt
-    </div>
-    <div style="display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap">
-      <div style="flex:1;min-width:200px">
-        <label class="fl">Upload reference track</label>
-        <div class="dz" id="dropZone">
-          <div style="font-size:26px;margin-bottom:8px">🎵</div>
-          <div style="font-size:13px;color:var(--text);margin-bottom:4px">Drop audio or click to browse</div>
-          <div style="font-size:11px;color:var(--muted);font-family:'Space Mono',monospace">MP3, WAV, M4A</div>
-          <input type="file" id="audioFile" accept="audio/*" style="display:none">
-        </div>
-        <div id="audioPreview" style="display:none;margin-top:12px">
-          <div class="aloaded">
-            <span id="audioFilename">—</span>
-            <button id="clearAudioBtn" style="background:none;border:none;color:var(--accent);cursor:pointer;font-size:13px">✕</button>
-          </div>
-          <audio id="audioPlayer" controls style="width:100%;margin-top:10px;border-radius:6px;accent-color:var(--purple)"></audio>
-        </div>
-      </div>
-      <div style="flex:1.4;min-width:240px">
-        <label class="fl">Describe the sound <span style="color:var(--accent);font-size:9px">— no title, no artist</span></label>
-        <textarea id="refDesc" style="min-height:100px" placeholder="e.g. hypnotic groove at 132bpm with dry kick and long reverb, minimal looping bassline, breakdown with slowly rising pad, warm analog mix..."></textarea>
-        <div style="margin-top:10px;padding:10px 14px;background:rgba(0,229,176,.05);border:1px solid rgba(0,229,176,.15);border-radius:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.8">
-          ℹ️ AI extracts keywords from your description.<br>
-          Upload the audio file in Suno via <strong style="color:var(--green)">"Upload audio"</strong>.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <button class="btn-gen" id="generateBtn">▶ GENERA PROMPT SUNO</button>
-
-  <div class="out-wrap" id="outputWrapper" style="display:none">
-    <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0 24px"></div>
-    <div class="sec"><span>Prompt Generato</span></div>
-    <div class="out-card">
-      <div class="out-hdr">
-        <span id="outLabel" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--purple);text-transform:uppercase">—</span>
-        <button class="cpbtn" id="copyBtn">Copia Prompt</button>
-      </div>
-      <div class="out-blk">
-        <div class="out-blk-lbl">Style Prompt — paste in Suno "Style of Music"</div>
-        <div class="ptxt" id="promptText"></div>
-      </div>
-      <div class="out-blk"><div class="out-blk-lbl">Technical Tags</div><div id="techTags"></div></div>
-      <div class="out-blk" id="refBlock" style="display:none">
-        <div class="out-blk-lbl">Audio Reference</div>
-        <div id="refContent" style="background:rgba(123,92,255,.07);border:1px solid rgba(123,92,255,.2);border-radius:8px;padding:12px 16px;font-size:12px;font-family:'Space Mono',monospace;color:var(--purple);line-height:1.9"></div>
-      </div>
-      <div class="out-blk"><div class="out-blk-lbl">Suno Tips</div><div id="sunoTips" style="font-size:13px;color:var(--muted);line-height:1.9"></div></div>
-
-    </div>
-  </div>
-
-
-
-  <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
-    SUNO PROMPT ENGINEER<br>
-    
-    <a href="https://suno.com" target="_blank" rel="noopener noreferrer" style="color:var(--border)">Suno AI</a>
-    <br><br>
-    <span style="color:var(--muted);font-size:9px;letter-spacing:3px">✦ <span id="promptCounter">—</span> PROMPTS GENERATED</span>
-  </div>
-</div>
-
-<!-- PRICING MODAL -->
-<div class="pricing-movr" id="pricingModal" style="display:none">
-  <div class="pricing-box" style="position:relative">
-    <button class="pricing-close" onclick="closePricing()">✕</button>
-    <h2>Acquista Crediti</h2>
-    <p>I crediti non scadono e sono legati a questo browser. Ogni generazione usa 1 credito.</p>
-    <div class="pkg-grid">
-      <div class="pkg" id="pkg-starter" onclick="selectPkg('starter')">
-        <div class="pkg-name">Starter</div>
-        <div class="pkg-price">€1.99</div>
-        <div class="pkg-credits">50 generations</div>
-        <div class="pkg-cpp">€0.04 / gen</div>
-      </div>
-      <div class="pkg popular selected" id="pkg-pro" onclick="selectPkg('pro')">
-        <div class="pkg-name">Pro</div>
-        <div class="pkg-price">€3.99</div>
-        <div class="pkg-credits">150 generations</div>
-        <div class="pkg-cpp">€0.027 / gen</div>
-      </div>
-      <div class="pkg" id="pkg-studio" onclick="selectPkg('studio')">
-        <div class="pkg-name">Studio</div>
-        <div class="pkg-price">€7.99</div>
-        <div class="pkg-credits">400 generations</div>
-        <div class="pkg-cpp">€0.02 / gen</div>
-      </div>
-    </div>
-    <button class="btn-pay" id="payBtn" onclick="startCheckout()">PAGA E ATTIVA →</button>
-    <div class="restore-row">
-      Cambiato browser? <a onclick="toggleRestore()">Ripristina crediti con session ID</a>
-    </div>
-    <div class="uuid-restore" id="uuidRestore">
-      <input type="text" id="restoreInput" placeholder="Incolla il tuo session ID qui...">
-      <button onclick="restoreCredits()">RESTORE CREDITS</button>
-    </div>
-  </div>
-</div>
-
-<!-- AD INTERSTITIAL -->
-<div id="adOverlay" style="display:none">
-  <div class="ad-box">
-    <div class="ad-box-top">
-      <div>
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:24px;letter-spacing:2px">Prompt ready! ✦</div>
-        <div class="ad-box-label">support the tool — just a moment</div>
-      </div>
-      <div class="ring">
-        <svg width="48" height="48" viewBox="0 0 48 48"><circle cx="24" cy="24" r="18"/><circle class="arc" id="arcEl" cx="24" cy="24" r="18"/></svg>
-        <div class="ring-num" id="ringNum">5</div>
-      </div>
-    </div>
-    <div class="ad-content">
-      <ins class="adsbygoogle" style="display:block;width:100%;min-height:160px" data-ad-client="YOUR_ADSENSE_CLIENT" data-ad-slot="YOUR_AD_SLOT_2" data-ad-format="auto" data-full-width-responsive="true"></ins>
-    </div>
-    <div class="ad-footer">
-      <div class="ad-hint">Your prompt is ready and waiting.<br>Click the button to reveal it.</div>
-      <button class="btn-reveal" id="revealBtn">SHOW PROMPT →</button>
-    </div>
-  </div>
-</div>
-
-<!-- LIMIT MODAL -->
-<div class="movr" id="limitModal" style="display:none">
-  <div class="mbox">
-    <h2>Limite giornaliero raggiunto</h2>
-    <p>Hai usato le 2 generazioni gratuite di oggi. Acquista crediti per continuare. Reset a mezzanotte.</p>
-    <button class="btn-pay" style="margin-bottom:16px" onclick="closeLimitModal();openPricing()">⚡ ACQUISTA CREDITI →</button>
-    <div style="display:flex;gap:10px;flex-wrap:wrap">
-      <button id="modalCloseBtn" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px">CHIUDI</button>
-    </div>
-  </div>
-</div>
-
-<script>
-var apiKey='';var audioFileName=null;var lastOutput=null;var FREE_LIMIT=2;var cdTimer=null;
-function getTodayKey(){return 'spe_used_'+new Date().toISOString().slice(0,10);}
-function getUsed(){return parseInt(localStorage.getItem(getTodayKey())||'0',10);}
-function incUsed(){localStorage.setItem(getTodayKey(),String(getUsed()+1));}
-function updateBanner(){
-  var u=getUsed(),r=Math.max(0,FREE_LIMIT-u),b=document.getElementById('freeBanner');
-  if(userCredits>0){b.style.display='none';return;}
-  b.style.display='flex';
-  document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' free generations':' free generation')+' today'):'🔒 Limite raggiunto — acquista crediti';
-  var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
-}
-
-var AD_SEC=5;var adPushed=false;
-function showAd(cb){
-  var ov=document.getElementById('adOverlay'),rb=document.getElementById('revealBtn'),num=document.getElementById('ringNum'),arc=document.getElementById('arcEl'),circ=2*Math.PI*18;
-  ov.style.display='flex';rb.className='btn-reveal';arc.style.strokeDashoffset=circ;num.textContent=AD_SEC;
-  // Fix #5: push only once to avoid AdSense duplicate errors
-  if(!adPushed){try{(adsbygoogle=window.adsbygoogle||[]).push({});adPushed=true;}catch(e){}}
-  var left=AD_SEC;
-  if(cdTimer)clearInterval(cdTimer);
-  cdTimer=setInterval(function(){left-=1;num.textContent=left;arc.style.strokeDashoffset=circ*(left/AD_SEC);if(left<=0){clearInterval(cdTimer);rb.className='btn-reveal ready';num.textContent='✓';}},1000);
-  // Fix #1: {once:true} prevents listener accumulation on multiple generations
-  rb.addEventListener('click',function onReveal(){
-    if(!rb.classList.contains('ready'))return;
-    clearInterval(cdTimer);ov.style.display='none';cb();
-  },{once:true});
-}
-var wf=document.getElementById('waveform');
-[14,22,10,28,16,8,24,18,12,26,20,8,22,14,28,10,18,24,12,20,16,26,8,22,14,28,18,10,24].forEach(function(h,i){var s=document.createElement('span');s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.18)+'s ease-in-out '+(i%6)*0.15+'s infinite;';wf.appendChild(s);});
-document.getElementById('bpm').addEventListener('input',function(){document.getElementById('bpmDisplay').textContent=this.value;document.getElementById('bpmVal').textContent=this.value;});
-document.querySelectorAll('.tg').forEach(function(g){var single=g.id==='energy-tags'||g.id==='time-tags'||g.id==='suno-version-tags';g.querySelectorAll('.tag').forEach(function(t){t.addEventListener('click',function(){if(single)g.querySelectorAll('.tag').forEach(function(x){x.classList.remove('active');});t.classList.toggle('active');});});});
-function getTags(id){return Array.from(document.querySelectorAll('#'+id+' .tag.active')).map(function(t){return t.dataset.val;});}
-document.getElementById('dropZone').addEventListener('click',function(){document.getElementById('audioFile').click();});
-document.getElementById('audioFile').addEventListener('change',function(e){loadAudio(e.target.files[0]);});
-document.getElementById('clearAudioBtn').addEventListener('click',function(){audioFileName=null;document.getElementById('audioPreview').style.display='none';document.getElementById('dropZone').style.display='block';document.getElementById('audioFile').value='';});
-var dz=document.getElementById('dropZone');
-dz.addEventListener('dragover',function(e){e.preventDefault();dz.classList.add('over');});
-dz.addEventListener('dragleave',function(){dz.classList.remove('over');});
-dz.addEventListener('drop',function(e){e.preventDefault();dz.classList.remove('over');loadAudio(e.dataTransfer.files[0]);});
-function loadAudio(f){if(!f||!f.type.startsWith('audio/'))return;audioFileName=f.name;document.getElementById('audioFilename').textContent=f.name;document.getElementById('audioPlayer').src=URL.createObjectURL(f);document.getElementById('audioPreview').style.display='block';document.getElementById('dropZone').style.display='none';}
-var COLORS={genre:'#7b5cff',style:'#ff3c5f',mood:'#f5c842',instr:'#00e5b0',tech:'#a0d8ff',extra:'#6b6b85'};
-
-function buildSystemPrompt(version){
-  var isLegacy = version==='v3'||version==='v3.5';
-  var versionRules = isLegacy
-    ? 'TARGET: Suno '+version+' (legacy). Keep the prompt SHORT and DIRECT.\n- Max 6-8 keywords total\n- Focus only on: genre, core rhythm, 1-2 main instruments\n- NO texture/mix/structure/era descriptors — they confuse v3\n- No more than 60 characters total\n- Simpler = better for this version'
-    : 'TARGET: Suno '+version+' (modern). Use a FULL, LAYERED prompt.\n- 10-15 keywords, up to 120 characters\n- Include: genre/era → mood/energy → instruments → production texture → mix character → structure hints\n- v4/v4.5 handles stylistic nuance and stacking well — use it\n- Reference descriptions blend well into the prompt at this version';
-  return 'You are an expert Suno AI prompt engineer. Given music parameters, generate an optimized Style of Music prompt calibrated for the target Suno version.\n\n'+versionRules+'\n\nOutput ONLY a raw JSON object with this exact structure, no markdown, no explanation:\n{\n  "stylePrompt": "the complete style prompt string",\n  "tips": ["tip1", "tip2"]\n}\n\nGeneral rules:\n- Natural flowing keywords, NOT a sentence\n- NEVER include artist names, song titles, or brand names\n- English only\n- If reference description provided, extract sonic keywords and blend them in\n\nRules for tips: 1-3 short actionable tips specific to the genre/version, max 80 chars each. Include one tip about how this prompt behaves specifically on '+version+'.';
-}
-
-function buildUserMessage(f){
-  var parts=[];
-  if(f.genre)parts.push('Genre: '+f.genre);
-  if(f.era)parts.push('Era/Reference: '+f.era);
-  if(f.substyles&&f.substyles.length)parts.push('Sub-styles: '+f.substyles.join(', '));
-  if(f.moods&&f.moods.length)parts.push('Mood: '+f.moods.join(', '));
-  if(f.energy)parts.push('Energy: '+f.energy);
-  if(f.bpm)parts.push('BPM: '+f.bpm);
-  if(f.key)parts.push('Key: '+f.key);
-  if(f.timeSig)parts.push('Time signature: '+f.timeSig);
-  if(f.instruments&&f.instruments.length)parts.push('Instruments: '+f.instruments.join(', '));
-  if(f.mix&&f.mix.length)parts.push('Mix: '+f.mix.join(', '));
-  if(f.structure&&f.structure.length)parts.push('Structure: '+f.structure.join(', '));
-  if(f.vocalStyle)parts.push('Vocals: '+[f.vocalStyle,f.vocalTex,f.vocalLang].filter(Boolean).join(', '));
-  if(f.extra)parts.push('Extra notes: '+f.extra);
-  if(f.refDesc)parts.push('Reference description: '+f.refDesc);
-  return parts.join('\n');
-}
-
-async function generate(){
-  var genre=document.getElementById('genre').value,era=document.getElementById('era').value.trim(),bpm=document.getElementById('bpm').value,key=document.getElementById('key').value,vs=document.getElementById('vocalStyle').value,vt=document.getElementById('vocalTex').value,vl=document.getElementById('vocalLang').value,extra=document.getElementById('extra').value.trim(),refDesc=document.getElementById('refDesc').value.trim();
-  var substyles=getTags('substyle-tags'),moods=getTags('mood-tags'),energy=getTags('energy-tags'),timeSig=getTags('time-tags'),instrs=getTags('instr-tags'),mix=getTags('mix-tags'),struct=getTags('struct-tags');
-  if(!genre&&substyles.length===0&&moods.length===0){alert('Seleziona almeno un genere o alcuni tag.');return;}
-  if(refDesc.length>1000){alert('Reference description is too long (max 1000 characters).');return;}
-
-  // If free limit reached and no API key → show modal
-  if(userCredits<=0&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
-
-  var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERAZIONE IN CORSO...';
-
-  var sunoVersion=getTags('suno-version-tags')[0]||'v4';
-  var formData={
-    sunoVersion:sunoVersion,genre:genre,era:era,substyles:substyles,moods:moods,
-    energy:energy[0]||'',bpm:bpm,key:key,timeSig:timeSig[0]||'4/4',
-    instruments:instrs,mix:mix,structure:struct,
-    vocalStyle:vs,vocalTex:vt,vocalLang:vl,
-    extra:extra,refDesc:refDesc
-  };
-
-  var result=null;
-  try{
-    if(false){
-      // BYOK disabled — always use server with uuid
-      var resp=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-calls':'true'},
-        body:JSON.stringify({model:'claude-haiku-4-5-20251001',max_tokens:600,system:buildSystemPrompt(formData.sunoVersion),messages:[{role:'user',content:buildUserMessage(formData)}]})
-      });
-      if(!resp.ok){var e=await resp.json();throw new Error(e.error?e.error.message:'API error');}
-      var data=await resp.json();
-      var raw=(data.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
-      try{result=JSON.parse(raw.replace(/```json|```/g,'').trim());}catch(e){result={stylePrompt:raw,tips:[]};}
-    } else {
-      // Free tier — call our server
-      var resp2=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({formData:formData,uuid:userUuid})});
-      if(resp2.status===402){ openPricing(); btn.innerHTML='▶ GENERA PROMPT SUNO'; return; }
-      if(resp2.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;}
-      if(!resp2.ok){var e2=await resp2.json();throw new Error(e2.error||'Server error');}
-      result=await resp2.json();
-      incUsed();updateBanner();
-    }
-  }catch(err){
-    console.error(err);
-    document.getElementById('promptText').textContent='⚠ Error: '+err.message;
-    btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;
-  }
-
-  if(!result||!result.stylePrompt){
-    document.getElementById('promptText').textContent='⚠ Unexpected response from AI. Try again.';
-    btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;
-  }
-
-  // Render output
-  var techTags=[bpm+' BPM',key,timeSig[0]].filter(Boolean);
-  var tips=result.tips||[];
-
-  // Auto-tips if AI returned none
-  var bpmN=parseInt(bpm,10);
-  if(tips.length===0){
-    if(bpmN>145)tips.push('⚡ High BPM: try no vocals for cleaner drum patterns.');
-    if(bpmN<90)tips.push('🌊 Slow BPM: consider adding atmospheric or cinematic.');
-    if(['Techno','Minimal Techno','Industrial Techno'].indexOf(genre)>-1)tips.push('🔊 Try "Berlin club sound" or "warehouse rave" in Suno\'s text field.');
-    if(!vs)tips.push('🎵 No vocals: write [Instrumental] in Suno\'s text field.');
-    if(tips.length===0)tips.push('✅ Paste the Style Prompt into Suno\'s Style of Music field.');
-  }
-
-  document.getElementById('outLabel').textContent=(genre||'Custom')+' — '+bpm+' BPM';
-  document.getElementById('promptText').textContent=result.stylePrompt;
-
-  document.getElementById('techTags').innerHTML=techTags.map(function(t){return '<span class="tpill">'+t+'</span>';}).join('');
-
-  if(audioFileName||refDesc){
-    var h='';
-    if(audioFileName)h+='📎 <strong>'+audioFileName+'</strong> — upload in Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';
-    if(refDesc)h+='📝 Reference description used for AI keyword extraction.<br>';
-    h+='<span style="color:#6b6b85;font-size:11px">→ Title and artist stay private.</span>';
-    document.getElementById('refContent').innerHTML=h;
-    document.getElementById('refBlock').style.display='block';
-  } else {
-    document.getElementById('refBlock').style.display='none';
-  }
-
-  document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
-
-  lastOutput=result.stylePrompt;
-  btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';
-
-  showAd(function(){
-    var ow=document.getElementById('outputWrapper');
-    ow.style.display='none';ow.style.animation='none';
-    requestAnimationFrame(function(){
-      ow.style.display='block';
-      requestAnimationFrame(function(){
-        ow.style.animation='';
-        setTimeout(function(){ow.scrollIntoView({behavior:'smooth',block:'start'});},80);
-      });
-    });
-  });
-}
-document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Prompt';b.style.color='';b.style.borderColor='';},2000);});});
-document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
-updateBanner();
-
-// Typewriter
-var TW_EXAMPLES=[
-  'dark hypnotic techno, 132 BPM, punchy kick, acid bassline, warehouse reverb',
-  'deep house, 122 BPM, warm analog, soulful vocals, late night groovy',
-  'ambient IDM, no drums, textural pads, glitchy percussion, long reverb tails',
-  'drum and bass, 174 BPM, heavy sub bass, breakbeat, euphoric, crisp digital mix',
-  'melodic techno, 128 BPM, minor key, atmospheric build, gradual drop, wide stereo',
-  'afro house, 124 BPM, tribal percussion, female vocals, warm summer groove',
-  'industrial techno, 140 BPM, raw distorted kick, cold ominous, EBM influence',
-];
-var twIdx=0,twPos=0,twDeleting=false,twPause=0;
-function twTick(){
-  var el=document.getElementById('typewriterEl');if(!el)return;
-  var full=TW_EXAMPLES[twIdx];
-  if(twPause>0){twPause--;setTimeout(twTick,80);return;}
-  if(!twDeleting){
-    twPos++;el.textContent=full.slice(0,twPos);
-    if(twPos>=full.length){twPause=38;twDeleting=true;}
-    setTimeout(twTick,38);
-  }else{
-    twPos--;el.textContent=full.slice(0,twPos);
-    if(twPos<=0){twDeleting=false;twIdx=(twIdx+1)%TW_EXAMPLES.length;twPause=10;}
-    setTimeout(twTick,18);
-  }
-}
-setTimeout(twTick,800);
-
-// API Accordion — auto-open if key already saved
-
-
-
-// Fake live counter — base 1247, grows 3-11 per page load, persists in localStorage
-(function(){
-  var BASE=1247;
-  var stored=parseInt(localStorage.getItem('spe_counter')||'0',10);
-  var count=stored>BASE?stored:BASE;
-  count+=Math.floor(Math.random()*9)+3;
-  localStorage.setItem('spe_counter',String(count));
-  var el=document.getElementById('promptCounter');
-  if(el)el.textContent=count.toLocaleString('en');
-})();
-
-// ── Bootstrap ──
-document.addEventListener('DOMContentLoaded', function(){
-  loadCredits();
-  var params = new URLSearchParams(window.location.search);
-  if(params.get('payment') === 'success'){
-    history.replaceState(null, '', window.location.pathname);
-    setTimeout(async function(){ await loadCredits(); alert('✓ Pagamento completato! ' + userCredits + ' crediti attivati. Controlla la tua email.'); }, 1200);
-  }
-});
-</script>
-
-
 </body>
-</html>
+</html>`,
+      }),
+    });
+  } catch(e) {
+    console.error('Email send failed:', e.message);
+  }
+}
