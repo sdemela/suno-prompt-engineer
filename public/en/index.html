@@ -267,6 +267,10 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .cookie-accept{background:var(--purple);border:none;color:#fff;border-radius:8px;padding:8px 20px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px;white-space:nowrap;}
 .cookie-decline{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap;}
 .cookie-decline:hover{border-color:var(--muted);}
+
+.btn-regen{width:100%;padding:14px;background:transparent;border:1px solid var(--purple);border-radius:12px;color:var(--purple);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:all .2s;margin-top:12px;display:none;}
+.btn-regen:hover{background:rgba(123,92,255,.1);transform:translateY(-2px);}
+.btn-regen:disabled{opacity:.4;cursor:not-allowed;transform:none;}
 </style>
 <!-- Google Analytics (loads only after consent) -->
 <script>
@@ -685,6 +689,8 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
       </div>
       <div class="out-blk"><div class="out-blk-lbl">Suno Tips</div><div id="sunoTips" style="font-size:13px;color:var(--muted);line-height:1.9"></div></div>
 
+
+  <button class="btn-regen" id="regenBtn">↺ REGENERATE</button>
     </div>
   </div>
 
@@ -938,6 +944,7 @@ async function generate(){
   document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
 
   lastOutput=result.stylePrompt+(result.lyricsPrompt&&result.lyricsPrompt.trim()?'\n\n'+result.lyricsPrompt:'');
+  document.getElementById('regenBtn').style.display='block';
   btn.disabled=false;btn.innerHTML='▶ GENERATE SUNO PROMPT';
 
   showAd(function(){
@@ -1032,6 +1039,8 @@ function denyAnalytics(){
   localStorage.setItem('spe_cookie_consent','denied');
   var b=document.getElementById('cookieBanner');if(b)b.remove();
 }
+
+document.getElementById('regenBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
 </script>
 
 
