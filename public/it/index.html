@@ -738,7 +738,7 @@ async function generate(){
   if(refDesc.length>1000){alert('Reference description is too long (max 1000 characters).');return;}
 
   // If free limit reached and no API key → show modal
-  if(!apiKey&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
+  if(userCredits<=0&&getUsed()>=FREE_LIMIT){document.getElementById('limitModal').style.display='flex';return;}
 
   var btn=document.getElementById('generateBtn');btn.disabled=true;btn.innerHTML='<span class="sp"></span> GENERAZIONE IN CORSO...';
 
