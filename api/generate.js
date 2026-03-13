@@ -11,11 +11,10 @@ function setCors(req, res) {
 }
 
 // api/generate.js — Vercel serverless function
-// Free tier: 2/day per IP (in-memory)
+// Free tier: 2/day per IP — rate limit centralizzato su Redis (fix #4)
 // Credits tier: paid credits in Upstash Redis per UUID (via REST API, no SDK)
 
 const FREE_LIMIT = 2;
-const ipStore = new Map();
 
 async function redisGet(key) {
   const url = `${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`;
@@ -35,9 +34,30 @@ async function redisDecrby(key, n) {
   return d.result;
 }
 
-function getTodayKey(ip) {
+// Redis-based free tier counter — INCR + EXPIREAT a mezzanotte UTC
+// Condiviso tra tutte le istanze serverless, nessun cold start issue
+async function redisIncrFreeTier(key) {
+  const base = process.env.UPSTASH_REDIS_REST_URL;
+  const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
+
+  const incrRes = await fetch(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
+  const incrData = await incrRes.json();
+  const count = incrData.result;
+
+  // Set expiry only on first increment — expires at next midnight UTC
+  if (count === 1) {
+    const now = new Date();
+    const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
+    const expireAt = Math.floor(midnight.getTime() / 1000);
+    await fetch(`${base}/expireat/${encodeURIComponent(key)}/${expireAt}`, { headers: auth });
+  }
+
+  return count;
+}
+
+function getFreeTierKey(ip) {
   const today = new Date().toISOString().slice(0, 10);
-  return `${ip}::${today}`;
+  return `free:${ip}:${today}`;
 }
 
 export default async function handler(req, res) {
@@ -68,27 +88,26 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- FREE TIER (IP-based, 2/day) ---
-  const ip = req.headers['x-forwarded-for']?.split(',')[0] || req.socket?.remoteAddress || 'unknown';
-  const key = getTodayKey(ip);
-  const used = ipStore.get(key) || 0;
+  // --- FREE TIER (IP-based, 2/day — Redis centralizzato) ---
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+  const freeKey = getFreeTierKey(ip);
+  const used = await redisIncrFreeTier(freeKey);
 
-  if (used >= FREE_LIMIT) {
+  if (used > FREE_LIMIT) {
     return res.status(429).json({
       error: 'free_limit_reached',
       message: `You've used your ${FREE_LIMIT} free generations today.`,
-      used, limit: FREE_LIMIT,
+      used: used - 1, limit: FREE_LIMIT,
     });
   }
 
   try {
     const result = await callAnthropic(formData);
-    ipStore.set(key, used + 1);
     return res.status(200).json({
       ...result,
-      used: used + 1,
+      used,
       limit: FREE_LIMIT,
-      remaining: Math.max(0, FREE_LIMIT - used - 1),
+      remaining: Math.max(0, FREE_LIMIT - used),
       tier: 'free',
     });
   } catch(e) {
