@@ -18,7 +18,7 @@ async function getRawBody(req) {
   });
 }
 
-// Stripe webhook signature verification (no SDK)
+// Stripe webhook signature verification — timing-safe (fix #5)
 function verifyStripeSignature(rawBody, sig, secret) {
   const parts = sig.split(',').reduce((acc, p) => {
     const [k, v] = p.split('=');
@@ -26,25 +26,42 @@ function verifyStripeSignature(rawBody, sig, secret) {
     return acc;
   }, {});
   const timestamp = parts['t'];
-  const expected = parts['v1'];
+  const expected  = parts['v1'];
   if (!timestamp || !expected) throw new Error('Invalid signature header');
 
   const payload = `${timestamp}.${rawBody.toString('utf8')}`;
-  const hmac = crypto.createHmac('sha256', secret).update(payload).digest('hex');
-  if (hmac !== expected) throw new Error('Signature mismatch');
+  const hmac    = crypto.createHmac('sha256', secret).update(payload).digest();
+
+  // Fix #5: constant-time comparison to prevent timing attacks
+  const expectedBuf = Buffer.from(expected, 'hex');
+  if (hmac.length !== expectedBuf.length || !crypto.timingSafeEqual(hmac, expectedBuf)) {
+    throw new Error('Signature mismatch');
+  }
 
   // Reject events older than 5 minutes
   if (Math.abs(Date.now() / 1000 - parseInt(timestamp)) > 300) throw new Error('Timestamp too old');
   return true;
 }
 
-// Upstash REST: incrby
+// Upstash REST helpers
 async function redisIncrby(key, amount) {
   const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${key}/${amount}`, {
     headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
   });
   const d = await r.json();
   return d.result;
+}
+
+// Fix #1: idempotency — SETNX with 24h TTL to deduplicate event IDs
+async function isEventAlreadyProcessed(eventId) {
+  const key = `whook:${eventId}`;
+  // SET key 1 NX EX 86400 — returns OK if set, null if already exists
+  const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/set/${key}/1/nx/ex/86400`, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
+  const d = await r.json();
+  // result is "OK" if key was set (first time), null if already existed
+  return d.result !== 'OK';
 }
 
 export default async function handler(req, res) {
@@ -63,9 +80,17 @@ export default async function handler(req, res) {
   }
 
   if (event.type === 'checkout.session.completed') {
+
+    // Fix #1: idempotency check — skip if already processed
+    const alreadyProcessed = await isEventAlreadyProcessed(event.id);
+    if (alreadyProcessed) {
+      console.log(`⚠️ Duplicate event ignored: ${event.id}`);
+      return res.status(200).json({ received: true, duplicate: true });
+    }
+
     const session = event.data.object;
-    const uuid = session.metadata?.uuid;
-    const email = session.customer_details?.email;
+    const uuid    = session.metadata?.uuid;
+    const email   = session.customer_details?.email;
 
     // Fetch line items from Stripe REST to get price ID
     let resolvedPriceId = null;
