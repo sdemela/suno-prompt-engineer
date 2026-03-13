@@ -2,26 +2,24 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Suno Prompt Engineer — Generate Better AI Music Prompts</title>
 <meta name="description" content="Stop guessing Suno prompts. Pick your genre, mood, BPM and instruments — get an expert-optimized Style prompt for Suno v3, v4, v4.5 and v5 in seconds. Free to try.">
 <meta name="keywords" content="suno prompt, suno ai prompt generator, suno style prompt, suno v4 prompt, suno v5 prompt, ai music prompt tool, suno prompt engineer">
 <link rel="canonical" href="https://supre.online/en/">
-<link rel="alternate" hreflang="en" href="https://supre.online/en/">
-<link rel="alternate" hreflang="it" href="https://supre.online/it/">
-<link rel="alternate" hreflang="x-default" href="https://supre.online/en/">
 <meta property="og:title" content="Suno Prompt Engineer — Generate Better AI Music Prompts">
 <meta property="og:description" content="Stop guessing Suno prompts. Pick genre, mood, BPM, instruments — get an expert-optimized Style prompt in seconds.">
 <meta property="og:image" content="https://supre.online/og-image.png">
-<meta property="og:url" content="https://supre.online/en/landing">
+<meta property="og:url" content="https://supre.online/en/">
 <meta property="og:type" content="website">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Suno Prompt Engineer — Generate Better AI Music Prompts">
 <meta name="twitter:description" content="Stop guessing Suno prompts. Get expert-optimized Style prompts for Suno v3–v5 in seconds.">
 <meta name="twitter:image" content="https://supre.online/og-image.png">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="icon" type="image/x-icon" href="/favicon.ico">
-<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
@@ -729,12 +727,12 @@ footer {
   <div class="footer-links">
     <a href="/en/tool">Tool</a>
     <a href="/it/landing">IT</a>
-    <a href="/cdn-cgi/l/email-protection#68000d040407281b1d181a0d4607060401060d">Contact</a>
+    <a href="mailto:hello@supre.online">Contact</a>
   </div>
   <div class="footer-copy">© 2025 supre.online</div>
 </footer>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 // ── WAVEFORM ──
 var wf = document.getElementById('waveform');
 var heights = [8,14,20,28,36,44,40,32,24,18,12,8,14,22,32,40,44,38,28,20,14,10,16,26,36,42,40,30,22,16];
@@ -786,4 +784,10 @@ document.querySelectorAll('.faq-q').forEach(function(q) {
   q.addEventListener('click', function() {
     var item = q.closest('.faq-item');
     var isOpen = item.classList.contains('open');
-    document.querySelectorAll
+    document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!isOpen) item.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
