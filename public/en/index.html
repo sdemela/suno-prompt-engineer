@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Suno Prompt Engineer — AI Music Prompt Tool</title>
-<meta name="description" content="Generate precise prompts for Suno AI. Free tool for producers and DJs.">
+<meta name="description" content="AI prompt generator for Suno. Pick genre, mood, BPM, instruments — get an optimized Style prompt for v3, v4, v4.5 and v5 in seconds. Free to try.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=YOUR_ADSENSE_CLIENT" crossorigin="anonymous"></script>
 <script>
@@ -271,6 +271,20 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .btn-regen{width:100%;padding:14px;background:transparent;border:1px solid var(--purple);border-radius:12px;color:var(--purple);font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:all .2s;margin-top:12px;display:none;}
 .btn-regen:hover{background:rgba(123,92,255,.1);transform:translateY(-2px);}
 .btn-regen:disabled{opacity:.4;cursor:not-allowed;transform:none;}
+
+.hist-wrap{margin-top:40px;}
+.hist-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;}
+.hist-title{font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;}
+.hist-clear{background:transparent;border:none;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);cursor:pointer;letter-spacing:1px;text-transform:uppercase;padding:0;}
+.hist-clear:hover{color:var(--accent);}
+.hist-list{display:flex;flex-direction:column;gap:8px;}
+.hist-item{background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:12px 14px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;cursor:default;}
+.hist-item:hover{border-color:rgba(123,92,255,.4);}
+.hist-text{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);line-height:1.6;flex:1;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.hist-meta{font-size:10px;color:#3a3a4a;margin-top:4px;letter-spacing:0.5px;}
+.hist-cp{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:5px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
+.hist-cp:hover{border-color:var(--green);color:var(--green);}
+.hist-empty{font-family:'Space Mono',monospace;font-size:11px;color:#2a2a3a;text-align:center;padding:20px 0;letter-spacing:1px;}
 </style>
 <!-- Google Analytics (loads only after consent) -->
 <script>
@@ -292,7 +306,7 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://supre.online/en/">
   <meta property="og:title" content="Suno Prompt Engineer — AI Music Prompt Tool">
-  <meta property="og:description" content="Generate precise prompts for Suno AI. Free for the first 2 per day. Pick genre, mood, BPM, instrumentation and get an optimized prompt in seconds.">
+  <meta property="og:description" content="AI prompt generator for Suno AI. Pick genre, mood, BPM, instruments — get an optimized Style prompt for v3, v4, v4.5 and v5 in seconds. Free to try.">
   <meta property="og:image" content="https://supre.online/og-image.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -303,7 +317,7 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:url" content="https://supre.online/en/">
   <meta name="twitter:title" content="Suno Prompt Engineer — AI Music Prompt Tool">
-  <meta name="twitter:description" content="Generate precise prompts for Suno AI. Free for the first 2 per day.">
+  <meta name="twitter:description" content="AI prompt generator for Suno. Genre, mood, BPM, instruments → optimized prompt in seconds. Free to try.">
   <meta name="twitter:image" content="https://supre.online/og-image.png">
 
   <!-- Schema.org structured data -->
@@ -690,6 +704,14 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
       <div class="out-blk"><div class="out-blk-lbl">Suno Tips</div><div id="sunoTips" style="font-size:13px;color:var(--muted);line-height:1.9"></div></div>
 
 
+
+  <div class="hist-wrap" id="histWrap" style="display:none">
+    <div class="hist-hdr">
+      <span class="hist-title">Recent prompts</span>
+      <button class="hist-clear" id="histClear">clear</button>
+    </div>
+    <div class="hist-list" id="histList"></div>
+  </div>
   <button class="btn-regen" id="regenBtn">↺ REGENERATE</button>
     </div>
   </div>
@@ -1041,6 +1063,56 @@ function denyAnalytics(){
 }
 
 document.getElementById('regenBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
+
+// Prompt history (localStorage)
+var HIST_KEY='spe_history';var MAX_HIST=10;
+
+function loadHistory(){
+  try{return JSON.parse(localStorage.getItem(HIST_KEY)||'[]');}catch(e){return[];}
+}
+function saveHistory(h){
+  try{localStorage.setItem(HIST_KEY,JSON.stringify(h));}catch(e){}
+}
+function addToHistory(prompt,genre,version){
+  var h=loadHistory();
+  var entry={prompt:prompt,genre:genre||'',version:version||'',ts:Date.now()};
+  h.unshift(entry);
+  if(h.length>MAX_HIST)h=h.slice(0,MAX_HIST);
+  saveHistory(h);
+  renderHistory();
+}
+function renderHistory(){
+  var h=loadHistory();
+  var wrap=document.getElementById('histWrap');
+  var list=document.getElementById('histList');
+  if(!h.length){wrap.style.display='none';return;}
+  wrap.style.display='block';
+  list.innerHTML=h.map(function(e,i){
+    var d=new Date(e.ts);
+    var time=d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    return '<div class="hist-item">'
+      +'<div style="flex:1;min-width:0">'
+      +'<div class="hist-text">'+e.prompt.replace(/</g,'&lt;')+'</div>'
+      +'<div class="hist-meta">'+[e.version,e.genre,time].filter(Boolean).join(' · ')+'</div>'
+      +'</div>'
+      +'<button class="hist-cp" data-i="'+i+'">Copy</button>'
+      +'</div>';
+  }).join('');
+  list.querySelectorAll('.hist-cp').forEach(function(btn){
+    btn.addEventListener('click',function(){
+      var entry=loadHistory()[parseInt(this.dataset.i)];
+      if(!entry)return;
+      navigator.clipboard.writeText(entry.prompt).then(function(){
+        btn.textContent='✓';
+        setTimeout(function(){btn.textContent='Copy'},1500);
+      });
+    });
+  });
+}
+document.getElementById('histClear').addEventListener('click',function(){
+  saveHistory([]);renderHistory();
+});
+renderHistory();
 </script>
 
 
