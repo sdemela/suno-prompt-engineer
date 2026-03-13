@@ -26,15 +26,10 @@
     { "src": "/api/credits",    "dest": "/api/credits.js" },
     { "src": "/api/save-email", "dest": "/api/save-email.js" },
 
-    { "src": "/en",             "dest": "/public/en/index.html" },
-    { "src": "/en/",            "dest": "/public/en/index.html" },
-    { "src": "/en/tool",        "dest": "/public/en/tool.html" },
-    { "src": "/en/tool/",       "dest": "/public/en/tool.html" },
-
-    { "src": "/it",             "dest": "/public/it/index.html" },
-    { "src": "/it/",            "dest": "/public/it/index.html" },
-    { "src": "/it/tool",        "dest": "/public/it/tool.html" },
-    { "src": "/it/tool/",       "dest": "/public/it/tool.html" },
+    { "src": "/en/?",           "dest": "/public/en/index.html" },
+    { "src": "/en/tool/?",      "dest": "/public/en/tool.html" },
+    { "src": "/it/?",           "dest": "/public/it/index.html" },
+    { "src": "/it/tool/?",      "dest": "/public/it/tool.html" },
 
     { "src": "/",               "dest": "/public/index.html" },
     { "src": "/(.*)",           "dest": "/public/404.html", "status": 404 }
