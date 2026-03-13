@@ -20,16 +20,28 @@
     }
   ],
   "routes": [
-    { "src": "/api/generate",          "dest": "/api/generate.js" },
-    { "src": "/api/checkout",          "dest": "/api/checkout.js" },
-    { "src": "/api/webhook",           "dest": "/api/webhook.js" },
-    { "src": "/api/credits",           "dest": "/api/credits.js" },
-    { "src": "/api/save-email",        "dest": "/api/save-email.js" },
-    { "src": "/en/tool",               "dest": "/public/en/tool.html" },
-    { "src": "/it/tool",               "dest": "/public/it/tool.html" },
-    { "src": "/en(/?)",                "dest": "/public/en/index.html" },
-    { "src": "/it(/?)",                "dest": "/public/it/index.html" },
-    { "src": "/",                      "dest": "/public/index.html" },
-    { "src": "/(.*)",                  "dest": "/public/404.html", "status": 404 }
+    { "src": "/api/generate",   "dest": "/api/generate.js" },
+    { "src": "/api/checkout",   "dest": "/api/checkout.js" },
+    { "src": "/api/webhook",    "dest": "/api/webhook.js" },
+    { "src": "/api/credits",    "dest": "/api/credits.js" },
+    { "src": "/api/save-email", "dest": "/api/save-email.js" },
+
+    { "src": "/en/tool",        "dest": "/public/en/tool.html" },
+    { "src": "/it/tool",        "dest": "/public/it/tool.html" },
+    { "src": "/en(/?)",         "dest": "/public/en/index.html" },
+    { "src": "/it(/?)",         "dest": "/public/it/index.html" },
+
+    { "src": "/og-image.png",        "dest": "/public/og-image.png" },
+    { "src": "/og-image.svg",        "dest": "/public/og-image.svg" },
+    { "src": "/favicon.svg",         "dest": "/public/favicon.svg" },
+    { "src": "/favicon.ico",         "dest": "/public/favicon.ico" },
+    { "src": "/apple-touch-icon.png","dest": "/public/apple-touch-icon.png" },
+    { "src": "/logo.png",            "dest": "/public/logo.png" },
+    { "src": "/sitemap.xml",         "dest": "/public/sitemap.xml" },
+    { "src": "/robots.txt",          "dest": "/public/robots.txt" },
+    { "src": "/ads.txt",             "dest": "/public/ads.txt" },
+
+    { "src": "/",               "dest": "/public/index.html" },
+    { "src": "/(.*)",           "dest": "/public/404.html", "status": 404 }
   ]
 }
