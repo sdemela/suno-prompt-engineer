@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#1a1228"/>
+      <stop offset="100%" stop-color="#0a0a0a"/>
+    </radialGradient>
+    <linearGradient id="g1" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7b5cff"/>
+      <stop offset="100%" stop-color="#ff3c5f"/>
+    </linearGradient>
+    <linearGradient id="g2" x1="100%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ff3c5f" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#7b5cff" stop-opacity="0.2"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="6" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background -->
+  <rect width="400" height="400" rx="48" fill="url(#bg)"/>
+
+  <!-- Outer ring arc — top left, violet -->
+  <circle cx="200" cy="200" r="138" fill="none" stroke="url(#g1)" stroke-width="2.5" stroke-dasharray="520 350" stroke-dashoffset="0" opacity="0.35"/>
+
+  <!-- Concentric frequency rings -->
+  <circle cx="200" cy="200" r="108" fill="none" stroke="#7b5cff" stroke-width="1" opacity="0.18"/>
+  <circle cx="200" cy="200" r="78"  fill="none" stroke="#7b5cff" stroke-width="1" opacity="0.12"/>
+
+  <!-- Main waveform — 5 vertical bars, centered, gradient fill -->
+  <g filter="url(#glow)">
+    <!-- bar heights encode a waveform shape: short tall short taller short -->
+    <rect x="148" y="172" width="14" height="56"  rx="7" fill="url(#g1)" opacity="0.75"/>
+    <rect x="170" y="148" width="14" height="104" rx="7" fill="url(#g1)"/>
+    <rect x="192" y="160" width="16" height="80"  rx="8" fill="url(#g1)"/>
+    <rect x="216" y="140" width="14" height="120" rx="7" fill="url(#g1)"/>
+    <rect x="238" y="168" width="14" height="64"  rx="7" fill="url(#g1)" opacity="0.75"/>
+  </g>
+
+  <!-- Subtle reflection below -->
+  <g opacity="0.12">
+    <rect x="148" y="232" width="14" height="28" rx="7" fill="url(#g2)"/>
+    <rect x="170" y="254" width="14" height="14" rx="7" fill="url(#g2)"/>
+    <rect x="192" y="244" width="16" height="20" rx="8" fill="url(#g2)"/>
+    <rect x="216" y="262" width="14" height="10" rx="7" fill="url(#g2)"/>
+    <rect x="238" y="236" width="14" height="24" rx="7" fill="url(#g2)"/>
+  </g>
+
+  <!-- Diagonal accent line — top right -->
+  <line x1="280" y1="80" x2="340" y2="120" stroke="#ff3c5f" stroke-width="1.5" opacity="0.4"/>
+  <line x1="290" y1="70" x2="340" y2="100" stroke="#7b5cff" stroke-width="1" opacity="0.25"/>
+
+  <!-- Small dot cluster — bottom left -->
+  <circle cx="82"  cy="300" r="3" fill="#7b5cff" opacity="0.5"/>
+  <circle cx="96"  cy="312" r="2" fill="#ff3c5f" opacity="0.4"/>
+  <circle cx="74"  cy="316" r="1.5" fill="#7b5cff" opacity="0.3"/>
+
+  <!-- Corner tick marks -->
+  <line x1="56" y1="68" x2="72" y2="68" stroke="#7b5cff" stroke-width="1.5" opacity="0.3"/>
+  <line x1="56" y1="68" x2="56" y2="84" stroke="#7b5cff" stroke-width="1.5" opacity="0.3"/>
+  <line x1="344" y1="332" x2="328" y2="332" stroke="#ff3c5f" stroke-width="1.5" opacity="0.3"/>
+  <line x1="344" y1="332" x2="344" y2="316" stroke="#ff3c5f" stroke-width="1.5" opacity="0.3"/>
+</svg>
