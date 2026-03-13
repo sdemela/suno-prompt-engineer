@@ -69,6 +69,7 @@ export default async function handler(req, res) {
 
   const rawBody = await getRawBody(req);
   const sig = req.headers['stripe-signature'];
+  if (!sig) return res.status(400).json({ error: 'Missing stripe-signature header' });
 
   let event;
   try {
