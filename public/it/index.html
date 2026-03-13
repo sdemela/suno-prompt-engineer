@@ -285,6 +285,25 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .hist-cp{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:5px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
 .hist-cp:hover{border-color:var(--green);color:var(--green);}
 .hist-empty{font-family:'Space Mono',monospace;font-size:11px;color:#2a2a3a;text-align:center;padding:20px 0;letter-spacing:1px;}
+
+.success-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease}
+.success-box{background:#111118;border:1px solid rgba(123,92,255,.5);border-radius:16px;padding:32px;max-width:420px;width:100%;position:relative;box-shadow:0 0 60px rgba(123,92,255,.2)}
+.success-close{position:absolute;top:14px;right:16px;background:transparent;border:none;color:#3a3a5a;font-size:20px;cursor:pointer;line-height:1}
+.success-close:hover{color:#fff}
+.success-icon{text-align:center;margin-bottom:16px}
+.success-icon svg{width:48px;height:48px}
+.success-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#fff;text-align:center;margin-bottom:4px}
+.success-credits{text-align:center;margin-bottom:20px}
+.success-credits-num{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#7b5cff;line-height:1}
+.success-credits-sub{font-family:'Space Mono',monospace;font-size:11px;color:#6b6b85;letter-spacing:1px}
+.success-session{background:#0a0a0f;border:1px solid #1e1e2e;border-radius:8px;padding:14px;margin-bottom:20px}
+.success-session-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#3a3a5a;text-transform:uppercase;margin-bottom:6px}
+.success-session-id{font-family:'Space Mono',monospace;font-size:11px;color:#7b5cff;word-break:break-all;margin-bottom:8px}
+.success-session-hint{font-size:10px;color:#3a3a5a;line-height:1.6}
+.success-cta{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#7b5cff,#ff3c5f);border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:all .2s;text-align:center}
+.success-cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(123,92,255,.4)}
+.cancelled-bar{position:fixed;top:0;left:0;right:0;background:#1a0a0a;border-bottom:1px solid rgba(255,60,95,.3);padding:10px 20px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:#ff3c5f;z-index:200;letter-spacing:1px}
+
 </style>
 <!-- Google Analytics (loads only after consent) -->
 <script>
@@ -1114,6 +1133,36 @@ document.getElementById('histClear').addEventListener('click',function(){
   saveHistory([]);renderHistory();
 });
 renderHistory();
+
+function showSuccessModal(credits, uuid) {
+  if(document.getElementById('successOverlay')) return;
+  var o = document.createElement('div');
+  o.className = 'success-overlay';
+  o.id = 'successOverlay';
+  o.innerHTML = `
+    <div class="success-box">
+      <button class="success-close" onclick="document.getElementById('successOverlay').remove()">×</button>
+      <div class="success-icon">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <circle cx="24" cy="24" r="23" stroke="#7b5cff" stroke-width="1.5" fill="rgba(123,92,255,0.1)"/>
+          <path d="M14 24l7 7 13-14" stroke="#00e5b0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="success-title">CREDITI ATTIVATI</div>
+      <div class="success-credits">
+        <div class="success-credits-num">`+credits+`</div>
+        <div class="success-credits-sub">crediti aggiunti alla tua sessione</div>
+      </div>
+      <div class="success-session">
+        <div class="success-session-lbl">Il tuo session ID</div>
+        <div class="success-session-id">`+uuid+`</div>
+        <div class="success-session-hint">Salva questo ID — usalo per ripristinare i crediti su un altro browser o dispositivo.</div>
+      </div>
+      <button class="success-cta" onclick="document.getElementById('successOverlay').remove()">▶ INIZIA A GENERARE</button>
+    </div>`;
+  document.body.appendChild(o);
+  o.addEventListener('click', function(e){ if(e.target===o) o.remove(); });
+}
 </script>
 
 
