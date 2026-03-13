@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suno Prompt Engineer — Generate Better AI Music Prompts</title>
+<meta name="description" content="Stop guessing Suno prompts. Pick your genre, mood, BPM and instruments — get an expert-optimized Style prompt for Suno v3, v4, v4.5 and v5 in seconds. Free to try.">
+<meta name="keywords" content="suno prompt, suno ai prompt generator, suno style prompt, suno v4 prompt, suno v5 prompt, ai music prompt tool, suno prompt engineer">
+<link rel="canonical" href="https://supre.online/en/landing">
+<meta property="og:title" content="Suno Prompt Engineer — Generate Better AI Music Prompts">
+<meta property="og:description" content="Stop guessing Suno prompts. Pick genre, mood, BPM, instruments — get an expert-optimized Style prompt in seconds.">
+<meta property="og:image" content="https://supre.online/og-image.png">
+<meta property="og:url" content="https://supre.online/en/landing">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Suno Prompt Engineer — Generate Better AI Music Prompts">
+<meta name="twitter:description" content="Stop guessing Suno prompts. Get expert-optimized Style prompts for Suno v3–v5 in seconds.">
+<meta name="twitter:image" content="https://supre.online/og-image.png">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><rect width='32' height='32' rx='8' fill='%230a0a0a'/><text x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' font-size='20' font-family='monospace' fill='%237b5cff'>S</text></svg>">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  "name": "Suno Prompt Engineer",
+  "description": "AI-powered prompt generator for Suno music creation tool. Optimized prompts for Suno v3, v4, v4.5, and v5.",
+  "url": "https://supre.online/en/landing",
+  "isPartOf": { "@type": "WebSite", "url": "https://supre.online" }
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0a0a;
+  --deep: #111118;
+  --card: #1c1c28;
+  --border: #2a2a3a;
+  --accent: #ff3c5f;
+  --purple: #7b5cff;
+  --green: #00e5b0;
+  --text: #e8e8f0;
+  --muted: #6b6b85;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.6; overflow-x: hidden; }
+
+/* ── NOISE OVERLAY ── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── NAV ── */
+nav {
+  position: fixed;
+  top: 0; left: 0; right: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 40px;
+  background: rgba(10,10,10,0.85);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid rgba(42,42,58,0.5);
+}
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-cta {
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: opacity .2s, transform .2s;
+}
+.nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+
+/* ── HERO ── */
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  overflow: hidden;
+}
+.hero-glow {
+  position: absolute;
+  top: 20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, rgba(123,92,255,0.18) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-glow2 {
+  position: absolute;
+  bottom: 10%;
+  right: -10%;
+  width: 400px;
+  height: 400px;
+  background: radial-gradient(circle, rgba(255,60,95,0.1) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(123,92,255,0.12);
+  border: 1px solid rgba(123,92,255,0.3);
+  border-radius: 100px;
+  padding: 6px 16px;
+  font-family: 'Space Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  color: var(--purple);
+  margin-bottom: 28px;
+  animation: fadeUp .6s ease both;
+}
+.hero-tag::before { content: '✦'; }
+h1.hero-title {
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: clamp(52px, 10vw, 120px);
+  line-height: .95;
+  letter-spacing: 2px;
+  color: var(--text);
+  margin-bottom: 28px;
+  animation: fadeUp .7s .1s ease both;
+}
+h1.hero-title em {
+  font-style: normal;
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: clamp(15px, 2vw, 19px);
+  color: var(--muted);
+  max-width: 560px;
+  margin: 0 auto 40px;
+  line-height: 1.7;
+  animation: fadeUp .7s .2s ease both;
+}
+.hero-sub strong { color: var(--text); font-weight: 500; }
+.hero-cta-group {
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  animation: fadeUp .7s .3s ease both;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 16px 36px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: transform .2s, box-shadow .2s;
+  box-shadow: 0 4px 30px rgba(123,92,255,0.35);
+}
+.btn-primary:hover { transform: translateY(-3px); box-shadow: 0 8px 40px rgba(123,92,255,0.5); }
+.btn-secondary {
+  background: transparent;
+  color: var(--muted);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px 28px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 2px;
+  cursor: pointer;
+  text-decoration: none;
+  display: inline-block;
+  transition: border-color .2s, color .2s;
+}
+.btn-secondary:hover { border-color: var(--purple); color: var(--text); }
+.hero-note { font-size: 11px; color: var(--muted); margin-top: 16px; font-family: 'Space Mono', monospace; letter-spacing: 1px; animation: fadeUp .7s .4s ease both; }
+
+/* ── WAVEFORM ANIMATION ── */
+.waveform {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  height: 48px;
+  margin: 48px auto 0;
+  animation: fadeUp .7s .5s ease both;
+}
+.wbar {
+  width: 3px;
+  border-radius: 2px;
+  background: var(--purple);
+  opacity: 0.5;
+  animation: wave var(--d) ease-in-out infinite alternate;
+}
+@keyframes wave { from { height: 4px; opacity: 0.2; } to { height: var(--h); opacity: 0.7; } }
+
+/* ── PROMPT PREVIEW ── */
+.prompt-preview {
+  position: relative;
+  max-width: 680px;
+  margin: 60px auto 0;
+  animation: fadeUp .7s .6s ease both;
+}
+.prompt-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 10px; text-align: left; }
+.prompt-box {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px 24px;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  color: var(--green);
+  line-height: 1.6;
+  text-align: left;
+  position: relative;
+  overflow: hidden;
+}
+.prompt-box::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+}
+.prompt-cursor { display: inline-block; width: 8px; height: 14px; background: var(--green); margin-left: 2px; animation: blink 1s step-end infinite; vertical-align: text-bottom; }
+@keyframes blink { 50% { opacity: 0; } }
+.prompt-tags { display: flex; gap: 8px; margin-top: 14px; flex-wrap: wrap; }
+.ptag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 1px; padding: 4px 10px; border-radius: 4px; background: rgba(123,92,255,0.12); border: 1px solid rgba(123,92,255,0.25); color: var(--purple); }
+
+/* ── SOCIAL PROOF ── */
+.social-strip {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 40px;
+  padding: 24px 40px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  flex-wrap: wrap;
+}
+.stat { text-align: center; }
+.stat-n { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--text); line-height: 1; }
+.stat-n span { color: var(--purple); }
+.stat-l { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-top: 4px; }
+.stat-div { width: 1px; height: 40px; background: var(--border); }
+
+/* ── HOW IT WORKS ── */
+section { position: relative; z-index: 1; }
+.section-tag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--purple); text-transform: uppercase; margin-bottom: 16px; }
+.section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 6vw, 64px); letter-spacing: 2px; line-height: 1; margin-bottom: 16px; }
+.section-sub { font-size: 15px; color: var(--muted); max-width: 480px; line-height: 1.7; }
+
+.how-section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; }
+.how-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px; margin-top: 60px; }
+.how-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  position: relative;
+  overflow: hidden;
+  transition: transform .2s, border-color .2s;
+}
+.how-card:hover { transform: translateY(-4px); border-color: rgba(123,92,255,0.4); }
+.how-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, var(--purple), var(--accent));
+  opacity: 0;
+  transition: opacity .2s;
+}
+.how-card:hover::before { opacity: 1; }
+.how-num { font-family: 'Bebas Neue', sans-serif; font-size: 64px; color: rgba(123,92,255,0.15); line-height: 1; margin-bottom: 16px; }
+.how-title { font-family: 'Space Mono', monospace; font-size: 13px; font-weight: 700; letter-spacing: 1px; color: var(--text); margin-bottom: 10px; }
+.how-desc { font-size: 14px; color: var(--muted); line-height: 1.7; }
+
+/* ── FEATURES ── */
+.features-section { padding: 100px 40px; background: var(--deep); }
+.features-inner { max-width: 1100px; margin: 0 auto; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 60px; }
+.feat-card {
+  padding: 28px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(28,28,40,0.5);
+  transition: border-color .2s;
+}
+.feat-card:hover { border-color: rgba(123,92,255,0.3); }
+.feat-icon { font-size: 28px; margin-bottom: 16px; }
+.feat-title { font-family: 'Space Mono', monospace; font-size: 12px; font-weight: 700; letter-spacing: 1px; color: var(--text); margin-bottom: 8px; }
+.feat-desc { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ── VERSIONS ── */
+.versions-section { padding: 100px 40px; max-width: 1100px; margin: 0 auto; }
+.versions-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 16px; margin-top: 56px; }
+.ver-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 28px 24px;
+  text-align: center;
+  transition: transform .2s, border-color .2s;
+}
+.ver-card:hover { transform: translateY(-4px); border-color: rgba(123,92,255,0.4); }
+.ver-badge {
+  display: inline-block;
+  font-family: 'Bebas Neue', sans-serif;
+  font-size: 32px;
+  letter-spacing: 2px;
+  color: var(--purple);
+  margin-bottom: 10px;
+}
+.ver-name { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); margin-bottom: 14px; }
+.ver-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+.ver-tag { display: inline-block; font-size: 9px; font-family: 'Space Mono', monospace; padding: 3px 8px; border-radius: 4px; background: rgba(0,229,176,0.1); border: 1px solid rgba(0,229,176,0.25); color: var(--green); margin-top: 12px; letter-spacing: 1px; }
+
+/* ── PRICING ── */
+.pricing-section { padding: 100px 40px; background: var(--deep); }
+.pricing-inner { max-width: 900px; margin: 0 auto; }
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 60px; }
+.pkg-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  position: relative;
+  transition: transform .2s;
+}
+.pkg-card:hover { transform: translateY(-4px); }
+.pkg-card.featured {
+  border-color: rgba(123,92,255,0.5);
+  background: linear-gradient(135deg, rgba(123,92,255,0.08), rgba(255,60,95,0.05));
+}
+.pkg-badge { position: absolute; top: -12px; left: 50%; transform: translateX(-50%); background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; padding: 4px 14px; border-radius: 100px; white-space: nowrap; }
+.pkg-name { font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; color: var(--muted); margin-bottom: 12px; }
+.pkg-price { font-family: 'Bebas Neue', sans-serif; font-size: 52px; letter-spacing: 2px; color: var(--text); line-height: 1; margin-bottom: 4px; }
+.pkg-price span { font-size: 20px; color: var(--muted); }
+.pkg-credits { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--purple); margin-bottom: 24px; }
+.pkg-features { list-style: none; margin-bottom: 28px; }
+.pkg-features li { font-size: 13px; color: var(--muted); padding: 6px 0; border-bottom: 1px solid rgba(42,42,58,0.5); display: flex; align-items: center; gap: 10px; }
+.pkg-features li::before { content: '✓'; color: var(--green); font-size: 12px; flex-shrink: 0; }
+.pkg-cta {
+  display: block;
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  font-family: 'Space Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 2px;
+  font-weight: 700;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: opacity .2s, transform .2s;
+}
+.pkg-cta:hover { opacity: .88; transform: translateY(-2px); }
+.pkg-cta.outline {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+.pkg-cta.outline:hover { border-color: var(--purple); color: var(--text); }
+
+/* ── FAQ ── */
+.faq-section { padding: 100px 40px; max-width: 760px; margin: 0 auto; }
+.faq-list { margin-top: 56px; }
+.faq-item { border-bottom: 1px solid var(--border); }
+.faq-q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  cursor: pointer;
+  font-family: 'Space Mono', monospace;
+  font-size: 13px;
+  color: var(--text);
+  letter-spacing: 0.5px;
+  gap: 16px;
+}
+.faq-q:hover { color: var(--purple); }
+.faq-arrow { color: var(--purple); font-size: 18px; transition: transform .2s; flex-shrink: 0; }
+.faq-item.open .faq-arrow { transform: rotate(45deg); }
+.faq-a { font-size: 14px; color: var(--muted); line-height: 1.8; padding-bottom: 24px; display: none; }
+.faq-item.open .faq-a { display: block; }
+
+/* ── CTA BAND ── */
+.cta-band {
+  padding: 100px 40px;
+  text-align: center;
+  background: radial-gradient(ellipse at center, rgba(123,92,255,0.12) 0%, transparent 70%);
+  border-top: 1px solid var(--border);
+}
+.cta-band h2 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(40px, 7vw, 80px); letter-spacing: 3px; margin-bottom: 20px; }
+.cta-band p { font-size: 16px; color: var(--muted); margin-bottom: 40px; }
+
+/* ── FOOTER ── */
+footer {
+  padding: 32px 40px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+
+/* ── ANIMATIONS ── */
+@keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
+.reveal { opacity: 0; transform: translateY(30px); transition: opacity .7s ease, transform .7s ease; }
+.reveal.visible { opacity: 1; transform: translateY(0); }
+
+/* ── MOBILE ── */
+@media (max-width: 600px) {
+  nav { padding: 14px 20px; }
+  .how-section, .versions-section, .faq-section { padding: 70px 20px; }
+  .features-section, .pricing-section { padding: 70px 20px; }
+  .cta-band { padding: 70px 20px; }
+  footer { padding: 24px 20px; flex-direction: column; align-items: flex-start; }
+  .social-strip { gap: 24px; padding: 24px 20px; }
+  .stat-div { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+  <a href="/en/" class="nav-cta">TRY FREE →</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-glow"></div>
+  <div class="hero-glow2"></div>
+
+  <div class="hero-tag">AI Music Prompt Tool · Free to try</div>
+
+  <h1 class="hero-title">
+    BETTER<br>
+    <em>SUNO</em><br>
+    PROMPTS.
+  </h1>
+
+  <p class="hero-sub">
+    Stop writing prompts by trial and error.<br>
+    Pick your <strong>genre, mood, BPM and instruments</strong> — get an expert-crafted Style prompt optimized for Suno v3, v4, v4.5 and v5 in seconds.
+  </p>
+
+  <div class="hero-cta-group">
+    <a href="/en/" class="btn-primary">⚡ GENERATE YOUR FIRST PROMPT →</a>
+    <a href="#how" class="btn-secondary">HOW IT WORKS</a>
+  </div>
+
+  <p class="hero-note">✓ 2 free generations per day · No signup required · Credits never expire</p>
+
+  <div class="waveform" id="waveform"></div>
+
+  <div class="prompt-preview">
+    <div class="prompt-label">example output →</div>
+    <div class="prompt-box">
+      <span id="typewriter"></span><span class="prompt-cursor"></span>
+    </div>
+    <div class="prompt-tags">
+      <span class="ptag">tech house</span>
+      <span class="ptag">130 BPM</span>
+      <span class="ptag">Suno v4.5</span>
+      <span class="ptag">dark &amp; hypnotic</span>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF STRIP -->
+<div class="social-strip reveal">
+  <div class="stat">
+    <div class="stat-n">4.8<span>/5</span></div>
+    <div class="stat-l">Average rating</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat">
+    <div class="stat-n">4<span>x</span></div>
+    <div class="stat-l">Suno versions supported</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat">
+    <div class="stat-n">0<span>s</span></div>
+    <div class="stat-l">Signup required</div>
+  </div>
+  <div class="stat-div"></div>
+  <div class="stat">
+    <div class="stat-n">∞</div>
+    <div class="stat-l">Credits validity</div>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section class="how-section" id="how">
+  <div class="section-tag">How it works</div>
+  <h2 class="section-title">THREE<br>STEPS.</h2>
+  <p class="section-sub">No AI prompt engineering knowledge needed. Just describe your music.</p>
+
+  <div class="how-grid">
+    <div class="how-card reveal">
+      <div class="how-num">01</div>
+      <div class="how-title">PICK YOUR PARAMETERS</div>
+      <div class="how-desc">Select genre, era, mood, energy level, BPM, instruments, mix character and vocal style from curated options — or leave fields blank for broader results.</div>
+    </div>
+    <div class="how-card reveal">
+      <div class="how-num">02</div>
+      <div class="how-title">CHOOSE YOUR SUNO VERSION</div>
+      <div class="how-desc">Tell us which Suno version you're using. The engine calibrates prompt length, keyword density and structure specifically for v3, v4, v4.5 or v5.</div>
+    </div>
+    <div class="how-card reveal">
+      <div class="how-num">03</div>
+      <div class="how-title">COPY & CREATE</div>
+      <div class="how-desc">Get your optimized Style prompt plus 1–3 actionable tips. Copy it directly into Suno, hit generate, and hear the difference immediately.</div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features-section">
+  <div class="features-inner">
+    <div class="section-tag">Features</div>
+    <h2 class="section-title reveal">BUILT FOR<br>CREATORS.</h2>
+
+    <div class="features-grid">
+      <div class="feat-card reveal">
+        <div class="feat-icon">🎛️</div>
+        <div class="feat-title">VERSION-AWARE PROMPTS</div>
+        <div class="feat-desc">Each Suno version responds differently. Our engine knows the ideal keyword count, structure and descriptors for each — so you don't have to guess.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">🎵</div>
+        <div class="feat-title">LYRICS PROMPT GENERATOR</div>
+        <div class="feat-desc">Beyond Style prompts — get a full Lyrics prompt with proper Suno metatags ([Verse], [Chorus], [Drop]…) in the language and vocal style you want.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">🔁</div>
+        <div class="feat-title">REGENERATE IN ONE CLICK</div>
+        <div class="feat-desc">Not quite right? Hit Regenerate with the same parameters to get a fresh variation instantly — no re-filling forms.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">📋</div>
+        <div class="feat-title">PROMPT HISTORY</div>
+        <div class="feat-desc">Your last 10 prompts are saved locally. Browse, copy and re-use any previous generation without losing your creative thread.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">⚡</div>
+        <div class="feat-title">CREDITS NEVER EXPIRE</div>
+        <div class="feat-desc">Buy once, use whenever. Credits are linked to your session ID — transferable across browsers and devices. No subscription, no pressure.</div>
+      </div>
+      <div class="feat-card reveal">
+        <div class="feat-icon">🌐</div>
+        <div class="feat-title">ENGLISH & ITALIAN</div>
+        <div class="feat-desc">Full UI and generated prompts available in both English and Italian. Switch anytime — your settings follow you.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VERSIONS -->
+<section class="versions-section">
+  <div class="section-tag">Suno version support</div>
+  <h2 class="section-title reveal">EVERY<br>VERSION.</h2>
+  <p class="section-sub reveal">Prompts are calibrated differently for each Suno model — not one-size-fits-all.</p>
+
+  <div class="versions-grid">
+    <div class="ver-card reveal">
+      <div class="ver-badge">v3</div>
+      <div class="ver-name">LEGACY</div>
+      <div class="ver-desc">Short and direct. Max 6–8 keywords under 60 chars. Works with older Suno generations.</div>
+    </div>
+    <div class="ver-card reveal">
+      <div class="ver-badge">v4</div>
+      <div class="ver-name">MODERN</div>
+      <div class="ver-desc">Layered 10–15 keywords, up to 120 chars. Genre, mood, texture, structure and mix.</div>
+    </div>
+    <div class="ver-card reveal">
+      <div class="ver-badge">v4.5</div>
+      <div class="ver-name">CURRENT</div>
+      <div class="ver-desc">Rich 2–3 sentence descriptions. Evocative language, production detail, vocal direction.</div>
+      <div class="ver-tag">most used</div>
+    </div>
+    <div class="ver-card reveal">
+      <div class="ver-badge">v5</div>
+      <div class="ver-name">LATEST</div>
+      <div class="ver-desc">Natural language phrases, sonic atmospheres, emotional arcs. Up to 150 chars, maximum expressiveness.</div>
+      <div class="ver-tag">new</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing-section" id="pricing">
+  <div class="pricing-inner">
+    <div class="section-tag">Pricing</div>
+    <h2 class="section-title reveal">NO<br>SUBSCRIPTION.</h2>
+    <p class="section-sub reveal">Buy credits once. Use them whenever. They never expire.</p>
+
+    <div class="pricing-grid">
+      <div class="pkg-card reveal">
+        <div class="pkg-name">FREE TIER</div>
+        <div class="pkg-price"><span>€</span>0</div>
+        <div class="pkg-credits">2 generations / day</div>
+        <ul class="pkg-features">
+          <li>All Suno versions (v3–v5)</li>
+          <li>Style + Lyrics prompts</li>
+          <li>Prompt history</li>
+          <li>No signup needed</li>
+        </ul>
+        <a href="/en/" class="pkg-cta outline">START FREE →</a>
+      </div>
+
+      <div class="pkg-card featured reveal">
+        <div class="pkg-badge">MOST POPULAR</div>
+        <div class="pkg-name">PRO</div>
+        <div class="pkg-price"><span>€</span>9</div>
+        <div class="pkg-credits">50 credits · one-time</div>
+        <ul class="pkg-features">
+          <li>All free features</li>
+          <li>50 prompt generations</li>
+          <li>Credits never expire</li>
+          <li>Multi-device via session ID</li>
+          <li>Email backup included</li>
+        </ul>
+        <a href="/en/" class="pkg-cta">GET PRO →</a>
+      </div>
+
+      <div class="pkg-card reveal">
+        <div class="pkg-name">STUDIO</div>
+        <div class="pkg-price"><span>€</span>19</div>
+        <div class="pkg-credits">120 credits · one-time</div>
+        <ul class="pkg-features">
+          <li>All Pro features</li>
+          <li>120 prompt generations</li>
+          <li>Best value per credit</li>
+          <li>Credits never expire</li>
+          <li>Priority support</li>
+        </ul>
+        <a href="/en/" class="pkg-cta">GET STUDIO →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FAQ -->
+<section class="faq-section">
+  <div class="section-tag">FAQ</div>
+  <h2 class="section-title reveal">QUESTIONS.</h2>
+
+  <div class="faq-list">
+    <div class="faq-item reveal">
+      <div class="faq-q">What is a Suno Style prompt and why does it matter? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">The Style of Music field in Suno is the most powerful parameter for shaping your track's sound. A well-crafted prompt gives Suno precise direction on genre, energy, instruments and texture. A bad prompt produces generic results. Suno Prompt Engineer generates prompts calibrated for each Suno version's specific behavior.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Do I need to create an account? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">No. The tool is completely anonymous. A session ID is generated in your browser automatically. You can optionally save your email to recover credits on other devices.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">What happens when my free generations run out? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">The free tier resets at midnight every day. If you need more, you can buy credits once — they never expire and are tied to your session ID, usable on any browser or device.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">What's the difference between the Suno versions? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Each version responds to different prompt styles. v3 needs short keyword lists, v4 and v4.5 work best with layered descriptors, while v5 understands natural language phrases and can handle richer sonic descriptions. Our engine adapts automatically.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">Can I use the generated prompts commercially? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Yes. The prompts you generate are yours. Commercial use of Suno-generated music depends on Suno's own terms of service — check their site for the latest policy.</div>
+    </div>
+    <div class="faq-item reveal">
+      <div class="faq-q">What if I switch browsers or devices? <span class="faq-arrow">+</span></div>
+      <div class="faq-a">Your credits are tied to your session ID. Enter it in the "Restore credits" field on any device to recover them. Save your session ID or link it to an email address for safekeeping.</div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band reveal">
+  <h2>START<br>CREATING.</h2>
+  <p>Your first 2 prompts are free. No signup. No credit card.</p>
+  <a href="/en/" class="btn-primary">⚡ GENERATE YOUR FIRST PROMPT →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/en/">Tool</a>
+    <a href="/it/landing">IT</a>
+    <a href="mailto:hello@supre.online">Contact</a>
+  </div>
+  <div class="footer-copy">© 2025 supre.online</div>
+</footer>
+
+<script>
+// ── WAVEFORM ──
+var wf = document.getElementById('waveform');
+var heights = [8,14,20,28,36,44,40,32,24,18,12,8,14,22,32,40,44,38,28,20,14,10,16,26,36,42,40,30,22,16];
+heights.forEach(function(h, i) {
+  var bar = document.createElement('div');
+  bar.className = 'wbar';
+  bar.style.setProperty('--h', h + 'px');
+  bar.style.setProperty('--d', (0.5 + Math.random() * 1.2).toFixed(2) + 's');
+  bar.style.animationDelay = (i * 0.04).toFixed(2) + 's';
+  wf.appendChild(bar);
+});
+
+// ── TYPEWRITER ──
+var examples = [
+  'pulsing acid bassline, hypnotic percussion, reverb-drenched pads, dark warehouse energy, 130 BPM',
+  'lush neo-soul chords, warm vinyl crackle, mellow rhodes, lo-fi afternoon haze, 85 BPM',
+  'cinematic orchestral swells, tension-building strings, epic brass, emotional arc, no drums',
+  'minimal techno, driving kick, sparse hi-hats, industrial atmosphere, cold Berlin night, 135 BPM',
+  'afrobeat polyrhythm, talking drum, kora melody, joyful groove, bright horns, 98 BPM',
+];
+var ti = 0, ci = 0, deleting = false, el = document.getElementById('typewriter');
+function typeLoop() {
+  var txt = examples[ti];
+  if (!deleting) {
+    el.textContent = txt.slice(0, ci + 1);
+    ci++;
+    if (ci === txt.length) { deleting = true; setTimeout(typeLoop, 2200); return; }
+    setTimeout(typeLoop, 28);
+  } else {
+    el.textContent = txt.slice(0, ci - 1);
+    ci--;
+    if (ci === 0) { deleting = false; ti = (ti + 1) % examples.length; setTimeout(typeLoop, 400); return; }
+    setTimeout(typeLoop, 14);
+  }
+}
+typeLoop();
+
+// ── SCROLL REVEAL ──
+var reveals = document.querySelectorAll('.reveal');
+var observer = new IntersectionObserver(function(entries) {
+  entries.forEach(function(e) {
+    if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+  });
+}, { threshold: 0.12 });
+reveals.forEach(function(r) { observer.observe(r); });
+
+// ── FAQ ──
+document.querySelectorAll('.faq-q').forEach(function(q) {
+  q.addEventListener('click', function() {
+    var item = q.closest('.faq-item');
+    var isOpen = item.classList.contains('open');
+    document.querySelectorAll('.faq-item').forEach(function(i) { i.classList.remove('open'); });
+    if (!isOpen) item.classList.add('open');
+  });
+});
+</script>
+</body>
+</html>
