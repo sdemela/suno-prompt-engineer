@@ -2,11 +2,13 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
+  <!-- Landing pages (homepage) -->
   <url>
     <loc>https://supre.online/en/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/"/>
-    <lastmod>2026-03-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://supre.online/en/"/>
+    <lastmod>2026-03-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -15,9 +17,29 @@
     <loc>https://supre.online/it/</loc>
     <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/"/>
-    <lastmod>2026-03-12</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://supre.online/en/"/>
+    <lastmod>2026-03-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
+  </url>
+
+  <!-- Tool pages -->
+  <url>
+    <loc>https://supre.online/en/tool</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/tool"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/tool"/>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <url>
+    <loc>https://supre.online/it/tool</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/tool"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/tool"/>
+    <lastmod>2026-03-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>
 
 </urlset>
