@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>404 — Suno Prompt Engineer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --border: #1e1e2e;
+      --purple: #7b5cff;
+      --accent: #ff3c5f;
+      --green: #00e5b0;
+      --text: #e8e8f0;
+      --muted: #6b6b85;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Space Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+    .wrap {
+      text-align: center;
+      max-width: 480px;
+      width: 100%;
+    }
+    .tag {
+      font-size: 10px;
+      letter-spacing: 4px;
+      color: var(--purple);
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+    .code {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(100px, 20vw, 160px);
+      line-height: 1;
+      background: linear-gradient(135deg, var(--purple), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 8px;
+    }
+    .msg {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 36px;
+    }
+    .waveform {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 3px;
+      margin-bottom: 36px;
+      height: 32px;
+    }
+    .bar {
+      width: 3px;
+      border-radius: 2px;
+      background: var(--purple);
+      opacity: 0.4;
+      animation: wave 1.2s ease-in-out infinite;
+    }
+    @keyframes wave {
+      0%, 100% { transform: scaleY(0.3); opacity: 0.2; }
+      50% { transform: scaleY(1); opacity: 0.7; }
+    }
+    .btn {
+      display: inline-block;
+      background: linear-gradient(135deg, var(--purple), var(--accent));
+      color: #fff;
+      text-decoration: none;
+      padding: 14px 32px;
+      border-radius: 10px;
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 18px;
+      letter-spacing: 3px;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(123,92,255,.4);
+    }
+    .footer {
+      margin-top: 32px;
+      font-size: 10px;
+      color: var(--border);
+      letter-spacing: 2px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="tag">✦ Suno Prompt Engineer</div>
+    <div class="code">404</div>
+    <div class="waveform" id="waveform"></div>
+    <p class="msg">
+      This track doesn't exist.<br>
+      Maybe it was deleted, moved, or never generated.
+    </p>
+    <a href="/en/" class="btn">↩ BACK TO THE TOOL</a>
+    <div class="footer">supre.online</div>
+  </div>
+  <script>
+    var wf = document.getElementById('waveform');
+    var heights = [8,14,20,28,32,24,18,28,32,20,14,8,18,26,32,24,16,10,22,30,28,18,12];
+    heights.forEach(function(h, i) {
+      var b = document.createElement('div');
+      b.className = 'bar';
+      b.style.height = h + 'px';
+      b.style.animationDelay = (i * 0.07) + 's';
+      wf.appendChild(b);
+    });
+
+    // Detect language from the URL that caused the 404
+    var path = window.location.pathname || '';
+    var ref = document.referrer || '';
+    var isIt = path.startsWith('/it') || ref.indexOf('/it') !== -1;
+    if (isIt) {
+      var btn = document.querySelector('.btn');
+      btn.href = '/it/';
+      btn.textContent = '↩ TORNA AL TOOL';
+      document.querySelector('.msg').innerHTML =
+        'Questa pagina non esiste.<br>Forse è stata eliminata, spostata o mai generata.';
+    }
+  </script>
+</body>
+</html>
