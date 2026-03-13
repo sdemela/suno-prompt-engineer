@@ -25,13 +25,19 @@ async function redisGet(key) {
   return d.result;
 }
 
-async function redisDecrby(key, n) {
-  const url = `${process.env.UPSTASH_REDIS_REST_URL}/decrby/${encodeURIComponent(key)}/${n}`;
-  const r = await fetch(url, {
-    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+// Atomic check-and-decrement via Lua script (fix race condition #3)
+// Returns new credit count if > 0, or -1 if already at zero
+async function redisAtomicDecrIfPositive(key) {
+  const base = process.env.UPSTASH_REDIS_REST_URL;
+  const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
+  const script = 'local v=redis.call("GET",KEYS[1]) local c=tonumber(v) or 0 if c<=0 then return -1 end return redis.call("DECRBY",KEYS[1],1)';
+  const r = await fetch(`${base}/eval`, {
+    method: 'POST',
+    headers: { ...auth, 'Content-Type': 'application/json' },
+    body: JSON.stringify([script, 1, key]),
   });
   const d = await r.json();
-  return d.result;
+  return typeof d.result === 'number' ? d.result : -2;
 }
 
 // Redis-based free tier counter — INCR + EXPIREAT a mezzanotte UTC
@@ -71,15 +77,16 @@ export default async function handler(req, res) {
   const totalLen = JSON.stringify(formData).length;
   if (totalLen > 3000) return res.status(400).json({ error: 'Input too long' });
 
-  // --- CREDITS TIER (paid) ---
+  // --- CREDITS TIER (paid) — atomic check+decrement via Lua ---
   if (uuid && uuid.length >= 10) {
     try {
-      const raw = await redisGet(`credits:${uuid}`);
-      const credits = parseInt(raw) || 0;
-      if (credits <= 0) {
+      const newCredits = await redisAtomicDecrIfPositive(`credits:${uuid}`);
+      if (newCredits === -1) {
         return res.status(402).json({ error: 'no_credits', message: 'No credits remaining.' });
       }
-      const newCredits = await redisDecrby(`credits:${uuid}`, 1);
+      if (newCredits === -2) {
+        return res.status(500).json({ error: 'redis_error', message: 'Failed to decrement credits.' });
+      }
       const result = await callAnthropic(formData);
       return res.status(200).json({ ...result, creditsRemaining: newCredits, tier: 'credits' });
     } catch(e) {
