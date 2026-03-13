@@ -11,6 +11,11 @@ function setCors(req, res) {
 }
 
 // api/save-email.js — saves user email linked to UUID, sends session ID via Resend
+// Rate limiting: max 3 requests per IP per hour, max 1 per UUID per 10 minutes
+
+const RATE_IP_MAX  = 3;    // max sends per IP per hour
+const RATE_IP_TTL  = 3600; // 1 hour in seconds
+const RATE_UUID_TTL = 600; // 10 min cooldown per UUID
 
 async function redisSet(key, value) {
   const url = `${process.env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}/${encodeURIComponent(value)}`;
@@ -29,6 +34,31 @@ async function redisGet(key) {
   return d.result;
 }
 
+// INCR with TTL on first set — returns new count
+async function redisIncrWithTTL(key, ttl) {
+  const incr = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/incr/${encodeURIComponent(key)}`, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
+  const d = await incr.json();
+  const count = d.result;
+  // Set TTL only on first increment (count === 1)
+  if (count === 1) {
+    await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/expire/${encodeURIComponent(key)}/${ttl}`, {
+      headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+    });
+  }
+  return count;
+}
+
+// SETNX with TTL — returns true if key was set (first time), false if already exists
+async function redisSetNxEx(key, ttl) {
+  const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}/1/nx/ex/${ttl}`, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
+  const d = await r.json();
+  return d.result === 'OK';
+}
+
 export default async function handler(req, res) {
   setCors(req, res);
   if (req.method === 'OPTIONS') return res.status(200).end();
@@ -37,6 +67,28 @@ export default async function handler(req, res) {
   const { uuid, email } = req.body || {};
   if (!uuid || uuid.length < 10) return res.status(400).json({ error: 'Invalid UUID' });
   if (!email || !email.includes('@')) return res.status(400).json({ error: 'Invalid email' });
+
+  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+
+  // Rate limit #1: UUID cooldown — max 1 send per UUID per 10 minutes
+  const uuidKey = `rl:email:uuid:${uuid}`;
+  const uuidOk = await redisSetNxEx(uuidKey, RATE_UUID_TTL);
+  if (!uuidOk) {
+    return res.status(429).json({
+      error: 'cooldown',
+      message: 'Please wait 10 minutes before requesting another session ID email.'
+    });
+  }
+
+  // Rate limit #2: IP limit — max 3 sends per IP per hour
+  const ipKey = `rl:email:ip:${ip}`;
+  const ipCount = await redisIncrWithTTL(ipKey, RATE_IP_TTL);
+  if (ipCount > RATE_IP_MAX) {
+    return res.status(429).json({
+      error: 'rate_limit',
+      message: 'Too many requests from this IP. Try again later.'
+    });
+  }
 
   try {
     // Save email → uuid mapping
