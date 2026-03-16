@@ -436,13 +436,10 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
 
   <div class="free-banner" id="freeBanner">
     <div>
-      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni gratuite oggi</div>
+      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni rimaste oggi</div>
       <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Dalla 3ª acquista crediti — reset a mezzanotte</div>
     </div>
-    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
-      <div class="free-pill"><span class="used-count" id="usedCount">0</span><span class="total-count">/ 2 free</span></div>
-      <button class="buy-btn" onclick="openPricing()">+ Acquista crediti</button>
-    </div>
+    <div class="free-pill"><span id="usedCount" style="font-size:16px;font-weight:700;color:#fff">2</span><span style="color:var(--muted)">/ 2 free</span></div>
   </div>
   <div class="credits-bar" id="creditsBar" style="display:none">
     <div>
@@ -812,25 +809,14 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
 </div>
 
 <!-- LIMIT MODAL -->
-<div class="movr" id="limitModal" style="display:none" onclick="if(event.target===this)closeLimitModal()">
-  <div class="mbox" style="max-width:520px">
-    <div style="font-size:32px;margin-bottom:12px">🔒</div>
-    <h2 style="color:var(--accent)">Limite giornaliero raggiunto</h2>
-    <p>Hai usato le tue <strong style="color:var(--text)">2 generazioni gratuite</strong> di oggi.<br>Si ricaricano a mezzanotte — o sblocca altri crediti subito.</p>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:20px 0">
-      <div style="background:rgba(123,92,255,.08);border:1px solid rgba(123,92,255,.25);border-radius:12px;padding:16px;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text)">€9</div>
-        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--purple);margin-bottom:6px">PRO · 50 credits</div>
-        <div style="font-size:11px;color:var(--muted)">Never expire</div>
-      </div>
-      <div style="background:rgba(255,60,95,.08);border:1px solid rgba(255,60,95,.25);border-radius:12px;padding:16px;text-align:center">
-        <div style="font-family:'Bebas Neue',sans-serif;font-size:28px;color:var(--text)">€19</div>
-        <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--accent);margin-bottom:6px">STUDIO · 120 credits</div>
-        <div style="font-size:11px;color:var(--muted)">Best value</div>
-      </div>
+<div class="movr" id="limitModal" style="display:none">
+  <div class="mbox">
+    <h2>Limite giornaliero raggiunto</h2>
+    <p>Hai usato le 2 generazioni gratuite di oggi. Acquista crediti per continuare. Reset a mezzanotte.</p>
+    <button class="btn-pay" style="margin-bottom:16px" onclick="closeLimitModal();openPricing()">⚡ ACQUISTA CREDITI →</button>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <button id="modalCloseBtn" style="background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:12px">CHIUDI</button>
     </div>
-    <button class="btn-pay" style="width:100%;margin-bottom:10px" onclick="closeLimitModal();openPricing()">⚡ ACQUISTA CREDITI →</button>
-    <button onclick="closeLimitModal()" style="width:100%;background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:8px;padding:10px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px">ASPETTA MEZZANOTTE</button>
   </div>
 </div>
 
@@ -844,7 +830,7 @@ function updateBanner(){
   if(userCredits>0){b.style.display='none';return;}
   b.style.display='flex';
   document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' free generations':' free generation')+' today'):'🔒 Limite raggiunto — acquista crediti';
-  var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
+  var uc=document.getElementById('usedCount');if(uc)uc.textContent=r;
 }
 
 var AD_SEC=5;var adPushed=false;
