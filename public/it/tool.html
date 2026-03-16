@@ -436,10 +436,10 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
 
   <div class="free-banner" id="freeBanner">
     <div>
-      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni rimaste oggi</div>
+      <div class="free-counter" id="freeCounterText">⚡ 2 generazioni gratuite oggi</div>
       <div style="font-size:11px;color:var(--muted);margin-top:3px;font-family:'Space Mono',monospace">Dalla 3ª acquista crediti — reset a mezzanotte</div>
     </div>
-    <div class="free-pill"><span id="usedCount" style="font-size:16px;font-weight:700;color:#fff">2</span><span style="color:var(--muted)">/ 2 free</span></div>
+    <div class="free-pill"><span class="used-count" id="usedCount">0</span><span class="total-count">/ 2 free</span></div>
   </div>
   <div class="credits-bar" id="creditsBar" style="display:none">
     <div>
@@ -821,6 +821,8 @@ gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
 </div>
 
 <script>
+// FIX #3 XSS: sanitize all user/AI data before innerHTML insertion
+function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
 var apiKey='';var audioFileName=null;var lastOutput=null;var FREE_LIMIT=2;var cdTimer=null;
 function getTodayKey(){return 'spe_used_'+new Date().toISOString().slice(0,10);}
 function getUsed(){return parseInt(localStorage.getItem(getTodayKey())||'0',10);}
@@ -830,7 +832,7 @@ function updateBanner(){
   if(userCredits>0){b.style.display='none';return;}
   b.style.display='flex';
   document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' free generations':' free generation')+' today'):'🔒 Limite raggiunto — acquista crediti';
-  var uc=document.getElementById('usedCount');if(uc)uc.textContent=r;
+  var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
 }
 
 var AD_SEC=5;var adPushed=false;
@@ -960,14 +962,14 @@ async function generate(){
   document.getElementById('outLabel').textContent=(genre||'Custom')+' — '+bpm+' BPM';
   document.getElementById('promptText').textContent=result.stylePrompt;
 
-  document.getElementById('techTags').innerHTML=techTags.map(function(t){return '<span class="tpill">'+t+'</span>';}).join('');
+  document.getElementById('techTags').innerHTML=techTags.map(function(t){return '<span class="tpill">'+esc(t)+'</span>';}).join('');
 
   // Lyrics block
   var lyricsBlock=document.getElementById('lyricsBlock');
   var lyricsContent=document.getElementById('lyricsContent');
   if(result.lyricsPrompt&&result.lyricsPrompt.trim().length>0){
     // Render metatags with color highlight
-    var lyricsHtml=result.lyricsPrompt.replace(/\[([^\]]+)\]/g,'<span style="color:var(--accent);font-weight:bold">[$1]</span>');
+    var lyricsHtml=esc(result.lyricsPrompt).replace(/\[([^\]]+)\]/g,'<span style="color:var(--accent);font-weight:bold">[$1]</span>');
     lyricsContent.innerHTML=lyricsHtml.replace(/\n/g,'<br>');
     lyricsBlock.style.display='block';
   } else {
@@ -976,7 +978,7 @@ async function generate(){
 
   if(audioFileName||refDesc){
     var h='';
-    if(audioFileName)h+='📎 <strong>'+audioFileName+'</strong> — upload in Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';
+    if(audioFileName)h+='📎 <strong>'+esc(audioFileName)+'</strong> — upload in Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';
     if(refDesc)h+='📝 Reference description used for AI keyword extraction.<br>';
     h+='<span style="color:#6b6b85;font-size:11px">→ Title and artist stay private.</span>';
     document.getElementById('refContent').innerHTML=h;
@@ -985,7 +987,7 @@ async function generate(){
     document.getElementById('refBlock').style.display='none';
   }
 
-  document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+t+'</div>';}).join('');
+  document.getElementById('sunoTips').innerHTML=tips.map(function(t){return '<div style="margin-bottom:6px">'+esc(t)+'</div>';}).join('');
 
   lastOutput=result.stylePrompt+(result.lyricsPrompt&&result.lyricsPrompt.trim()?'\n\n'+result.lyricsPrompt:'');
   document.getElementById('regenBtn').style.display='block';

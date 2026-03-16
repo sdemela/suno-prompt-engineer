@@ -1,4 +1,4 @@
-// CORS allowlist (fix #3)
+// CORS allowlist
 const ALLOWED_ORIGINS = ['https://supre.online', 'https://www.supre.online'];
 function setCors(req, res) {
   const origin = req.headers['origin'] || '';
@@ -10,9 +10,17 @@ function setCors(req, res) {
   res.setHeader('Vary', 'Origin');
 }
 
-// api/generate.js — Vercel serverless function
-// Free tier: 2/day per IP — rate limit centralizzato su Redis (fix #4)
-// Credits tier: paid credits in Upstash Redis per UUID (via REST API, no SDK)
+// Security headers
+function setSecurityHeaders(res) {
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
+  res.setHeader('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
+}
+
+// api/generate.js
+// FIX #2: UUID must match spe- format — unknown UUIDs fall through to free tier
+// FIX #4: x-forwarded-for uses LAST trusted proxy IP, not first (spoofable)
 
 const FREE_LIMIT = 2;
 
@@ -25,40 +33,35 @@ async function redisGet(key) {
   return d.result;
 }
 
-// Atomic check-and-decrement via Lua script (fix race condition #3)
-// Returns new credit count if > 0, or -1 if already at zero
+// Atomic check-and-decrement via Lua script
+// Returns: remaining credits (>=0), -1 if zero, -2 on error, -3 if key doesn't exist
 async function redisAtomicDecrIfPositive(key) {
   const base = process.env.UPSTASH_REDIS_REST_URL;
   const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
-  const script = 'local v=redis.call("GET",KEYS[1]) local c=tonumber(v) or 0 if c<=0 then return -1 end return redis.call("DECRBY",KEYS[1],1)';
+  const script = 'local v=redis.call("GET",KEYS[1]) if v==false then return -3 end local c=tonumber(v) or 0 if c<=0 then return -1 end return redis.call("DECRBY",KEYS[1],1)';
   const r = await fetch(`${base}/eval`, {
     method: 'POST',
     headers: { ...auth, 'Content-Type': 'application/json' },
     body: JSON.stringify([script, 1, key]),
   });
   const d = await r.json();
-  if (d.result === null || d.result === undefined) return -3; // key doesn't exist
+  if (d.result === null || d.result === undefined) return -3;
   return typeof d.result === 'number' ? d.result : -2;
 }
 
-// Redis-based free tier counter — INCR + EXPIREAT a mezzanotte UTC
-// Condiviso tra tutte le istanze serverless, nessun cold start issue
+// Redis-based free tier counter — INCR + EXPIREAT at midnight UTC
 async function redisIncrFreeTier(key) {
   const base = process.env.UPSTASH_REDIS_REST_URL;
   const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
-
   const incrRes = await fetch(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
   const incrData = await incrRes.json();
   const count = incrData.result;
-
-  // Set expiry only on first increment — expires at next midnight UTC
   if (count === 1) {
     const now = new Date();
     const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
     const expireAt = Math.floor(midnight.getTime() / 1000);
     await fetch(`${base}/expireat/${encodeURIComponent(key)}/${expireAt}`, { headers: auth });
   }
-
   return count;
 }
 
@@ -67,8 +70,21 @@ function getFreeTierKey(ip) {
   return `free:${ip}:${today}`;
 }
 
+// FIX #4: Use rightmost IP in x-forwarded-for chain (last hop before Vercel)
+// This is harder to spoof than the leftmost (client-controlled) value
+function getTrustedIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ips = forwarded.split(',').map(s => s.trim()).filter(Boolean);
+    // Vercel adds the real client IP as the last entry in the chain
+    return ips[ips.length - 1] || 'unknown';
+  }
+  return req.socket?.remoteAddress || 'unknown';
+}
+
 export default async function handler(req, res) {
   setCors(req, res);
+  setSecurityHeaders(res);
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'POST') return res.status(405).json({ error: 'Method not allowed' });
 
@@ -78,12 +94,14 @@ export default async function handler(req, res) {
   const totalLen = JSON.stringify(formData).length;
   if (totalLen > 3000) return res.status(400).json({ error: 'Input too long' });
 
-  // --- CREDITS TIER (paid) — atomic check+decrement via Lua ---
-  if (uuid && uuid.length >= 10) {
+  // FIX #2: Only treat as paid user if UUID matches our format AND has credits in Redis
+  const isValidSpeUuid = uuid && typeof uuid === 'string' && uuid.startsWith('spe-') && uuid.length >= 15 && uuid.length <= 60;
+
+  if (isValidSpeUuid) {
     try {
       const newCredits = await redisAtomicDecrIfPositive(`credits:${uuid}`);
       if (newCredits === -3) {
-        // UUID exists but no credits key — treat as free tier user, fall through
+        // Key doesn't exist — not a paid user, fall through to free tier
       } else if (newCredits === -1) {
         return res.status(402).json({ error: 'no_credits', message: 'No credits remaining.' });
       } else if (newCredits === -2) {
@@ -98,8 +116,8 @@ export default async function handler(req, res) {
     }
   }
 
-  // --- FREE TIER (IP-based, 2/day — Redis centralizzato) ---
-  const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
+  // --- FREE TIER (IP-based, 2/day) ---
+  const ip = getTrustedIp(req);
   const freeKey = getFreeTierKey(ip);
   const used = await redisIncrFreeTier(freeKey);
 
