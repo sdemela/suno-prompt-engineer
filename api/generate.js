@@ -37,6 +37,7 @@ async function redisAtomicDecrIfPositive(key) {
     body: JSON.stringify([script, 1, key]),
   });
   const d = await r.json();
+  if (d.result === null || d.result === undefined) return -3; // key doesn't exist
   return typeof d.result === 'number' ? d.result : -2;
 }
 
@@ -81,14 +82,16 @@ export default async function handler(req, res) {
   if (uuid && uuid.length >= 10) {
     try {
       const newCredits = await redisAtomicDecrIfPositive(`credits:${uuid}`);
-      if (newCredits === -1) {
+      if (newCredits === -3) {
+        // UUID exists but no credits key — treat as free tier user, fall through
+      } else if (newCredits === -1) {
         return res.status(402).json({ error: 'no_credits', message: 'No credits remaining.' });
-      }
-      if (newCredits === -2) {
+      } else if (newCredits === -2) {
         return res.status(500).json({ error: 'redis_error', message: 'Failed to decrement credits.' });
+      } else {
+        const result = await callAnthropic(formData);
+        return res.status(200).json({ ...result, creditsRemaining: newCredits, tier: 'credits' });
       }
-      const result = await callAnthropic(formData);
-      return res.status(200).json({ ...result, creditsRemaining: newCredits, tier: 'credits' });
     } catch(e) {
       console.error('Credits tier error:', e.message);
       return res.status(500).json({ error: e.message });
