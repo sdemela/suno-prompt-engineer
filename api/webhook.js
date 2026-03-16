@@ -165,7 +165,7 @@ async function sendEmail(email, pkg, totalCredits, uuid) {
     <div style="font-size:11px;color:#6b6b85;margin-top:8px;line-height:1.6">Credits are linked to this browser session. If you switch browser or device, enter this ID in the tool to restore your credits.</div>
   </div>
   <div style="text-align:center">
-    <a href="https://supre.online" style="display:inline-block;background:linear-gradient(135deg,#7b5cff,#ff3c5f);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:bold">START GENERATING →</a>
+    <a href="https://supre.online/en/tool" style="display:inline-block;background:linear-gradient(135deg,#7b5cff,#ff3c5f);color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-size:14px;letter-spacing:2px;text-transform:uppercase;font-weight:bold">START GENERATING →</a>
   </div>
   <div style="text-align:center;margin-top:32px;font-size:10px;color:#2a2a3a;letter-spacing:1px">
     supre.online · Suno Prompt Engineer<br>
