@@ -28,6 +28,7 @@ var selectedPkg = 'pro';
 async function loadCredits(){
   try {
     var r = await fetch('/api/credits', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, authHeaders()), body: JSON.stringify({uuid: userUuid})});
+    if(!r.ok){ console.warn('Credits check failed:', r.status); return; }
     var d = await r.json();
     userCredits = d.credits || 0;
     updateCreditsUI();
@@ -62,10 +63,11 @@ async function startCheckout(){
   btn.disabled = true; btn.textContent = 'Loading...';
   try {
     var r = await fetch('/api/checkout', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, authHeaders()), body: JSON.stringify({pkg: selectedPkg, uuid: userUuid, lang: 'it'})});
+    if(!r.ok){ var ed = await r.json().catch(function(){return {};}); throw new Error(ed.message || 'Sessione di pagamento non avviata. Riprova.'); }
     var d = await r.json();
     if(d.url){ window.location.href = d.url; }
-    else { alert('Error: '+JSON.stringify(d)); btn.disabled=false; btn.textContent='PAGA E ATTIVA →'; }
-  } catch(e){ alert('Error: '+e.message); btn.disabled=false; btn.textContent='PAGA E ATTIVA →'; }
+    else { throw new Error('Impossibile avviare il pagamento. Riprova.'); }
+  } catch(e){ alert(e.message); btn.disabled=false; btn.textContent='PAGA E ATTIVA →'; }
 }
 
 function toggleRestore(){
@@ -75,9 +77,10 @@ function toggleRestore(){
 
 async function restoreCredits(){
   var id = document.getElementById('restoreInput').value.trim();
-  if(!id || id.length < 10){ alert('Enter a valid session ID.'); return; }
+  if(!id || id.length < 10){ alert('Inserisci un Session ID valido.'); return; }
   try {
     var r = await fetch('/api/credits', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, authHeaders()), body: JSON.stringify({uuid: id})});
+    if(!r.ok){ alert('Impossibile verificare il Session ID. Riprova.'); return; }
     var d = await r.json();
     if(d.credits > 0){
       localStorage.setItem('spe_uuid', id);
@@ -86,9 +89,9 @@ async function restoreCredits(){
       updateCreditsUI();
       document.getElementById('sessionIdDisplay').textContent = userUuid;
       closePricing();
-      alert('✓ Restored! ' + d.credits + ' credits available.');
-    } else { alert('No credits found for that session ID.'); }
-  } catch(e){ alert('Error restoring credits.'); }
+      alert('✓ Ripristinati! ' + d.credits + ' crediti disponibili.');
+    } else { alert('Nessun credito trovato per questo Session ID.'); }
+  } catch(e){ alert('Impossibile ripristinare i crediti. Controlla la connessione e riprova.'); }
 }
 
 function copySessionId(){
@@ -101,16 +104,17 @@ function copySessionId(){
 
 async function saveEmail(){
   var email = document.getElementById('emailInput').value.trim();
-  if(!email || !email.includes('@')){ alert('Please enter a valid email.'); return; }
+  if(!email || !email.includes('@')){ alert('Inserisci un indirizzo email valido.'); return; }
   try {
     var r = await fetch('/api/save-email', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid, email: email})});
+    if(!r.ok){ alert('Impossibile salvare l\'email. Riprova.'); return; }
     var d = await r.json();
     if(d.ok){
       if(d.sig) localStorage.setItem('spe_sig', d.sig);
       document.getElementById('emailSaveArea').style.display = 'none';
       document.getElementById('emailSaved').style.display = 'block';
-    }
-  } catch(e){ alert('Error: '+e.message); }
+    } else { alert('Impossibile salvare l\'email. Riprova.'); }
+  } catch(e){ alert('Impossibile salvare l\'email. Controlla la connessione.'); }
 }
 </script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
