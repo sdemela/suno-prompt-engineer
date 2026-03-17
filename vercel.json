@@ -28,6 +28,8 @@
 
     { "src": "/en/tool",             "dest": "/public/en/tool.html" },
     { "src": "/it/tool",             "dest": "/public/it/tool.html" },
+    { "src": "/en/landing",          "dest": "/public/en/landing_en.html" },
+    { "src": "/it/landing",          "dest": "/public/it/landing_it.html" },
     { "src": "/en(/?)",              "dest": "/public/en/index.html" },
     { "src": "/it(/?)",              "dest": "/public/it/index.html" },
 
