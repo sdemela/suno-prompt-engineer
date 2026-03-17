@@ -15,7 +15,7 @@
 var userUuid = localStorage.getItem('spe_uuid');
 if(!userUuid){ userUuid = 'spe-'+Date.now()+'-'+Math.random().toString(36).slice(2,9); localStorage.setItem('spe_uuid', userUuid); }
 
-var userCredits = 0;
+function authHeaders(){   return {     'X-SPE-UUID': localStorage.getItem('spe_uuid') || '',     'X-SPE-Sig':  localStorage.getItem('spe_sig')  || ''   }; }  var userCredits = 0;
 var selectedPkg = 'pro';
 
 async function loadCredits(){
