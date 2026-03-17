@@ -71,15 +71,10 @@ body::before {
 
 /* ── NAV ── */
 nav {
-  position: fixed;
-  top: 0; left: 0; right: 0;
-  z-index: 100;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 16px 40px;
-  background: rgba(10,10,10,0.85);
-  backdrop-filter: blur(12px);
   border-bottom: 1px solid rgba(42,42,58,0.5);
 }
 .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
@@ -109,7 +104,7 @@ nav {
   align-items: center;
   justify-content: center;
   text-align: center;
-  padding: 120px 24px 80px;
+  padding: 80px 24px 80px;
   overflow: hidden;
 }
 .hero-glow {
@@ -514,28 +509,18 @@ footer {
 </head>
 <body>
 
-<!-- PRODUCT HUNT LAUNCH BANNER -->
+<!-- STICKY HEADER: banner + nav -->
+<div id="site-header" style="position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.97);backdrop-filter:blur(12px)">
 <div id="ph-banner" style="background:linear-gradient(90deg,rgba(228,184,74,0.12),rgba(228,184,74,0.06));border-bottom:1px solid rgba(228,184,74,0.2);padding:10px 24px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px">
   <span style="color:#e4b84a">🔺 Featured on Product Hunt today</span>
   <span style="color:#6b6b85;margin:0 12px">·</span>
   <a href="https://www.producthunt.com/products/supre?launch=supre" target="_blank" rel="noopener" style="color:#e4b84a;text-decoration:underline;text-underline-offset:3px">Upvote & support →</a>
 </div>
-<script>
-(function(){
-  var banner = document.getElementById('ph-banner');
-  var nav = document.querySelector('nav');
-  if(banner && nav){
-    var h = banner.offsetHeight;
-    nav.style.top = h + 'px';
-  }
-})();
-</script>
-
-<!-- NAV -->
-<nav>
+<nav style="position:relative;top:auto">
   <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
   <a href="/en/tool" class="nav-cta">TRY FREE →</a>
 </nav>
+</div>
 
 <!-- HERO -->
 <section class="hero">
