@@ -1,7 +1,7 @@
 // api/_auth.js — modulo HMAC condiviso
 // Verifica che uuid + signature siano validi prima di processare ogni request
 
-const crypto = require("crypto");
+import crypto from 'crypto';
 
 const SECRET = process.env.SPE_HMAC_SECRET;
 
@@ -9,7 +9,7 @@ const SECRET = process.env.SPE_HMAC_SECRET;
  * Genera la firma HMAC-SHA256 per un UUID.
  * Usato solo in api/save-email.js al momento della creazione UUID.
  */
-function signUUID(uuid) {
+export function signUUID(uuid) {
   if (!SECRET) throw new Error("SPE_HMAC_SECRET non configurato");
   return crypto.createHmac("sha256", SECRET).update(uuid).digest("hex");
 }
@@ -18,7 +18,7 @@ function signUUID(uuid) {
  * Verifica uuid + signature ricevuti nella request.
  * Restituisce { valid: true } oppure { valid: false, error: "..." }
  */
-function verifyHMAC(uuid, signature) {
+export function verifyHMAC(uuid, signature) {
   if (!SECRET) {
     console.error("[auth] SPE_HMAC_SECRET mancante");
     return { valid: false, error: "Server misconfigured" };
@@ -62,10 +62,8 @@ function verifyHMAC(uuid, signature) {
  *   X-SPE-UUID: spe-...
  *   X-SPE-Sig:  <hex hmac>
  */
-function extractAndVerify(req) {
+export function extractAndVerify(req) {
   const uuid = req.headers["x-spe-uuid"] || "";
   const sig = req.headers["x-spe-sig"] || "";
   return { uuid, sig, ...verifyHMAC(uuid, sig) };
 }
-
-module.exports = { signUUID, verifyHMAC, extractAndVerify };

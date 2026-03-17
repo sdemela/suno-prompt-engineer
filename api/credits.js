@@ -96,6 +96,7 @@ export default async function handler(req, res) {
     const credits = parseInt(result) || 0;
     return res.status(200).json({ credits, authenticated: true });
   } catch(e) {
-    return res.status(500).json({ error: e.message });
+    console.error('[credits] Redis error:', e.message);
+    return res.status(500).json({ error: 'Internal error' });
   }
 }
