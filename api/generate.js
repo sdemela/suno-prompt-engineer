@@ -128,7 +128,7 @@ export default async function handler(req, res) {
         }
       } catch(e) {
         console.error('Credits tier error:', e.message);
-        return res.status(500).json({ error: e.message });
+        return res.status(500).json({ error: 'Internal error' });
       }
     }
     // Firma non valida → cade nel free tier sotto
@@ -156,7 +156,8 @@ export default async function handler(req, res) {
       tier: 'free',
     });
   } catch(e) {
-    return res.status(500).json({ error: e.message });
+    console.error('Free tier error:', e.message);
+    return res.status(500).json({ error: 'Internal error' });
   }
 }
 
