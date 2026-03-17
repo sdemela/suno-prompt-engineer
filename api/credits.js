@@ -21,34 +21,41 @@ function setSecurityHeaders(res) {
 // FIX #2: IP extraction rightmost (coerente con generate.js)
 // FIX #3: usa il parametro ttl invece di hardcoded 60
 
+// Fix #5: timeout wrapper for all external calls
+async function fetchWithTimeout(url, options = {}, ms = 6000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function redisGet(key) {
   const url = `${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`;
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } });
+  const r = await fetchWithTimeout(url, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } });
   const d = await r.json();
   return d.result;
 }
 
-// FIX #2: rightmost IP
-function getTrustedIp(req) {
+async function redisIncrWithTTL(key, ttl) {
+  const base = process.env.UPSTASH_REDIS_REST_URL;
+  const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
+  const incr = await fetchWithTimeout(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
+  const d = await incr.json();
+  const count = d.result;
+  if (count === 1) {
+    await fetchWithTimeout(`${base}/expire/${encodeURIComponent(key)}/${ttl}`, { headers: auth });
+  }
+  return count;
+}
   const forwarded = req.headers['x-forwarded-for'];
   if (forwarded) {
     const ips = forwarded.split(',').map(s => s.trim()).filter(Boolean);
     return ips[ips.length - 1] || 'unknown';
   }
   return req.socket?.remoteAddress || 'unknown';
-}
-
-// FIX #3: usa parametro ttl (non hardcoded)
-async function redisIncrWithTTL(key, ttl) {
-  const base = process.env.UPSTASH_REDIS_REST_URL;
-  const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
-  const incr = await fetch(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
-  const d = await incr.json();
-  const count = d.result;
-  if (count === 1) {
-    await fetch(`${base}/expire/${encodeURIComponent(key)}/${ttl}`, { headers: auth }); // FIX #3: era hardcoded 60
-  }
-  return count;
 }
 
 export default async function handler(req, res) {

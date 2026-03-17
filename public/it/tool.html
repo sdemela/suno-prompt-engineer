@@ -751,7 +751,7 @@ function renderHistory(){
   var h=loadHistory(),wrap=document.getElementById('histWrap'),list=document.getElementById('histList');
   if(!h.length){wrap.style.display='none';return;}
   wrap.style.display='block';
-  list.innerHTML=h.map(function(e,i){var d=new Date(e.ts);var time=d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="hist-item"><div style="flex:1;min-width:0"><div class="hist-text">'+e.prompt.replace(/</g,'&lt;')+'</div><div class="hist-meta">'+[e.version,e.genre,time].filter(Boolean).join(' · ')+'</div></div><button class="hist-cp" data-i="'+i+'">Copy</button></div>';}).join('');
+  list.innerHTML=h.map(function(e,i){var d=new Date(e.ts);var time=d.toLocaleDateString()+' '+d.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});return '<div class="hist-item"><div style="flex:1;min-width:0"><div class="hist-text">'+e.prompt.replace(/</g,'&lt;')+'</div><div class="hist-meta">'+[e.version,e.genre,time].filter(Boolean).map(function(s){return esc(s);}).join(' · ')+'</div></div><button class="hist-cp" data-i="'+i+'">Copy</button></div>';}).join('');
   list.querySelectorAll('.hist-cp').forEach(function(btn){btn.addEventListener('click',function(){var entry=loadHistory()[parseInt(this.dataset.i)];if(!entry)return;navigator.clipboard.writeText(entry.prompt).then(function(){btn.textContent='✓';setTimeout(function(){btn.textContent='Copia'},1500);});});});
 }
 document.getElementById('histClear').addEventListener('click',function(){saveHistory([]);renderHistory();});
