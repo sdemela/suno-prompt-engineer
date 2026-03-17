@@ -515,11 +515,21 @@ footer {
 <body>
 
 <!-- PRODUCT HUNT LAUNCH BANNER -->
-<div style="background:linear-gradient(90deg,rgba(228,184,74,0.12),rgba(228,184,74,0.06));border-bottom:1px solid rgba(228,184,74,0.2);padding:10px 24px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px">
+<div id="ph-banner" style="background:linear-gradient(90deg,rgba(228,184,74,0.12),rgba(228,184,74,0.06));border-bottom:1px solid rgba(228,184,74,0.2);padding:10px 24px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px">
   <span style="color:#e4b84a">🔺 Featured on Product Hunt today</span>
   <span style="color:#6b6b85;margin:0 12px">·</span>
   <a href="https://www.producthunt.com/products/supre?launch=supre" target="_blank" rel="noopener" style="color:#e4b84a;text-decoration:underline;text-underline-offset:3px">Upvote & support →</a>
 </div>
+<script>
+(function(){
+  var banner = document.getElementById('ph-banner');
+  var nav = document.querySelector('nav');
+  if(banner && nav){
+    var h = banner.offsetHeight;
+    nav.style.top = h + 'px';
+  }
+})();
+</script>
 
 <!-- NAV -->
 <nav>
