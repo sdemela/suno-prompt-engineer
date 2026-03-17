@@ -271,6 +271,39 @@ h1.hero-title em {
 .stat-l { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-top: 4px; }
 .stat-div { width: 1px; height: 40px; background: var(--border); }
 
+/* ── BEFORE / AFTER ── */
+.ba-section { padding: 100px 40px; }
+.ba-inner { max-width: 1000px; margin: 0 auto; }
+.ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 60px; }
+@media(max-width:700px){ .ba-grid { grid-template-columns: 1fr; } }
+.ba-card { border-radius: 14px; padding: 28px; }
+.ba-card.bad { background: rgba(255,60,95,0.05); border: 1px solid rgba(255,60,95,0.2); }
+.ba-card.good { background: rgba(0,229,176,0.05); border: 1px solid rgba(0,229,176,0.25); }
+.ba-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; margin-bottom: 16px; }
+.ba-card.bad .ba-label { color: var(--accent); }
+.ba-card.good .ba-label { color: var(--green); }
+.ba-prompt { font-family: 'Space Mono', monospace; font-size: 13px; line-height: 1.8; margin-bottom: 16px; padding: 14px 18px; border-radius: 8px; }
+.ba-card.bad .ba-prompt { color: var(--muted); background: rgba(255,60,95,0.06); border: 1px solid rgba(255,60,95,0.1); }
+.ba-card.good .ba-prompt { color: var(--green); background: rgba(0,229,176,0.06); border: 1px solid rgba(0,229,176,0.15); }
+.ba-result { font-size: 13px; color: var(--muted); line-height: 1.7; }
+
+/* ── TESTIMONIALS ── */
+.testimonials-section { padding: 100px 40px; background: var(--deep); }
+.testimonials-inner { max-width: 1100px; margin: 0 auto; }
+.testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 60px; }
+.testi-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; transition: border-color .2s; }
+.testi-card:hover { border-color: rgba(123,92,255,0.35); }
+.testi-quote { font-size: 14px; color: var(--text); line-height: 1.8; margin-bottom: 20px; font-style: italic; }
+.testi-quote::before { content: '"'; font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--purple); opacity: 0.4; display: block; line-height: 1; margin-bottom: 8px; font-style: normal; }
+.testi-author { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+
+/* ── TRY IT LIVE ── */
+.trylive-section { padding: 100px 40px; }
+.trylive-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+.trylive-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 40px; }
+.trylive-btn { background: var(--card); border: 1px solid var(--border); border-radius: 100px; padding: 12px 24px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text); text-decoration: none; transition: all .2s; letter-spacing: 1px; }
+.trylive-btn:hover { border-color: var(--purple); color: var(--purple); transform: translateY(-2px); background: rgba(123,92,255,0.08); }
+
 /* ── HOW IT WORKS ── */
 section { position: relative; z-index: 1; }
 .section-tag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--purple); text-transform: uppercase; margin-bottom: 16px; }
@@ -489,14 +522,14 @@ footer {
   <div class="hero-tag">AI Music Prompt Tool · Free to try</div>
 
   <h1 class="hero-title">
-    BETTER<br>
-    <em>SUNO</em><br>
-    PROMPTS.
+    THE PROMPT<br>
+    ENGINEER<br>
+    <em>SUNO FORGOT</em><br>
+    TO BUILD.
   </h1>
 
   <p class="hero-sub">
-    Stop writing prompts by trial and error.<br>
-    Pick your <strong>genre, mood, BPM and instruments</strong> — get an expert-crafted Style prompt optimized for Suno v3, v4, v4.5 and v5 in seconds.
+    Stop guessing the Style field. Pick your <strong>genre, mood, BPM and instruments</strong> — get a version-calibrated prompt for Suno v3, v4, v4.5 and v5 in seconds.
   </p>
 
   <div class="hero-cta-group">
@@ -544,6 +577,67 @@ footer {
     <div class="stat-l">Credits validity</div>
   </div>
 </div>
+
+<!-- BEFORE / AFTER -->
+<section class="ba-section reveal">
+  <div class="ba-inner">
+    <div class="section-tag">The difference</div>
+    <h2 class="section-title">BEFORE<br><em>vs</em> AFTER.</h2>
+    <p class="section-sub">This is what happens when you stop guessing.</p>
+    <div class="ba-grid">
+      <div class="ba-card bad">
+        <div class="ba-label">❌ Without Supre</div>
+        <div class="ba-prompt">"dark techno hypnotic bass Berlin"</div>
+        <div class="ba-result">→ Generic. Suno ignores half the keywords. Output sounds like every other track.</div>
+      </div>
+      <div class="ba-card good">
+        <div class="ba-label">✅ With Supre · v4.5</div>
+        <div class="ba-prompt">"hypnotic minimal techno, pulsing acid bassline cutting through reverb-drenched pads, TR-909 kick punching hard, wide stereo mix, late-night Berlin warehouse feel, dark driving energy at 132 BPM"</div>
+        <div class="ba-result">→ Calibrated for v4.5. Right length, right density, right structure. Every word does work.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="testimonials-inner">
+    <div class="section-tag">What people say</div>
+    <h2 class="section-title reveal">REAL<br>RESULTS.</h2>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-quote">"I was copy-pasting the same 5 words into Suno and wondering why everything sounded the same. First prompt from Supre — completely different result. The version calibration is the key thing nobody talks about."</div>
+        <div class="testi-author">— Marco R., music producer · Milan</div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-quote">"The lyrics metatag generator alone is worth it. I didn't know [Drop] and [Build up] did so much until I started using them properly. Supre outputs them automatically now."</div>
+        <div class="testi-author">— DJ Phantom, electronic artist</div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-quote">"Tried v5 for the first time with a Supre prompt. The difference vs what I was writing manually is embarrassing. Especially the production texture language — Suno actually responded to it."</div>
+        <div class="testi-author">— Sarah K., content creator · London</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRY IT LIVE -->
+<section class="trylive-section reveal">
+  <div class="trylive-inner">
+    <div class="section-tag">Try it now</div>
+    <h2 class="section-title">ONE CLICK<br>AWAY.</h2>
+    <p class="section-sub">Pick a genre. See what a calibrated prompt looks like. No signup.</p>
+    <div class="trylive-grid">
+      <a href="/en/tool?genre=Techno" class="trylive-btn">🎛️ Techno</a>
+      <a href="/en/tool?genre=Deep+House" class="trylive-btn">🎵 Deep House</a>
+      <a href="/en/tool?genre=Hip-Hop" class="trylive-btn">🎤 Hip-Hop</a>
+      <a href="/en/tool?genre=Ambient" class="trylive-btn">🌊 Ambient</a>
+      <a href="/en/tool?genre=Jazz" class="trylive-btn">🎷 Jazz</a>
+      <a href="/en/tool?genre=Afrobeat" class="trylive-btn">🥁 Afrobeat</a>
+    </div>
+    <p style="margin-top:24px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">⚡ 2 free generations today · resets at midnight</p>
+  </div>
+</section>
 
 <!-- HOW IT WORKS -->
 <section class="how-section" id="how">
@@ -766,9 +860,11 @@ footer {
 
 <!-- CTA BAND -->
 <section class="cta-band reveal">
-  <h2>START<br>CREATING.</h2>
-  <p>Your first 2 prompts are free. No signup. No credit card.</p>
+  <div style="display:inline-block;background:rgba(228,184,74,0.12);border:1px solid rgba(228,184,74,0.3);border-radius:100px;padding:6px 16px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#e4b84a;margin-bottom:24px">🔺 LAUNCHED TODAY ON PRODUCT HUNT</div>
+  <h2>YOUR 2 FREE<br>GENERATIONS<br>ARE WAITING.</h2>
+  <p>No signup. No credit card. Just better Suno prompts.</p>
   <a href="/en/tool" class="btn-primary">⚡ GENERATE YOUR FIRST PROMPT →</a>
+  <p style="margin-top:16px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px">Resets at midnight · Credits never expire</p>
 </section>
 
 <!-- FOOTER -->
