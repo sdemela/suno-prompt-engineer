@@ -64,7 +64,7 @@ export default async function handler(req, res) {
 
   const { uuid, email } = req.body || {};
   if (!uuid || uuid.length < 10) return res.status(400).json({ error: 'Invalid UUID' });
-  if (!email || !email.includes('@')) return res.status(400).json({ error: 'Invalid email' });
+  if (email && !email.includes('@')) return res.status(400).json({ error: 'Invalid email' });
 
   const ip = req.headers['x-forwarded-for']?.split(',')[0]?.trim() || req.socket?.remoteAddress || 'unknown';
 
