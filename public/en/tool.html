@@ -62,7 +62,7 @@ async function startCheckout(){
   btn.disabled = true;
   btn.textContent = 'Loading...';
   try {
-    var r = await fetch('/api/checkout', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({pkg: selectedPkg, uuid: userUuid, lang: 'en'})});
+    var r = await fetch('/api/checkout', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, authHeaders()), body: JSON.stringify({pkg: selectedPkg, uuid: userUuid, lang: 'en'})});
     var d = await r.json();
     if(d.url){ window.location.href = d.url; }
     else { alert('Error: '+JSON.stringify(d)); btn.disabled=false; btn.textContent='PAY & ACTIVATE →'; }
