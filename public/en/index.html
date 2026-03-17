@@ -518,7 +518,13 @@ footer {
 </div>
 <nav style="position:relative;top:auto">
   <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
-  <a href="/en/tool" class="nav-cta">TRY FREE →</a>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div style="display:flex;background:var(--card);border:1px solid var(--border);border-radius:8px;overflow:hidden;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px">
+      <a href="/en/" style="padding:7px 14px;color:#fff;background:var(--purple);text-decoration:none">EN</a>
+      <a href="/it/" style="padding:7px 14px;color:var(--muted);text-decoration:none;transition:color .2s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--muted)'">IT</a>
+    </div>
+    <a href="/en/tool" class="nav-cta">TRY FREE →</a>
+  </div>
 </nav>
 </div>
 
