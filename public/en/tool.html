@@ -20,7 +20,7 @@ var selectedPkg = 'pro';
 
 async function loadCredits(){
   try {
-    var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: userUuid})});
+    var r = await fetch('/api/credits', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, authHeaders()), body: JSON.stringify({uuid: userUuid})});
     var d = await r.json();
     userCredits = d.credits || 0;
     updateCreditsUI();
@@ -78,7 +78,7 @@ async function restoreCredits(){
   var id = document.getElementById('restoreInput').value.trim();
   if(!id || id.length < 10){ alert('Enter a valid session ID.'); return; }
   try {
-    var r = await fetch('/api/credits', {method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({uuid: id})});
+    var r = await fetch('/api/credits', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, authHeaders()), body: JSON.stringify({uuid: id})});
     var d = await r.json();
     if(d.credits > 0){
       localStorage.setItem('spe_uuid', id);
