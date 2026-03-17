@@ -345,8 +345,8 @@ section { position: relative; z-index: 1; }
 
 /* ── PRICING ── */
 .pricing-section { padding: 100px 40px; background: var(--deep); }
-.pricing-inner { max-width: 900px; margin: 0 auto; }
-.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; margin-top: 60px; }
+.pricing-inner { max-width: 1100px; margin: 0 auto; }
+.pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-top: 60px; }
 .pkg-card {
   background: var(--card);
   border: 1px solid var(--border);
@@ -469,8 +469,14 @@ footer {
 </head>
 <body>
 
-<!-- NAV -->
-<nav>
+<!-- PRODUCT HUNT LAUNCH BANNER -->
+<div style="background:linear-gradient(90deg,rgba(228,184,74,0.12),rgba(228,184,74,0.06));border-bottom:1px solid rgba(228,184,74,0.2);padding:10px 24px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px">
+  <span style="color:#e4b84a">🔺 Featured on Product Hunt today</span>
+  <span style="color:#6b6b85;margin:0 12px">·</span>
+  <a href="https://www.producthunt.com/posts/supre" target="_blank" rel="noopener" style="color:#e4b84a;text-decoration:underline;text-underline-offset:3px">Upvote & support →</a>
+</div>
+
+<!-- NAV -->\n<nav>
   <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
   <a href="/en/tool" class="nav-cta">TRY FREE →</a>
 </nav>
@@ -519,13 +525,13 @@ footer {
 <!-- SOCIAL PROOF STRIP -->
 <div class="social-strip reveal">
   <div class="stat">
-    <div class="stat-n">4.8<span>/5</span></div>
-    <div class="stat-l">Average rating</div>
+    <div class="stat-n" style="color:#e4b84a">🔺<span style="font-size:18px;color:#e4b84a"> PH</span></div>
+    <div class="stat-l">Featured today</div>
   </div>
   <div class="stat-div"></div>
   <div class="stat">
     <div class="stat-n">4<span>x</span></div>
-    <div class="stat-l">Suno versions supported</div>
+    <div class="stat-l">Suno versions</div>
   </div>
   <div class="stat-div"></div>
   <div class="stat">
@@ -668,14 +674,29 @@ footer {
         <a href="/en/tool" class="pkg-cta outline">START FREE →</a>
       </div>
 
-      <div class="pkg-card featured reveal">
-        <div class="pkg-badge">MOST POPULAR</div>
-        <div class="pkg-name">PRO</div>
-        <div class="pkg-price"><span>€</span>9</div>
+      <div class="pkg-card reveal">
+        <div class="pkg-name">STARTER</div>
+        <div class="pkg-price"><span>€</span>1.99</div>
         <div class="pkg-credits">50 credits · one-time</div>
         <ul class="pkg-features">
           <li>All free features</li>
           <li>50 prompt generations</li>
+          <li>€0.04 / generation</li>
+          <li>Credits never expire</li>
+          <li>Multi-device via session ID</li>
+        </ul>
+        <a href="/en/tool" class="pkg-cta outline">GET STARTER →</a>
+      </div>
+
+      <div class="pkg-card featured reveal">
+        <div class="pkg-badge">MOST POPULAR</div>
+        <div class="pkg-name">PRO</div>
+        <div class="pkg-price"><span>€</span>3.99</div>
+        <div class="pkg-credits">150 credits · one-time</div>
+        <ul class="pkg-features">
+          <li>All free features</li>
+          <li>150 prompt generations</li>
+          <li>€0.027 / generation</li>
           <li>Credits never expire</li>
           <li>Multi-device via session ID</li>
           <li>Email backup included</li>
@@ -685,16 +706,16 @@ footer {
 
       <div class="pkg-card reveal">
         <div class="pkg-name">STUDIO</div>
-        <div class="pkg-price"><span>€</span>19</div>
-        <div class="pkg-credits">120 credits · one-time</div>
+        <div class="pkg-price"><span>€</span>7.99</div>
+        <div class="pkg-credits">400 credits · one-time</div>
         <ul class="pkg-features">
           <li>All Pro features</li>
-          <li>120 prompt generations</li>
+          <li>400 prompt generations</li>
+          <li>€0.02 / generation</li>
           <li>Best value per credit</li>
           <li>Credits never expire</li>
-          <li>Priority support</li>
         </ul>
-        <a href="/en/tool" class="pkg-cta">GET STUDIO →</a>
+        <a href="/en/tool" class="pkg-cta outline">GET STUDIO →</a>
       </div>
     </div>
   </div>
