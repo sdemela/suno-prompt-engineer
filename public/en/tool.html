@@ -586,7 +586,7 @@ function updateBanner(){
   if(userCredits>0){b.style.display='none';return;}
   b.style.display='flex';
   document.getElementById('freeCounterText').textContent=r>0?('⚡ '+r+(r>1?' free generations':' free generation')+' today'):'🔒 Daily limit reached — buy credits';
-  var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.min(u,FREE_LIMIT);
+  var uc=document.getElementById('usedCount');if(uc)uc.textContent=Math.max(0,FREE_LIMIT-u);
 }
 var AD_SEC=5;var adPushed=false;
 function showAd(cb){
@@ -752,8 +752,21 @@ renderHistory();
 function showSuccessModal(credits,uuid){
   if(document.getElementById('successOverlay'))return;
   var o=document.createElement('div');o.className='success-overlay';o.id='successOverlay';
-  o.innerHTML='<div class="success-box"><button class="success-close" onclick="document.getElementById(\'successOverlay\').remove()">×</button><div class="success-title">CREDITS ACTIVATED</div><div class="success-credits"><div class="success-credits-num">'+credits+'</div><div class="success-credits-sub">credits added to your session</div></div><div class="success-session"><div class="success-session-lbl">Your session ID</div><div class="success-session-id">'+uuid+'</div><div class="success-session-hint">Save this ID — use it to restore credits on another browser or device.</div></div><button class="success-cta" onclick="document.getElementById(\'successOverlay\').remove()">▶ START GENERATING</button></div>';
-  document.body.appendChild(o);
+  var box=document.createElement('div');box.className='success-box';
+  var closeBtn=document.createElement('button');closeBtn.className='success-close';closeBtn.textContent='×';closeBtn.onclick=function(){o.remove();};
+  var title=document.createElement('div');title.className='success-title';title.textContent='CREDITS ACTIVATED';
+  var credDiv=document.createElement('div');credDiv.className='success-credits';
+  var credNum=document.createElement('div');credNum.className='success-credits-num';credNum.textContent=credits;
+  var credSub=document.createElement('div');credSub.className='success-credits-sub';credSub.textContent='credits added to your session';
+  credDiv.appendChild(credNum);credDiv.appendChild(credSub);
+  var sessDiv=document.createElement('div');sessDiv.className='success-session';
+  var sessLbl=document.createElement('div');sessLbl.className='success-session-lbl';sessLbl.textContent='Your session ID';
+  var sessId=document.createElement('div');sessId.className='success-session-id';sessId.textContent=uuid;
+  var sessHint=document.createElement('div');sessHint.className='success-session-hint';sessHint.textContent='Save this ID — use it to restore credits on another browser or device.';
+  sessDiv.appendChild(sessLbl);sessDiv.appendChild(sessId);sessDiv.appendChild(sessHint);
+  var cta=document.createElement('button');cta.className='success-cta';cta.textContent='▶ START GENERATING';cta.onclick=function(){o.remove();};
+  box.appendChild(closeBtn);box.appendChild(title);box.appendChild(credDiv);box.appendChild(sessDiv);box.appendChild(cta);
+  o.appendChild(box);document.body.appendChild(o);
   o.addEventListener('click',function(e){if(e.target===o)o.remove();});
 }
 </script>
