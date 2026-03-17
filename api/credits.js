@@ -50,6 +50,8 @@ async function redisIncrWithTTL(key, ttl) {
   }
   return count;
 }
+
+function getTrustedIp(req) {
   const forwarded = req.headers['x-forwarded-for'];
   if (forwarded) {
     const ips = forwarded.split(',').map(s => s.trim()).filter(Boolean);
