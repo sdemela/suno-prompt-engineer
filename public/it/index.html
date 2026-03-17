@@ -275,6 +275,37 @@ h1.hero-title em {
 .stat-l { font-size: 11px; color: var(--muted); font-family: 'Space Mono', monospace; letter-spacing: 1px; margin-top: 4px; }
 .stat-div { width: 1px; height: 40px; background: var(--border); }
 
+/* ── BEFORE / AFTER ── */
+.ba-section { padding: 100px 40px; }
+.ba-inner { max-width: 1000px; margin: 0 auto; }
+.ba-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 60px; }
+@media(max-width:700px){ .ba-grid { grid-template-columns: 1fr; } }
+.ba-card { border-radius: 14px; padding: 28px; }
+.ba-card.bad { background: rgba(255,60,95,0.05); border: 1px solid rgba(255,60,95,0.2); }
+.ba-card.good { background: rgba(0,229,176,0.05); border: 1px solid rgba(0,229,176,0.25); }
+.ba-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; margin-bottom: 16px; }
+.ba-card.bad .ba-label { color: var(--accent); }
+.ba-card.good .ba-label { color: var(--green); }
+.ba-prompt { font-family: 'Space Mono', monospace; font-size: 13px; line-height: 1.8; margin-bottom: 16px; padding: 14px 18px; border-radius: 8px; }
+.ba-card.bad .ba-prompt { color: var(--muted); background: rgba(255,60,95,0.06); border: 1px solid rgba(255,60,95,0.1); }
+.ba-card.good .ba-prompt { color: var(--green); background: rgba(0,229,176,0.06); border: 1px solid rgba(0,229,176,0.15); }
+.ba-result { font-size: 13px; color: var(--muted); line-height: 1.7; }
+/* ── TESTIMONIALS ── */
+.testimonials-section { padding: 100px 40px; background: var(--deep); }
+.testimonials-inner { max-width: 1100px; margin: 0 auto; }
+.testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px; margin-top: 60px; }
+.testi-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 28px; transition: border-color .2s; }
+.testi-card:hover { border-color: rgba(123,92,255,0.35); }
+.testi-quote { font-size: 14px; color: var(--text); line-height: 1.8; margin-bottom: 20px; font-style: italic; }
+.testi-quote::before { content: '"'; font-family: 'Bebas Neue', sans-serif; font-size: 48px; color: var(--purple); opacity: 0.4; display: block; line-height: 1; margin-bottom: 8px; font-style: normal; }
+.testi-author { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; }
+/* ── TRY IT LIVE ── */
+.trylive-section { padding: 100px 40px; }
+.trylive-inner { max-width: 800px; margin: 0 auto; text-align: center; }
+.trylive-grid { display: flex; flex-wrap: wrap; gap: 12px; justify-content: center; margin-top: 40px; }
+.trylive-btn { background: var(--card); border: 1px solid var(--border); border-radius: 100px; padding: 12px 24px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--text); text-decoration: none; transition: all .2s; letter-spacing: 1px; }
+.trylive-btn:hover { border-color: var(--purple); color: var(--purple); transform: translateY(-2px); background: rgba(123,92,255,0.08); }
+
 /* ── HOW IT WORKS ── */
 section { position: relative; z-index: 1; }
 .section-tag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 3px; color: var(--purple); text-transform: uppercase; margin-bottom: 16px; }
@@ -475,6 +506,13 @@ footer {
 </head>
 <body>
 
+<!-- PRODUCT HUNT LAUNCH BANNER -->
+<div style="background:linear-gradient(90deg,rgba(228,184,74,0.12),rgba(228,184,74,0.06));border-bottom:1px solid rgba(228,184,74,0.2);padding:10px 24px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px">
+  <span style="color:#e4b84a">🔺 In evidenza su Product Hunt oggi</span>
+  <span style="color:#6b6b85;margin:0 12px">·</span>
+  <a href="https://www.producthunt.com/products/supre?launch=supre" target="_blank" rel="noopener" style="color:#e4b84a;text-decoration:underline;text-underline-offset:3px">Vota e supporta →</a>
+</div>
+
 <!-- NAV -->
 <nav>
   <a href="/it/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
@@ -489,14 +527,14 @@ footer {
   <div class="hero-tag">Tool AI per Prompt Musicali · Gratis</div>
 
   <h1 class="hero-title">
-    PROMPT<br>
-    <em>SUNO</em><br>
-    MIGLIORI.
+    IL PROMPT<br>
+    ENGINEER CHE<br>
+    <em>SUNO NON</em><br>
+    HA COSTRUITO.
   </h1>
 
   <p class="hero-sub">
-    Smetti di scrivere prompt per tentativi.<br>
-    Scegli <strong>genere, mood, BPM e strumenti</strong> — ottieni uno Style prompt ottimizzato per Suno v3, v4, v4.5 e v5 in pochi secondi.
+    Smetti di indovinare il campo Style. Scegli <strong>genere, mood, BPM e strumenti</strong> — ottieni un prompt calibrato per Suno v3, v4, v4.5 e v5 in pochi secondi.
   </p>
 
   <div class="hero-cta-group">
@@ -525,13 +563,13 @@ footer {
 <!-- SOCIAL PROOF STRIP -->
 <div class="social-strip reveal">
   <div class="stat">
-    <div class="stat-n">4.8<span>/5</span></div>
-    <div class="stat-l">Valutazione media</div>
+    <div class="stat-n" style="color:#e4b84a">🔺<span style="font-size:18px;color:#e4b84a"> PH</span></div>
+    <div class="stat-l">In evidenza oggi</div>
   </div>
   <div class="stat-div"></div>
   <div class="stat">
     <div class="stat-n">4<span>x</span></div>
-    <div class="stat-l">Versioni Suno supportate</div>
+    <div class="stat-l">Versioni Suno</div>
   </div>
   <div class="stat-div"></div>
   <div class="stat">
@@ -544,6 +582,68 @@ footer {
     <div class="stat-l">Validità crediti</div>
   </div>
 </div>
+</div>
+
+<!-- BEFORE / AFTER -->
+<section class="ba-section reveal">
+  <div class="ba-inner">
+    <div class="section-tag">La differenza</div>
+    <h2 class="section-title">PRIMA<br><em>vs</em> DOPO.</h2>
+    <p class="section-sub">Questo è quello che succede quando smetti di indovinare.</p>
+    <div class="ba-grid">
+      <div class="ba-card bad">
+        <div class="ba-label">❌ Senza Supre</div>
+        <div class="ba-prompt">"techno ipnotico dark bass Berlino"</div>
+        <div class="ba-result">→ Generico. Suno ignora metà delle parole. Il risultato suona come migliaia di altri brani.</div>
+      </div>
+      <div class="ba-card good">
+        <div class="ba-label">✅ Con Supre · v4.5</div>
+        <div class="ba-prompt">"hypnotic minimal techno, pulsing acid bassline cutting through reverb-drenched pads, TR-909 kick punching hard, wide stereo mix, late-night Berlin warehouse feel, dark driving energy at 132 BPM"</div>
+        <div class="ba-result">→ Calibrato per v4.5. Lunghezza, densità e struttura corrette. Ogni parola fa il suo lavoro.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="testimonials-section">
+  <div class="testimonials-inner">
+    <div class="section-tag">Cosa dicono</div>
+    <h2 class="section-title reveal">RISULTATI<br>REALI.</h2>
+    <div class="testi-grid">
+      <div class="testi-card reveal">
+        <div class="testi-quote">"Usavo sempre le stesse 5 parole su Suno e non capivo perché tutto suonasse uguale. Con il primo prompt di Supre il risultato era completamente diverso. La calibrazione per versione è la cosa che nessuno dice."</div>
+        <div class="testi-author">— Marco R., music producer · Milano</div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-quote">"Il generatore di metatag per i testi da solo vale tutto. Non sapevo quanto facessero la differenza [Drop] e [Build up] finché non ho iniziato a usarli bene. Supre li genera in automatico."</div>
+        <div class="testi-author">— DJ Phantom, artista elettronico</div>
+      </div>
+      <div class="testi-card reveal">
+        <div class="testi-quote">"Ho provato v5 per la prima volta con un prompt di Supre. La differenza rispetto a quello che scrivevo io è imbarazzante. Soprattutto il linguaggio sulla texture produttiva — Suno ci ha risposto davvero."</div>
+        <div class="testi-author">— Sara K., content creator · Londra</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TRY IT LIVE -->
+<section class="trylive-section reveal">
+  <div class="trylive-inner">
+    <div class="section-tag">Provalo ora</div>
+    <h2 class="section-title">A UN CLICK<br>DA QUI.</h2>
+    <p class="section-sub">Scegli un genere. Guarda come appare un prompt calibrato. Nessuna registrazione.</p>
+    <div class="trylive-grid">
+      <a href="/it/tool?genre=Techno" class="trylive-btn">🎛️ Techno</a>
+      <a href="/it/tool?genre=Deep+House" class="trylive-btn">🎵 Deep House</a>
+      <a href="/it/tool?genre=Hip-Hop" class="trylive-btn">🎤 Hip-Hop</a>
+      <a href="/it/tool?genre=Ambient" class="trylive-btn">🌊 Ambient</a>
+      <a href="/it/tool?genre=Jazz" class="trylive-btn">🎷 Jazz</a>
+      <a href="/it/tool?genre=Afrobeat" class="trylive-btn">🥁 Afrobeat</a>
+    </div>
+    <p style="margin-top:24px;font-family:'Space Mono',monospace;font-size:11px;color:var(--muted)">⚡ 2 generazioni gratis oggi · reset a mezzanotte</p>
+  </div>
+</section>
 
 <!-- HOW IT WORKS -->
 <section class="how-section" id="how">
@@ -766,9 +866,11 @@ footer {
 
 <!-- CTA BAND -->
 <section class="cta-band reveal">
-  <h2>START<br>CREATING.</h2>
-  <p>I tuoi primi 2 prompt sono gratuiti. Nessuna registrazione. Nessuna carta di credito.</p>
+  <div style="display:inline-block;background:rgba(228,184,74,0.12);border:1px solid rgba(228,184,74,0.3);border-radius:100px;padding:6px 16px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#e4b84a;margin-bottom:24px">🔺 LANCIATO OGGI SU PRODUCT HUNT</div>
+  <h2>LE TUE 2<br>GENERAZIONI<br>GRATIS TI ASPETTANO.</h2>
+  <p>Nessuna registrazione. Nessuna carta di credito. Solo prompt Suno migliori.</p>
   <a href="/it/tool" class="btn-primary">⚡ GENERA IL TUO PRIMO PROMPT →</a>
+  <p style="margin-top:16px;font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:1px">Reset a mezzanotte · I crediti non scadono mai</p>
 </section>
 
 <!-- FOOTER -->
