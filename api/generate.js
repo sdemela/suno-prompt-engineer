@@ -24,9 +24,20 @@ function setSecurityHeaders(res) {
 // HMAC auth: verifica firma prima di consumare crediti paid
 const FREE_LIMIT = 2;
 
+// Fix #5: timeout wrapper for all external calls
+async function fetchWithTimeout(url, options = {}, ms = 6000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetchWithTimeout(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function redisGet(key) {
   const url = `${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`;
-  const r = await fetch(url, {
+  const r = await fetchWithTimeout(url, {
     headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
   });
   const d = await r.json();
@@ -39,7 +50,7 @@ async function redisAtomicDecrIfPositive(key) {
   const base = process.env.UPSTASH_REDIS_REST_URL;
   const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
   const script = 'local v=redis.call("GET",KEYS[1]) if v==false then return -3 end local c=tonumber(v) or 0 if c<=0 then return -1 end return redis.call("DECRBY",KEYS[1],1)';
-  const r = await fetch(`${base}/eval`, {
+  const r = await fetchWithTimeout(`${base}/eval`, {
     method: 'POST',
     headers: { ...auth, 'Content-Type': 'application/json' },
     body: JSON.stringify([script, 1, key]),
@@ -53,14 +64,14 @@ async function redisAtomicDecrIfPositive(key) {
 async function redisIncrFreeTier(key) {
   const base = process.env.UPSTASH_REDIS_REST_URL;
   const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
-  const incrRes = await fetch(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
+  const incrRes = await fetchWithTimeout(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
   const incrData = await incrRes.json();
   const count = incrData.result;
   if (count === 1) {
     const now = new Date();
     const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
     const expireAt = Math.floor(midnight.getTime() / 1000);
-    await fetch(`${base}/expireat/${encodeURIComponent(key)}/${expireAt}`, { headers: auth });
+    await fetchWithTimeout(`${base}/expireat/${encodeURIComponent(key)}/${expireAt}`, { headers: auth });
   }
   return count;
 }
@@ -150,7 +161,7 @@ export default async function handler(req, res) {
 }
 
 async function callAnthropic(formData) {
-  const resp = await fetch('https://api.anthropic.com/v1/messages', {
+  const resp = await fetchWithTimeout('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -163,7 +174,7 @@ async function callAnthropic(formData) {
       system: buildSystemPrompt(formData.sunoVersion || 'v4'),
       messages: [{ role: 'user', content: buildUserMessage(formData) }],
     }),
-  });
+  }, 10000);
   if (!resp.ok) {
     const err = await resp.json();
     throw new Error(err.error?.message || 'Anthropic API error');

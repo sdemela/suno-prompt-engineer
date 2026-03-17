@@ -1,5 +1,17 @@
 // CORS allowlist (fix #3)
 const ALLOWED_ORIGINS = ['https://supre.online', 'https://www.supre.online'];
+
+// Fix #5: timeout wrapper
+async function fetchWithTimeout(url, options = {}, ms = 6000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 function setCors(req, res) {
   const origin = req.headers['origin'] || '';
   if (ALLOWED_ORIGINS.includes(origin)) {
@@ -58,7 +70,7 @@ export default async function handler(req, res) {
   });
 
   try {
-    const r = await fetch('https://api.stripe.com/v1/checkout/sessions', {
+    const r = await fetchWithTimeout('https://api.stripe.com/v1/checkout/sessions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.STRIPE_SECRET_KEY}`,

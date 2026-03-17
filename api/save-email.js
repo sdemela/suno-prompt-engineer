@@ -37,9 +37,20 @@ function getTrustedIp(req) {
   return req.socket?.remoteAddress || 'unknown';
 }
 
+// Fix #5: timeout wrapper for all external calls
+async function fetchWithTimeout(url, options = {}, ms = 5000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
 async function redisSet(key, value) {
   const url = `${process.env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}/${encodeURIComponent(value)}`;
-  const r = await fetch(url, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } });
+  const r = await fetchWithTimeout(url, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } });
   if (!r.ok) throw new Error(`Redis SET failed: ${r.status}`);
   return true;
 }
@@ -47,18 +58,18 @@ async function redisSet(key, value) {
 async function redisIncrWithTTL(key, ttl) {
   const base = process.env.UPSTASH_REDIS_REST_URL;
   const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
-  const incr = await fetch(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
+  const incr = await fetchWithTimeout(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
   if (!incr.ok) throw new Error(`Redis INCR failed: ${incr.status}`);
   const d = await incr.json();
   const count = d.result;
   if (count === 1) {
-    await fetch(`${base}/expire/${encodeURIComponent(key)}/${ttl}`, { headers: auth });
+    await fetchWithTimeout(`${base}/expire/${encodeURIComponent(key)}/${ttl}`, { headers: auth });
   }
   return count;
 }
 
 async function redisSetNxEx(key, ttl) {
-  const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}/1/nx/ex/${ttl}`, {
+  const r = await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}/1/nx/ex/${ttl}`, {
     headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
   });
   if (!r.ok) throw new Error(`Redis SETNX failed: ${r.status}`);
@@ -77,8 +88,15 @@ export default async function handler(req, res) {
   if (!isValidSpeUuid(uuid)) return res.status(400).json({ error: 'Invalid UUID format' });
 
   // FIX #1 — FLOW 1: sign-only (no email)
+  // Rate limited: 1 signature per UUID per 10 min to prevent HMAC fishing
   if (!email) {
     try {
+      const ip = getTrustedIp(req);
+      const signKey = `rl:sign:${ip}`;
+      const signCount = await redisIncrWithTTL(signKey, 600);
+      if (signCount > 5) {
+        return res.status(429).json({ error: 'rate_limit', message: 'Too many signature requests.' });
+      }
       const { signUUID } = await import('./_auth.js');
       const sig = signUUID(uuid);
       return res.status(200).json({ ok: true, sig });
@@ -114,7 +132,7 @@ export default async function handler(req, res) {
     const { signUUID } = await import('./_auth.js');
     const sig = signUUID(uuid);
 
-    const emailRes = await fetch('https://api.resend.com/emails', {
+    const emailRes = await fetchWithTimeout('https://api.resend.com/emails', {
       method: 'POST',
       headers: { 'Authorization': `Bearer ${process.env.RESEND_API_KEY}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({

@@ -9,10 +9,32 @@ const PACKAGES = {
 
 export const config = { api: { bodyParser: false } };
 
+// Fix #5: timeout wrapper for all external calls
+async function fetchWithTimeout(url, options = {}, ms = 6000) {
+  const controller = new AbortController();
+  const timer = setTimeout(() => controller.abort(), ms);
+  try {
+    return await fetch(url, { ...options, signal: controller.signal });
+  } finally {
+    clearTimeout(timer);
+  }
+}
+
+// Fix #3: body size limit 512KB to prevent DoS
+const MAX_BODY_SIZE = 512 * 1024;
+
 async function getRawBody(req) {
   return new Promise((resolve, reject) => {
     const chunks = [];
-    req.on('data', chunk => chunks.push(chunk));
+    let size = 0;
+    req.on('data', chunk => {
+      size += chunk.length;
+      if (size > MAX_BODY_SIZE) {
+        req.destroy();
+        return reject(new Error('Payload too large'));
+      }
+      chunks.push(chunk);
+    });
     req.on('end', () => resolve(Buffer.concat(chunks)));
     req.on('error', reject);
   });
@@ -45,23 +67,29 @@ function verifyStripeSignature(rawBody, sig, secret) {
 
 // Upstash REST helpers
 async function redisIncrby(key, amount) {
-  const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${key}/${amount}`, {
+  const r = await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${key}/${amount}`, {
     headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
   });
   const d = await r.json();
   return d.result;
 }
 
-// Fix #1: idempotency — SETNX with 24h TTL to deduplicate event IDs
+// Fix #4: check-only — does NOT mark as processed
 async function isEventAlreadyProcessed(eventId) {
   const key = `whook:${eventId}`;
-  // SET key 1 NX EX 86400 — returns OK if set, null if already exists
-  const r = await fetch(`${process.env.UPSTASH_REDIS_REST_URL}/set/${key}/1/nx/ex/86400`, {
+  const r = await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(key)}`, {
     headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
   });
   const d = await r.json();
-  // result is "OK" if key was set (first time), null if already existed
-  return d.result !== 'OK';
+  return d.result !== null;
+}
+
+// Fix #4: mark as processed — called only AFTER credits confirmed
+async function markEventProcessed(eventId) {
+  const key = `whook:${eventId}`;
+  await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/set/${encodeURIComponent(key)}/1/ex/86400`, {
+    headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+  });
 }
 
 export default async function handler(req, res) {
@@ -82,13 +110,6 @@ export default async function handler(req, res) {
 
   if (event.type === 'checkout.session.completed') {
 
-    // Fix #1: idempotency check — skip if already processed
-    const alreadyProcessed = await isEventAlreadyProcessed(event.id);
-    if (alreadyProcessed) {
-      console.log(`⚠️ Duplicate event ignored: ${event.id}`);
-      return res.status(200).json({ received: true, duplicate: true });
-    }
-
     const session = event.data.object;
     const uuid    = session.metadata?.uuid;
     const email   = session.customer_details?.email;
@@ -96,7 +117,7 @@ export default async function handler(req, res) {
     // Fetch line items from Stripe REST to get price ID
     let resolvedPriceId = null;
     try {
-      const liResp = await fetch(
+      const liResp = await fetchWithTimeout(
         `https://api.stripe.com/v1/checkout/sessions/${session.id}/line_items`,
         { headers: { Authorization: `Bearer ${process.env.STRIPE_SECRET_KEY}` } }
       );
@@ -112,8 +133,18 @@ export default async function handler(req, res) {
       return res.status(200).json({ received: true });
     }
 
+    // Fix #4: idempotency check BEFORE side-effects but mark AFTER success
+    const alreadyProcessed = await isEventAlreadyProcessed(event.id);
+    if (alreadyProcessed) {
+      console.log(`⚠️ Duplicate event ignored: ${event.id}`);
+      return res.status(200).json({ received: true, duplicate: true });
+    }
+
     // Add credits via Upstash REST
     const newCredits = await redisIncrby(`credits:${uuid}`, pkg.credits);
+
+    // Fix #4: mark as processed only AFTER credits confirmed
+    await markEventProcessed(event.id);
 
     // Send confirmation email via Resend
     if (email) await sendEmail(email, pkg, newCredits, uuid);
@@ -126,7 +157,7 @@ export default async function handler(req, res) {
 
 async function sendEmail(email, pkg, totalCredits, uuid) {
   try {
-    await fetch('https://api.resend.com/emails', {
+    await fetchWithTimeout('https://api.resend.com/emails', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${process.env.RESEND_API_KEY}`,
