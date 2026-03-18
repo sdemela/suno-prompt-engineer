@@ -287,11 +287,6 @@ window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wait_for_update': 500});
 </script>
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-LTGFQ1MTDG"></script>
-<script>
-gtag('js', new Date());
-gtag('config', 'G-LTGFQ1MTDG', {send_page_view: false});
-</script>
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://supre.online/en/">
 <meta property="og:title" content="Suno Prompt Engineer — AI Music Prompt Tool">
@@ -754,7 +749,13 @@ if(!localStorage.getItem('spe_sig')){
 function grantAnalytics(){
   localStorage.setItem('spe_cookie_consent','granted');
   gtag('consent','update',{'analytics_storage':'granted','ad_storage':'granted'});
-  gtag('event','page_view');
+  // Load GA4 only after consent
+  if(!document.querySelector('script[src*="googletagmanager"]')){
+    var gs=document.createElement('script');gs.async=true;
+    gs.src='https://www.googletagmanager.com/gtag/js?id=G-LTGFQ1MTDG';
+    document.head.appendChild(gs);
+    gs.onload=function(){gtag('js',new Date());gtag('config','G-LTGFQ1MTDG',{send_page_view:true});};
+  }
   // Load AdSense only after consent
   if(!document.querySelector('script[src*="adsbygoogle"]')){
     var s=document.createElement('script');
