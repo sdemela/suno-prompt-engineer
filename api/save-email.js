@@ -32,7 +32,7 @@ function getTrustedIp(req) {
   const forwarded = req.headers['x-forwarded-for'];
   if (forwarded) {
     const ips = forwarded.split(',').map(s => s.trim()).filter(Boolean);
-    return ips[ips.length - 1] || 'unknown';
+    return ips[0] || 'unknown';
   }
   return req.socket?.remoteAddress || 'unknown';
 }
