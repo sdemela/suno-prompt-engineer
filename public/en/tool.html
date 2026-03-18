@@ -79,11 +79,23 @@ async function restoreCredits(){
   var id = document.getElementById('restoreInput').value.trim();
   if(!id || id.length < 10){ alert('Enter a valid session ID.'); return; }
   try {
-    var r = await fetch('/api/credits', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, authHeaders()), body: JSON.stringify({uuid: id})});
+    // Step 1: get a valid signature for the new UUID via sign-only flow
+    var signR = await fetch('/api/save-email', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({uuid: id})
+    });
+    if(!signR.ok){ alert('Could not verify session ID. Please try again.'); return; }
+    var signD = await signR.json();
+    var newSig = signD.sig || '';
+
+    // Step 2: check credits using the correct signature for this UUID
+    var r = await fetch('/api/credits', {method:'POST', headers:Object.assign({'Content-Type':'application/json'}, {'X-SPE-UUID': id, 'X-SPE-Sig': newSig}), body: JSON.stringify({uuid: id})});
     if(!r.ok){ alert('Could not verify session ID. Please try again.'); return; }
     var d = await r.json();
     if(d.credits > 0){
       localStorage.setItem('spe_uuid', id);
+      localStorage.setItem('spe_sig', newSig);
       userUuid = id;
       userCredits = d.credits;
       updateCreditsUI();
