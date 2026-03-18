@@ -20,7 +20,7 @@ function setSecurityHeaders(res) {
 
 // api/generate.js
 // FIX #2: UUID must match spe- format — unknown UUIDs fall through to free tier
-// FIX #4: x-forwarded-for uses LAST trusted proxy IP, not first (spoofable)
+// FIX #4: x-forwarded-for uses Vercel: client IP is first element of x-forwarded-for
 // HMAC auth: verifica firma prima di consumare crediti paid
 const FREE_LIMIT = 2;
 
