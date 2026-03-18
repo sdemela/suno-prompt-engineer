@@ -48,8 +48,20 @@ function updateCreditsUI(){
 }
 
 function closeLimitModal(){ document.getElementById('limitModal').style.display='none'; }
-function openPricing(){ document.getElementById('pricingModal').style.display = 'flex'; }
-function closePricing(){ document.getElementById('pricingModal').style.display = 'none'; }
+function openPricing(){
+  var m=document.getElementById('pricingModal');
+  m.style.display='flex';
+  // Move focus inside modal
+  var first=m.querySelector('button,input,[tabindex="0"]');
+  if(first) setTimeout(function(){ first.focus(); }, 50);
+  // Trap focus inside modal
+  m.addEventListener('keydown', trapFocus);
+}
+function closePricing(){
+  var m=document.getElementById('pricingModal');
+  m.style.display='none';
+  m.removeEventListener('keydown', trapFocus);
+}
 
 function selectPkg(pkg){
   selectedPkg = pkg;
@@ -372,11 +384,11 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
   <div style="margin-bottom:18px;padding-bottom:16px;border-bottom:1px solid var(--border)">
     <label class="fl">Suno Version <span style="color:var(--green);font-size:9px;letter-spacing:1px">— influenza la qualità</span></label>
     <div class="tg" id="suno-version-tags" style="margin-top:8px">
-      <div class="tag" data-val="v3">v3 <span style="color:var(--muted);font-size:10px">legacy</span></div>
-      <div class="tag" data-val="v3.5">v3.5</div>
+      <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="v3">v3 <span style="color:var(--muted);font-size:10px">legacy</span></div>
+      <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="v3.5">v3.5</div>
       <div class="tag active" data-val="v4">v4 <span style="color:var(--green);font-size:10px">recommended</span></div>
-      <div class="tag" data-val="v4.5">v4.5</div>
-      <div class="tag" data-val="v5">v5 <span style="color:var(--accent);font-size:10px">latest</span></div>
+      <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="v4.5">v4.5</div>
+      <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="v5">v5 <span style="color:var(--accent);font-size:10px">latest</span></div>
     </div>
     <div style="margin-top:8px;font-size:11px;color:var(--muted);font-family:'Space Mono',monospace;line-height:1.7">v5 supports richer detail and narrative prompts. v4/v4.5 for layered style stacking. Strategy changes by version.</div>
   </div>
@@ -400,7 +412,7 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
   <div style="margin-top:16px">
     <label class="fl">Tag di sotto-stile</label>
     <div class="tg" id="substyle-tags">
-      <div class="tag" data-val="hypnotic">hypnotic</div><div class="tag" data-val="driving">driving</div><div class="tag" data-val="dark">dark</div><div class="tag" data-val="atmospheric">atmospheric</div><div class="tag" data-val="groovy">groovy</div><div class="tag" data-val="industrial">industrial</div><div class="tag" data-val="melodic">melodic</div><div class="tag" data-val="raw">raw</div><div class="tag" data-val="cinematic">cinematic</div><div class="tag" data-val="lo-fi">lo-fi</div><div class="tag" data-val="tribal">tribal</div><div class="tag" data-val="experimental">experimental</div><div class="tag" data-val="psychedelic">psychedelic</div><div class="tag" data-val="nostalgic">nostalgic</div>
+      <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="hypnotic">hypnotic</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="driving">driving</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="dark">dark</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="atmospheric">atmospheric</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="groovy">groovy</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="industrial">industrial</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="melodic">melodic</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="raw">raw</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="cinematic">cinematic</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="lo-fi">lo-fi</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="tribal">tribal</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="experimental">experimental</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="psychedelic">psychedelic</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="nostalgic">nostalgic</div>
     </div>
   </div>
 </div>
@@ -410,13 +422,13 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
     <div>
       <label class="fl">Emotional Tone</label>
       <div class="tg" id="mood-tags">
-        <div class="tag" data-val="euphoric">euphoric</div><div class="tag" data-val="melancholic">melancholic</div><div class="tag" data-val="tense">tense</div><div class="tag" data-val="meditative">meditative</div><div class="tag" data-val="aggressive">aggressive</div><div class="tag" data-val="dreamy">dreamy</div><div class="tag" data-val="haunting">haunting</div><div class="tag" data-val="joyful">joyful</div><div class="tag" data-val="cold">cold</div><div class="tag" data-val="warm">warm</div><div class="tag" data-val="ominous">ominous</div>
+        <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="euphoric">euphoric</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="melancholic">melancholic</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="tense">tense</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="meditative">meditative</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="aggressive">aggressive</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="dreamy">dreamy</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="haunting">haunting</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="joyful">joyful</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="cold">cold</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="warm">warm</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="ominous">ominous</div>
       </div>
     </div>
     <div>
       <label class="fl">Livello di Energia</label>
       <div class="tg" id="energy-tags">
-        <div class="tag" data-val="low energy">low</div><div class="tag" data-val="mid energy">mid</div><div class="tag" data-val="high energy">high</div><div class="tag" data-val="peak time">peak time</div><div class="tag" data-val="afterhours">afterhours</div><div class="tag" data-val="warm-up">warm-up</div>
+        <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="low energy">low</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="mid energy">mid</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="high energy">high</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="peak time">peak time</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="afterhours">afterhours</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="warm-up">warm-up</div>
       </div>
     </div>
   </div>
@@ -439,7 +451,7 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
   <div style="margin-top:16px">
     <label class="fl">Ritmo</label>
     <div class="tg" id="time-tags">
-      <div class="tag active" data-val="4/4">4/4</div><div class="tag" data-val="3/4">3/4</div><div class="tag" data-val="6/8">6/8</div><div class="tag" data-val="5/4">5/4</div><div class="tag" data-val="7/8">7/8</div>
+      <div class="tag active" data-val="4/4">4/4</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="3/4">3/4</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="6/8">6/8</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="5/4">5/4</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="7/8">7/8</div>
     </div>
   </div>
 </div>
@@ -447,7 +459,7 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
 <div class="card">
   <label class="fl">Strumenti &amp; Sorgenti Sonore</label>
   <div class="tg" id="instr-tags">
-    <div class="tag" data-val="kick drum">kick</div><div class="tag" data-val="hi-hats">hi-hats</div><div class="tag" data-val="snare">snare</div><div class="tag" data-val="claps">claps</div><div class="tag" data-val="bass synth">bass synth</div><div class="tag" data-val="sub bass">sub bass</div><div class="tag" data-val="acid bassline">acid bassline</div><div class="tag" data-val="arpeggio synth">arpeggio</div><div class="tag" data-val="pad synth">pads</div><div class="tag" data-val="lead synth">lead synth</div><div class="tag" data-val="piano">piano</div><div class="tag" data-val="electric guitar">e.guitar</div><div class="tag" data-val="acoustic guitar">ac.guitar</div><div class="tag" data-val="strings">strings</div><div class="tag" data-val="brass">brass</div><div class="tag" data-val="saxophone">sax</div><div class="tag" data-val="flute">flute</div><div class="tag" data-val="vocal chops">vocal chops</div><div class="tag" data-val="spoken word">spoken word</div><div class="tag" data-val="field recordings">field rec</div><div class="tag" data-val="noise texture">noise</div><div class="tag" data-val="vinyl crackle">vinyl crackle</div><div class="tag" data-val="808 drums">808</div><div class="tag" data-val="TR-909 drums">TR-909</div><div class="tag" data-val="TR-808 drums">TR-808</div>
+    <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="kick drum">kick</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="hi-hats">hi-hats</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="snare">snare</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="claps">claps</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="bass synth">bass synth</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="sub bass">sub bass</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="acid bassline">acid bassline</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="arpeggio synth">arpeggio</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="pad synth">pads</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="lead synth">lead synth</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="piano">piano</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="electric guitar">e.guitar</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="acoustic guitar">ac.guitar</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="strings">strings</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="brass">brass</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="saxophone">sax</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="flute">flute</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="vocal chops">vocal chops</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="spoken word">spoken word</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="field recordings">field rec</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="noise texture">noise</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="vinyl crackle">vinyl crackle</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="808 drums">808</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="TR-909 drums">TR-909</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="TR-808 drums">TR-808</div>
   </div>
 </div>
 <div class="sec"><span>05 — Produzione &amp; Mix</span></div>
@@ -456,13 +468,13 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
     <div>
       <label class="fl">Carattere del Mix</label>
       <div class="tg" id="mix-tags">
-        <div class="tag" data-val="heavy bass">heavy bass</div><div class="tag" data-val="punchy drums">punchy drums</div><div class="tag" data-val="wide stereo">wide stereo</div><div class="tag" data-val="compressed">compressed</div><div class="tag" data-val="warm analog">warm analog</div><div class="tag" data-val="crisp digital">crisp digital</div><div class="tag" data-val="reverb-heavy">reverb-heavy</div><div class="tag" data-val="dry mix">dry mix</div><div class="tag" data-val="distorted">distorted</div><div class="tag" data-val="lo-fi quality">lo-fi quality</div>
+        <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="heavy bass">heavy bass</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="punchy drums">punchy drums</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="wide stereo">wide stereo</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="compressed">compressed</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="warm analog">warm analog</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="crisp digital">crisp digital</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="reverb-heavy">reverb-heavy</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="dry mix">dry mix</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="distorted">distorted</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="lo-fi quality">lo-fi quality</div>
       </div>
     </div>
     <div>
       <label class="fl">Struttura / Arrangiamento</label>
       <div class="tg" id="struct-tags">
-        <div class="tag" data-val="long intro">long intro</div><div class="tag" data-val="gradual build">gradual build</div><div class="tag" data-val="drop">drop</div><div class="tag" data-val="breakdown">breakdown</div><div class="tag" data-val="instrumental">instrumental</div><div class="tag" data-val="verse-chorus">verse-chorus</div><div class="tag" data-val="continuous mix">continuous</div><div class="tag" data-val="loop-based">loop-based</div>
+        <div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="long intro">long intro</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="gradual build">gradual build</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="drop">drop</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="breakdown">breakdown</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="instrumental">instrumental</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="verse-chorus">verse-chorus</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="continuous mix">continuous</div><div class="tag" tabindex="0" role="checkbox" aria-checked="false" data-val="loop-based">loop-based</div>
       </div>
     </div>
   </div>
@@ -589,6 +601,14 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
   </div>
 </div>
 <script>
+function trapFocus(e){
+  if(e.key!=='Tab') return;
+  var modal=e.currentTarget;
+  var focusable=modal.querySelectorAll('button,input,select,[tabindex="0"]');
+  var first=focusable[0], last=focusable[focusable.length-1];
+  if(e.shiftKey){ if(document.activeElement===first){ e.preventDefault(); last.focus(); } }
+  else { if(document.activeElement===last){ e.preventDefault(); first.focus(); } }
+}
 function esc(s){var d=document.createElement('div');d.textContent=String(s||'');return d.innerHTML;}
 var apiKey='';var audioFileName=null;var lastOutput=null;var FREE_LIMIT=2;var cdTimer=null;
 function getTodayKey(){return 'spe_used_'+new Date().toISOString().slice(0,10);}
@@ -614,7 +634,31 @@ function showAd(cb){
 var wf=document.getElementById('waveform');
 [14,22,10,28,16,8,24,18,12,26,20,8,22,14,28,10,18,24,12,20,16,26,8,22,14,28,18,10,24].forEach(function(h,i){var s=document.createElement('span');s.style.cssText='height:'+h+'px;background:'+(i%2?'#ff3c5f':'#7b5cff')+';opacity:.7;animation:wave '+(0.8+(i%5)*0.18)+'s ease-in-out '+(i%6)*0.15+'s infinite;';wf.appendChild(s);});
 document.getElementById('bpm').addEventListener('input',function(){document.getElementById('bpmDisplay').textContent=this.value;document.getElementById('bpmVal').textContent=this.value;});
-document.querySelectorAll('.tg').forEach(function(g){var single=g.id==='energy-tags'||g.id==='time-tags'||g.id==='suno-version-tags';g.querySelectorAll('.tag').forEach(function(t){t.addEventListener('click',function(){if(single)g.querySelectorAll('.tag').forEach(function(x){x.classList.remove('active');});t.classList.toggle('active');});});});
+document.querySelectorAll('.tg').forEach(function(g){
+  var single=g.id==='energy-tags'||g.id==='time-tags'||g.id==='suno-version-tags';
+  // Set correct role for single-select groups
+  if(single){ g.setAttribute('role','radiogroup'); }
+  g.querySelectorAll('.tag').forEach(function(t){
+    if(single){ t.setAttribute('role','radio'); }
+    function activate(){
+      if(single){
+        g.querySelectorAll('.tag').forEach(function(x){
+          x.classList.remove('active');
+          x.setAttribute('aria-checked','false');
+        });
+        t.classList.add('active');
+        t.setAttribute('aria-checked','true');
+      } else {
+        t.classList.toggle('active');
+        t.setAttribute('aria-checked', t.classList.contains('active') ? 'true' : 'false');
+      }
+    }
+    t.addEventListener('click', activate);
+    t.addEventListener('keydown', function(e){
+      if(e.key==='Enter'||e.key===' '){ e.preventDefault(); activate(); }
+    });
+  });
+});
 function getTags(id){return Array.from(document.querySelectorAll('#'+id+' .tag.active')).map(function(t){return t.dataset.val;});}
 document.getElementById('dropZone').addEventListener('click',function(){document.getElementById('audioFile').click();});
 document.getElementById('audioFile').addEventListener('change',function(e){loadAudio(e.target.files[0]);});
@@ -719,6 +763,14 @@ async function generate(){
 }
 document.getElementById('copyBtn').addEventListener('click',function(){if(!lastOutput)return;navigator.clipboard.writeText(lastOutput).then(function(){var b=document.getElementById('copyBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Prompt';b.style.color='';b.style.borderColor='';},2000);});});
 document.getElementById('copyLyricsBtn').addEventListener('click',function(){var el=document.getElementById('lyricsContent');if(!el)return;var txt=el.innerText||el.textContent;navigator.clipboard.writeText(txt).then(function(){var b=document.getElementById('copyLyricsBtn');b.textContent='✓ Copiato!';b.style.color='#00e5b0';b.style.borderColor='#00e5b0';setTimeout(function(){b.textContent='Copia Testo';b.style.color='';b.style.borderColor='';},2000);});});
+
+// Escape key closes modals
+document.addEventListener('keydown', function(e){
+  if(e.key !== 'Escape') return;
+  if(document.getElementById('pricingModal').style.display==='flex') closePricing();
+  if(document.getElementById('limitModal').style.display==='flex') closeLimitModal();
+});
+
 document.getElementById('generateBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
 updateBanner();
 var TW_EXAMPLES=['dark hypnotic techno, 132 BPM, punchy kick, acid bassline, warehouse reverb','deep house, 122 BPM, warm analog, soulful vocals, late night groovy','ambient IDM, no drums, textural pads, glitchy percussion, long reverb tails','drum and bass, 174 BPM, heavy sub bass, breakbeat, euphoric, crisp digital mix','melodic techno, 128 BPM, minor key, atmospheric build, gradual drop, wide stereo','afro house, 124 BPM, tribal percussion, female vocals, warm summer groove','industrial techno, 140 BPM, raw distorted kick, cold ominous, EBM influence'];
