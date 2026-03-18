@@ -666,7 +666,13 @@ async function generate(){
     if(resp2.status===429){document.getElementById('limitModal').style.display='flex';btn.disabled=false;btn.innerHTML='▶ GENERA PROMPT SUNO';return;}
     if(!resp2.ok){var e2=await resp2.json();throw new Error(e2.error||'Server error');}
     result=await resp2.json();
-    incUsed();updateBanner();
+    // Sync free counter from server response to keep UI accurate
+    if(result.tier==='free' && typeof result.used === 'number'){
+      localStorage.setItem(getTodayKey(), String(result.used));
+    } else {
+      incUsed();
+    }
+    updateBanner();
   }catch(err){
     console.error(err);
     document.getElementById('promptText').textContent='⚠ Error: '+err.message;
