@@ -81,7 +81,8 @@ function getFreeTierKey(ip) {
   return `free:${ip}:${today}`;
 }
 
-// FIX #4: Use rightmost IP in x-forwarded-for chain (last hop before Vercel)
+// Vercel populates x-forwarded-for with the real client IP as the first element
+// getTrustedIp — canonical version in _auth.js, kept local to avoid dynamic import overhead
 function getTrustedIp(req) {
   const forwarded = req.headers['x-forwarded-for'];
   if (forwarded) {

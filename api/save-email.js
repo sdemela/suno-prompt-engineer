@@ -12,7 +12,7 @@ function setCors(req, res) {
 
 // api/save-email.js
 // FIX #1: two explicit flows (sign-only / save+email)
-// FIX #2: IP extraction rightmost
+// Vercel: client IP is the first element of x-forwarded-for
 // FIX #4: validazione UUID canonica
 
 const RATE_IP_MAX  = 3;
@@ -27,7 +27,8 @@ function isValidSpeUuid(uuid) {
     uuid.length <= 60;
 }
 
-// FIX #2: rightmost IP
+// Vercel: client IP is the first element of x-forwarded-for
+// getTrustedIp — canonical version in _auth.js, kept local to avoid dynamic import overhead
 function getTrustedIp(req) {
   const forwarded = req.headers['x-forwarded-for'];
   if (forwarded) {

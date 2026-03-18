@@ -67,3 +67,16 @@ export function extractAndVerify(req) {
   const sig = req.headers["x-spe-sig"] || "";
   return { uuid, sig, ...verifyHMAC(uuid, sig) };
 }
+
+/**
+ * Returns the real client IP from x-forwarded-for.
+ * Vercel populates this header with the client IP as the first element.
+ */
+export function getTrustedIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ips = forwarded.split(',').map(s => s.trim()).filter(Boolean);
+    return ips[0] || 'unknown';
+  }
+  return req.socket?.remoteAddress || 'unknown';
+}

@@ -18,7 +18,7 @@ function setSecurityHeaders(res) {
 }
 
 // api/credits.js
-// FIX #2: IP extraction rightmost (coerente con generate.js)
+// Vercel: client IP is the first element of x-forwarded-for
 // FIX #3: usa il parametro ttl invece di hardcoded 60
 
 // Fix #5: timeout wrapper for all external calls
@@ -51,6 +51,7 @@ async function redisIncrWithTTL(key, ttl) {
   return count;
 }
 
+// getTrustedIp — canonical version in _auth.js, kept local to avoid dynamic import overhead
 function getTrustedIp(req) {
   const forwarded = req.headers['x-forwarded-for'];
   if (forwarded) {
@@ -75,7 +76,7 @@ export default async function handler(req, res) {
     return res.status(400).json({ error: 'Invalid UUID format' });
   }
 
-  // FIX #2: rightmost IP
+  // Vercel: client IP is the first element of x-forwarded-for
   const ip = getTrustedIp(req);
   const rateLimitKey = `rl:credits:ip:${ip}`;
   const count = await redisIncrWithTTL(rateLimitKey, 60); // 20 req/min
