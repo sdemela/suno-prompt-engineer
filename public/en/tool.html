@@ -8,7 +8,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Suno Prompt Engineer — Tool</title>
 <meta name="description" content="AI prompt generator for Suno. Pick genre, mood, BPM, instruments — get an optimized Style prompt for v3, v4, v4.5 and v5 in seconds. Free to try.">
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9822663720780340" crossorigin="anonymous"></script>
 <script>
 // ══════════ CREDITS SYSTEM ══════════
 var userUuid = localStorage.getItem('spe_uuid');
@@ -749,10 +748,23 @@ if(!localStorage.getItem('spe_sig')){
   if(consent==='granted')grantAnalytics();
   if(consent!==null)return;
   var banner=document.createElement('div');banner.className='cookie-banner';banner.id='cookieBanner';
-  banner.innerHTML='<p>We use analytics cookies to improve the service.</p><div class="cookie-btns"><button class="cookie-decline" onclick="denyAnalytics()">Decline</button><button class="cookie-accept" onclick="grantAnalytics()">Accept</button></div>';
+  banner.innerHTML='<p>We use analytics and advertising cookies to improve the service. <a href="/en/" style="color:var(--purple)">Learn more</a></p><div class="cookie-btns"><button class="cookie-decline" onclick="denyAnalytics()">Decline</button><button class="cookie-accept" onclick="grantAnalytics()">Accept all</button></div>';
   document.body.appendChild(banner);
 })();
-function grantAnalytics(){localStorage.setItem('spe_cookie_consent','granted');gtag('consent','update',{'analytics_storage':'granted'});gtag('event','page_view');var b=document.getElementById('cookieBanner');if(b)b.remove();}
+function grantAnalytics(){
+  localStorage.setItem('spe_cookie_consent','granted');
+  gtag('consent','update',{'analytics_storage':'granted','ad_storage':'granted'});
+  gtag('event','page_view');
+  // Load AdSense only after consent
+  if(!document.querySelector('script[src*="adsbygoogle"]')){
+    var s=document.createElement('script');
+    s.async=true;
+    s.crossOrigin='anonymous';
+    s.src='https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-9822663720780340';
+    document.head.appendChild(s);
+  }
+  var b=document.getElementById('cookieBanner');if(b)b.remove();
+}
 function denyAnalytics(){localStorage.setItem('spe_cookie_consent','denied');var b=document.getElementById('cookieBanner');if(b)b.remove();}
 document.getElementById('regenBtn').addEventListener('click',function(){generate().catch(function(e){console.error(e);});});
 var HIST_KEY='spe_history';var MAX_HIST=10;
