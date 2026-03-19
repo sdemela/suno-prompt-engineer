@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supre Admin</title>
+<meta name="robots" content="noindex, nofollow">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px;}
+
+/* LOGIN */
+.login{background:var(--card);border:1px solid var(--border);border-radius:16px;padding:40px;max-width:400px;width:100%;text-align:center;}
+.login h1{font-family:'Bebas Neue',sans-serif;font-size:36px;letter-spacing:3px;margin-bottom:8px;}
+.login p{font-size:13px;color:var(--muted);margin-bottom:28px;}
+.login input{width:100%;background:var(--deep);border:1px solid var(--border);border-radius:8px;color:var(--text);font-family:'Space Mono',monospace;font-size:14px;padding:12px 16px;outline:none;margin-bottom:14px;}
+.login input:focus{border-color:var(--purple);}
+.login button{width:100%;padding:14px;background:linear-gradient(135deg,var(--purple),var(--accent));border:none;border-radius:8px;color:#fff;font-family:'Space Mono',monospace;font-size:13px;letter-spacing:2px;cursor:pointer;}
+.login button:hover{opacity:.9;}
+.login .err{color:var(--accent);font-size:12px;font-family:'Space Mono',monospace;margin-top:10px;}
+
+/* DASHBOARD */
+.dash{display:none;width:100%;max-width:1100px;}
+.dash-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:32px;}
+.dash-title{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:3px;}
+.dash-title span{color:var(--accent);}
+.dash-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:2px;margin-top:4px;}
+.refresh-btn{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 18px;color:var(--muted);font-family:'Space Mono',monospace;font-size:11px;cursor:pointer;transition:all .2s;}
+.refresh-btn:hover{border-color:var(--purple);color:var(--purple);}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:24px;}
+.metric{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:24px;position:relative;overflow:hidden;}
+.metric::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.metric.green::before{background:var(--green);}
+.metric.purple::before{background:var(--purple);}
+.metric.accent::before{background:var(--accent);}
+.metric.blue::before{background:#4a9eff;}
+.metric-label{font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:12px;}
+.metric-value{font-family:'Bebas Neue',sans-serif;font-size:52px;letter-spacing:2px;line-height:1;}
+.metric.green .metric-value{color:var(--green);}
+.metric.purple .metric-value{color:var(--purple);}
+.metric.accent .metric-value{color:var(--accent);}
+.metric.blue .metric-value{color:#4a9eff;}
+.metric-sub{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:6px;}
+
+.section-title{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:3px;color:var(--purple);text-transform:uppercase;margin:28px 0 14px;}
+
+.loading{text-align:center;font-family:'Space Mono',monospace;font-size:12px;color:var(--muted);padding:40px;}
+.ts{font-family:'Space Mono',monospace;font-size:10px;color:var(--border);text-align:right;margin-top:16px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login" id="loginBox">
+  <h1>SUPRE<span style="color:var(--accent)">.</span>ADMIN</h1>
+  <p>Enter your admin token to continue</p>
+  <input type="password" id="tokenInput" placeholder="Admin token..." onkeydown="if(event.key==='Enter')login()">
+  <button onclick="login()">ACCESS DASHBOARD →</button>
+  <div class="err" id="loginErr"></div>
+</div>
+
+<!-- DASHBOARD -->
+<div class="dash" id="dashboard">
+  <div class="dash-header">
+    <div>
+      <div class="dash-title">SUPRE<span>.</span>ADMIN</div>
+      <div class="dash-sub">supre.online — real-time metrics</div>
+    </div>
+    <button class="refresh-btn" onclick="loadMetrics()">↺ REFRESH</button>
+  </div>
+
+  <div id="content"><div class="loading">Loading metrics...</div></div>
+</div>
+
+<script>
+var TOKEN = '';
+
+function login(){
+  var t = document.getElementById('tokenInput').value.trim();
+  if(!t){ document.getElementById('loginErr').textContent = 'Enter a token.'; return; }
+  TOKEN = t;
+  loadMetrics();
+}
+
+async function loadMetrics(){
+  document.getElementById('content').innerHTML = '<div class="loading">Loading metrics...</div>';
+  try {
+    var r = await fetch('/api/admin', { headers: { 'X-Admin-Token': TOKEN } });
+    if(r.status === 401){
+      document.getElementById('loginErr').textContent = 'Invalid token.';
+      TOKEN = '';
+      return;
+    }
+    var d = await r.json();
+    document.getElementById('loginBox').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    render(d);
+  } catch(e){
+    document.getElementById('content').innerHTML = '<div class="loading">Error loading metrics. Check connection.</div>';
+  }
+}
+
+function fmt(n){ return Number(n).toLocaleString('en'); }
+function fmtEur(n){ return '€' + Number(n).toFixed(2); }
+
+function render(d){
+  var html = '';
+
+  // Revenue section
+  html += '<div class="section-title">💰 Revenue</div>';
+  html += '<div class="grid">';
+  html += metric('Total Revenue', fmtEur(d.revenue.total_eur), '', 'green');
+  html += metric('Credits Sold', fmt(d.revenue.credits_sold), 'total credit packs', 'purple');
+  html += metric('Paid Users', fmt(d.revenue.paid_users), 'unique purchases', 'accent');
+  html += '</div>';
+
+  // Generations section
+  html += '<div class="section-title">⚡ Generations</div>';
+  html += '<div class="grid">';
+  html += metric('Total', fmt(d.generations.total), 'all time', 'purple');
+  html += metric('Today', fmt(d.generations.today), new Date().toISOString().slice(0,10), 'green');
+  html += metric('Yesterday', fmt(d.generations.yesterday), 'previous day', 'blue');
+  html += metric('Free Users Today', fmt(d.generations.free_users_today), 'unique IPs on free tier', 'blue');
+  html += '</div>';
+
+  // Credits section
+  html += '<div class="section-title">🎟 Active Credits</div>';
+  html += '<div class="grid">';
+  html += metric('Paid UUIDs', fmt(d.credits.active_paid_uuids), 'sessions with credits', 'accent');
+  html += metric('Credits Remaining', fmt(d.credits.remaining_credits), 'across all paid users', 'purple');
+  html += '</div>';
+
+  html += '<div class="ts">Last updated: ' + new Date(d.timestamp).toLocaleString() + '</div>';
+
+  document.getElementById('content').innerHTML = html;
+}
+
+function metric(label, value, sub, color){
+  return '<div class="metric '+color+'">' +
+    '<div class="metric-label">'+label+'</div>' +
+    '<div class="metric-value">'+value+'</div>' +
+    (sub ? '<div class="metric-sub">'+sub+'</div>' : '') +
+    '</div>';
+}
+
+// Auto-refresh every 60s
+setInterval(function(){ if(TOKEN) loadMetrics(); }, 60000);
+</script>
+</body>
+</html>

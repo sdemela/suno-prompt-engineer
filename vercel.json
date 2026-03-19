@@ -37,6 +37,8 @@
     { "src": "/api/webhook",         "dest": "/api/webhook.js" },
     { "src": "/api/credits",         "dest": "/api/credits.js" },
     { "src": "/api/save-email",      "dest": "/api/save-email.js" },
+    { "src": "/api/admin",           "dest": "/api/admin.js" },
+    { "src": "/admin",               "dest": "/public/admin/index.html" },
     { "src": "/en/tool",             "dest": "/public/en/tool.html" },
     { "src": "/it/tool",             "dest": "/public/it/tool.html" },
     { "src": "/en/landing",          "dest": "/en/", "status": 301 },

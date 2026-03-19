@@ -125,6 +125,12 @@ export default async function handler(req, res) {
           return res.status(500).json({ error: 'redis_error', message: 'Failed to decrement credits.' });
         } else {
           const result = await callAnthropic(formData);
+          // Global stats
+          const today = new Date().toISOString().slice(0, 10);
+          await Promise.allSettled([
+            fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:generations_total`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+            fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:generations:${today}`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+          ]);
           return res.status(200).json({ ...result, creditsRemaining: newCredits, tier: 'credits' });
         }
       } catch(e) {
@@ -149,6 +155,12 @@ export default async function handler(req, res) {
 
   try {
     const result = await callAnthropic(formData);
+    // Global stats
+    const todayKey = new Date().toISOString().slice(0, 10);
+    await Promise.allSettled([
+      fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:generations_total`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+      fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:generations:${todayKey}`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+    ]);
     return res.status(200).json({
       ...result,
       used,

@@ -146,6 +146,15 @@ export default async function handler(req, res) {
     // Fix #4: mark as processed only AFTER credits confirmed
     await markEventProcessed(event.id);
 
+    // Global stats counters
+    const today = new Date().toISOString().slice(0, 10);
+    const priceEur = parseFloat(pkg.price) || 0;
+    await Promise.allSettled([
+      fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrbyfloat/stats:revenue_eur/${priceEur}`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+      fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/stats:credits_sold/${pkg.credits}`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+      fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:paid_users`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+    ]);
+
     // Send confirmation email via Resend
     if (email) await sendEmail(email, pkg, newCredits, uuid);
 
