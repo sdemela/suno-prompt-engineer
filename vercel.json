@@ -53,7 +53,7 @@
     { "src": "/robots.txt",          "dest": "/public/robots.txt" },
     { "src": "/ads.txt",             "dest": "/public/ads.txt" },
     { "src": "/google(.*)",          "dest": "/public/google$1" },
-    { "src": "/",                    "dest": "/public/en/index.html" },
+    { "src": "/",                    "dest": "/en/", "status": 301 },
     { "src": "/(.*)",                "dest": "/public/404.html", "status": 404 }
   ]
 }
