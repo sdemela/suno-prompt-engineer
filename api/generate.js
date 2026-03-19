@@ -124,8 +124,22 @@ export default async function handler(req, res) {
         } else if (newCredits === -2) {
           return res.status(500).json({ error: 'redis_error', message: 'Failed to decrement credits.' });
         } else {
-          const result = await callAnthropic(formData);
-          // Global stats
+          let result;
+          try {
+            result = await callAnthropic(formData);
+          } catch(anthropicErr) {
+            // Rollback: reincrement the credit since generation failed
+            try {
+              await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${encodeURIComponent(`credits:${uuid}`)}/1`, {
+                headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
+              });
+            } catch(rollbackErr) {
+              console.error('Credit rollback failed:', rollbackErr.message);
+            }
+            console.error('Anthropic error (credit rolled back):', anthropicErr.message);
+            return res.status(503).json({ error: 'Generation failed. Your credit has been restored. Please try again.' });
+          }
+          // Global stats — only on success
           const today = new Date().toISOString().slice(0, 10);
           await Promise.allSettled([
             fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:generations_total`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
@@ -144,17 +158,28 @@ export default async function handler(req, res) {
   // --- FREE TIER (IP-based, 2/day) ---
   const ip = getTrustedIp(req);
   const freeKey = getFreeTierKey(ip);
-  const used = await redisIncrFreeTier(freeKey);
-  if (used > FREE_LIMIT) {
+
+  // Check current usage WITHOUT incrementing yet
+  const currentUsed = await (async () => {
+    const base = process.env.UPSTASH_REDIS_REST_URL;
+    const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
+    const r = await fetchWithTimeout(`${base}/get/${encodeURIComponent(freeKey)}`, { headers: auth });
+    const d = await r.json();
+    return parseInt(d.result) || 0;
+  })();
+
+  if (currentUsed >= FREE_LIMIT) {
     return res.status(429).json({
       error: 'free_limit_reached',
       message: `You've used your ${FREE_LIMIT} free generations today.`,
-      used: used - 1, limit: FREE_LIMIT,
+      used: currentUsed, limit: FREE_LIMIT,
     });
   }
 
   try {
     const result = await callAnthropic(formData);
+    // Increment only after successful generation
+    const used = await redisIncrFreeTier(freeKey);
     // Global stats
     const todayKey = new Date().toISOString().slice(0, 10);
     await Promise.allSettled([
