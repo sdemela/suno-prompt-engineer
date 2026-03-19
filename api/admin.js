@@ -44,8 +44,8 @@ export default async function handler(req, res) {
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).end();
 
-  // Auth via token header or query param
-  const token = req.headers['x-admin-token'] || req.query?.token;
+  // Auth via header only — never via query string (tokens in URLs end up in logs/history)
+  const token = req.headers['x-admin-token'] || (req.headers['authorization'] || '').replace('Bearer ', '');
   if (!token || token !== process.env.ADMIN_TOKEN) {
     return res.status(401).json({ error: 'Unauthorized' });
   }
@@ -68,7 +68,7 @@ export default async function handler(req, res) {
       redisGet('stats:generations_total'),
       redisGet(`stats:generations:${today}`),
       redisGet(`stats:generations:${yesterday}`),
-      redisGet('stats:paid_users'),
+      redisGet('stats:paid_purchases'),
     ]);
 
     // Scan free tier keys for today's active free users
@@ -76,16 +76,20 @@ export default async function handler(req, res) {
 
     // Scan paid credit keys to get active paid UUIDs
     const creditKeys = await redisScan('credits:*');
-    const creditValues = await Promise.all(
-      creditKeys.slice(0, 50).map(k => redisGet(k))
-    );
-    const activeCredits = creditValues.reduce((sum, v) => sum + (parseInt(v) || 0), 0);
+
+    // Fix #6: process ALL keys in batches of 20 to avoid partial counts
+    let activeCredits = 0;
+    for (let i = 0; i < creditKeys.length; i += 20) {
+      const batch = creditKeys.slice(i, i + 20);
+      const values = await Promise.all(batch.map(k => redisGet(k)));
+      activeCredits += values.reduce((sum, v) => sum + (parseInt(v) || 0), 0);
+    }
 
     return res.status(200).json({
       revenue: {
         total_eur: parseFloat(revenueTotal) || 0,
         credits_sold: parseInt(creditsTotal) || 0,
-        paid_users: parseInt(paidUsers) || 0,
+        paid_purchases: parseInt(paidUsers) || 0, // Fix #7: renamed from paid_users — counts purchases not unique users
       },
       generations: {
         total: parseInt(generationsTotal) || 0,
@@ -95,7 +99,7 @@ export default async function handler(req, res) {
       },
       credits: {
         active_paid_uuids: creditKeys.length,
-        remaining_credits: activeCredits,
+        remaining_credits: activeCredits, // Fix #6: now counts all UUIDs, not just first 50
       },
       timestamp: new Date().toISOString(),
     });

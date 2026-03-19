@@ -152,7 +152,7 @@ export default async function handler(req, res) {
     await Promise.allSettled([
       fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrbyfloat/stats:revenue_eur/${priceEur}`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
       fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/stats:credits_sold/${pkg.credits}`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
-      fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:paid_users`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
+      fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:paid_purchases`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
     ]);
 
     // Send confirmation email via Resend

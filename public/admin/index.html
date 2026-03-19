@@ -114,7 +114,7 @@ function render(d){
   html += '<div class="grid">';
   html += metric('Total Revenue', fmtEur(d.revenue.total_eur), '', 'green');
   html += metric('Credits Sold', fmt(d.revenue.credits_sold), 'total credit packs', 'purple');
-  html += metric('Paid Users', fmt(d.revenue.paid_users), 'unique purchases', 'accent');
+  html += metric('Paid Purchases', fmt(d.revenue.paid_purchases), 'total transactions', 'accent');
   html += '</div>';
 
   // Generations section
