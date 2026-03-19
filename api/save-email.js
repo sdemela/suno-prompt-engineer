@@ -90,16 +90,37 @@ export default async function handler(req, res) {
   // FIX #4: validazione UUID canonica
   if (!isValidSpeUuid(uuid)) return res.status(400).json({ error: 'Invalid UUID format' });
 
-  // FIX #1 — FLOW 1: sign-only (no email)
-  // Rate limited: 1 signature per UUID per 10 min to prevent HMAC fishing
+  // FLOW 1: sign-only (no email)
+  // Two sub-cases:
+  //   a) newSession: true  → brand-new UUID, no Redis check required (rate-limited by IP)
+  //   b) newSession: false → restore flow, UUID must have paid credits in Redis
   if (!email) {
+    const isNewSession = req.body?.newSession === true;
+    const ip = getTrustedIp(req);
+
     try {
-      const ip = getTrustedIp(req);
-      const signKey = `rl:sign:${ip}`;
-      const signCount = await redisIncrWithTTL(signKey, 600);
-      if (signCount > 5) {
+      // Shared IP rate limit: max 10 sign requests per hour
+      const ipSignKey = `rl:sign:${ip}`;
+      const ipSignCount = await redisIncrWithTTL(ipSignKey, 3600);
+      if (ipSignCount > 10) {
         return res.status(429).json({ error: 'rate_limit', message: 'Too many signature requests.' });
       }
+
+      if (!isNewSession) {
+        // Restore flow — verify UUID actually has paid credits in Redis
+        // This prevents the signing oracle: arbitrary UUIDs cannot get a valid sig
+        const creditsRes = await fetchWithTimeout(
+          `${process.env.UPSTASH_REDIS_REST_URL}/get/${encodeURIComponent(`credits:${uuid}`)}`,
+          { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }
+        );
+        const creditsData = await creditsRes.json();
+        const credits = parseInt(creditsData.result);
+        if (!creditsData.result || isNaN(credits)) {
+          // UUID unknown — don't reveal if it ever existed
+          return res.status(404).json({ error: 'session_not_found', message: 'Session ID not found or has no credits.' });
+        }
+      }
+
       const { signUUID } = await import('./_auth.js');
       const sig = signUUID(uuid);
       return res.status(200).json({ ok: true, sig });

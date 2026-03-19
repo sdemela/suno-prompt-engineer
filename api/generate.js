@@ -60,20 +60,30 @@ async function redisAtomicDecrIfPositive(key) {
   return typeof d.result === 'number' ? d.result : -2;
 }
 
-// Redis-based free tier counter — INCR + EXPIREAT at midnight UTC
-async function redisIncrFreeTier(key) {
+// Atomic free tier: INCR first, then check limit.
+// Returns { count, overLimit } — caller must rollback (DECR) if Anthropic fails.
+// Sets EXPIREAT on first write (count === 1).
+async function redisAtomicIncrFreeTier(key, limit) {
   const base = process.env.UPSTASH_REDIS_REST_URL;
   const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
   const incrRes = await fetchWithTimeout(`${base}/incr/${encodeURIComponent(key)}`, { headers: auth });
+  if (!incrRes.ok) throw new Error(`Redis INCR failed: ${incrRes.status}`);
   const incrData = await incrRes.json();
   const count = incrData.result;
   if (count === 1) {
+    // First use today — set EXPIREAT to midnight UTC
     const now = new Date();
     const midnight = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() + 1));
     const expireAt = Math.floor(midnight.getTime() / 1000);
     await fetchWithTimeout(`${base}/expireat/${encodeURIComponent(key)}/${expireAt}`, { headers: auth });
   }
-  return count;
+  return { count, overLimit: count > limit };
+}
+
+async function redisDecrFreeTier(key) {
+  const base = process.env.UPSTASH_REDIS_REST_URL;
+  const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
+  await fetchWithTimeout(`${base}/decr/${encodeURIComponent(key)}`, { headers: auth });
 }
 
 function getFreeTierKey(ip) {
@@ -155,32 +165,31 @@ export default async function handler(req, res) {
     // Firma non valida → cade nel free tier sotto
   }
 
-  // --- FREE TIER (IP-based, 2/day) ---
+  // --- FREE TIER (IP-based, 2/day) — atomic: INCR first, rollback on failure ---
   const ip = getTrustedIp(req);
   const freeKey = getFreeTierKey(ip);
 
-  // Check current usage WITHOUT incrementing yet
-  const currentUsed = await (async () => {
-    const base = process.env.UPSTASH_REDIS_REST_URL;
-    const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
-    const r = await fetchWithTimeout(`${base}/get/${encodeURIComponent(freeKey)}`, { headers: auth });
-    const d = await r.json();
-    return parseInt(d.result) || 0;
-  })();
-
-  if (currentUsed >= FREE_LIMIT) {
-    return res.status(429).json({
-      error: 'free_limit_reached',
-      message: `You've used your ${FREE_LIMIT} free generations today.`,
-      used: currentUsed, limit: FREE_LIMIT,
-    });
+  let freeCount;
+  try {
+    const { count, overLimit } = await redisAtomicIncrFreeTier(freeKey, FREE_LIMIT);
+    freeCount = count;
+    if (overLimit) {
+      // Over limit — rollback the increment immediately
+      await redisDecrFreeTier(freeKey);
+      return res.status(429).json({
+        error: 'free_limit_reached',
+        message: `You've used your ${FREE_LIMIT} free generations today.`,
+        used: FREE_LIMIT, limit: FREE_LIMIT,
+      });
+    }
+  } catch(e) {
+    console.error('Free tier rate limit error:', e.message);
+    return res.status(500).json({ error: 'Internal error' });
   }
 
   try {
     const result = await callAnthropic(formData);
-    // Increment only after successful generation
-    const used = await redisIncrFreeTier(freeKey);
-    // Global stats
+    // Global stats — only on success
     const todayKey = new Date().toISOString().slice(0, 10);
     await Promise.allSettled([
       fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incr/stats:generations_total`, { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }),
@@ -188,14 +197,16 @@ export default async function handler(req, res) {
     ]);
     return res.status(200).json({
       ...result,
-      used,
+      used: freeCount,
       limit: FREE_LIMIT,
-      remaining: Math.max(0, FREE_LIMIT - used),
+      remaining: Math.max(0, FREE_LIMIT - freeCount),
       tier: 'free',
     });
   } catch(e) {
-    console.error('Free tier error:', e.message);
-    return res.status(500).json({ error: 'Internal error' });
+    // Rollback: Anthropic failed, restore the free slot
+    try { await redisDecrFreeTier(freeKey); } catch(re) { console.error('Free tier rollback failed:', re.message); }
+    console.error('Free tier generation error (slot rolled back):', e.message);
+    return res.status(503).json({ error: 'Generation failed. Your free generation has been restored. Please try again.' });
   }
 }
 

@@ -786,7 +786,7 @@ setTimeout(twTick,800);
 (function(){var BASE=1247;var stored=parseInt(localStorage.getItem('spe_counter')||'0',10);var count=stored>BASE?stored:BASE;count+=Math.floor(Math.random()*9)+3;localStorage.setItem('spe_counter',String(count));var el=document.getElementById('promptCounter');if(el)el.textContent=count.toLocaleString('en');})();
 document.addEventListener('DOMContentLoaded',function(){
   if(!localStorage.getItem('spe_sig')){
-    fetch('/api/save-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uuid:userUuid})})
+    fetch('/api/save-email',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({uuid:userUuid,newSession:true})})
     .then(function(r){return r.json();})
     .then(function(d){if(d.sig)localStorage.setItem('spe_sig',d.sig);})
     .catch(function(){});
