@@ -1,61 +1,172 @@
 {
   "version": 2,
   "builds": [
-    { "src": "api/**/*.js", "use": "@vercel/node" },
-    { "src": "public/**", "use": "@vercel/static" }
+    {
+      "src": "api/**/*.js",
+      "use": "@vercel/node"
+    },
+    {
+      "src": "public/**",
+      "use": "@vercel/static"
+    }
   ],
   "headers": [
     {
       "source": "/(.*)",
       "headers": [
-        { "key": "X-Content-Type-Options", "value": "nosniff" },
-        { "key": "X-Frame-Options", "value": "DENY" },
-        { "key": "Referrer-Policy", "value": "strict-origin-when-cross-origin" },
-        { "key": "Permissions-Policy", "value": "camera=(), microphone=(), geolocation=()" },
-        { "key": "Strict-Transport-Security", "value": "max-age=63072000; includeSubDomains; preload" },
-        { "key": "X-XSS-Protection", "value": "1; mode=block" },
-        { "key": "Content-Security-Policy", "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://supre.online https://api.anthropic.com https://workable-insect-69168.upstash.io https://api.stripe.com https://api.resend.com https://www.google-analytics.com https://region1.google-analytics.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://js.stripe.com; object-src 'none'; base-uri 'self';" }
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "DENY"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "strict-origin-when-cross-origin"
+        },
+        {
+          "key": "Permissions-Policy",
+          "value": "camera=(), microphone=(), geolocation=()"
+        },
+        {
+          "key": "Strict-Transport-Security",
+          "value": "max-age=63072000; includeSubDomains; preload"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://pagead2.googlesyndication.com https://googleads.g.doubleclick.net https://www.google-analytics.com https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://supre.online https://api.anthropic.com https://workable-insect-69168.upstash.io https://api.stripe.com https://api.resend.com https://www.google-analytics.com https://region1.google-analytics.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://js.stripe.com; object-src 'none'; base-uri 'self';"
+        }
       ]
     },
     {
       "source": "/sitemap.xml",
       "headers": [
-        { "key": "Content-Type", "value": "application/xml; charset=utf-8" },
-        { "key": "Cache-Control", "value": "public, max-age=86400" }
+        {
+          "key": "Content-Type",
+          "value": "application/xml; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=86400"
+        }
       ]
     },
     {
       "source": "/robots.txt",
       "headers": [
-        { "key": "Content-Type", "value": "text/plain; charset=utf-8" }
+        {
+          "key": "Content-Type",
+          "value": "text/plain; charset=utf-8"
+        }
       ]
     }
   ],
   "routes": [
-    { "src": "/api/generate",        "dest": "/api/generate.js" },
-    { "src": "/api/checkout",        "dest": "/api/checkout.js" },
-    { "src": "/api/webhook",         "dest": "/api/webhook.js" },
-    { "src": "/api/credits",         "dest": "/api/credits.js" },
-    { "src": "/api/save-email",      "dest": "/api/save-email.js" },
-    { "src": "/api/admin",           "dest": "/api/admin.js" },
-    { "src": "/admin",               "dest": "/public/admin/index.html" },
-    { "src": "/en/tool",             "dest": "/public/en/tool.html" },
-    { "src": "/it/tool",             "dest": "/public/it/tool.html" },
-    { "src": "/en/landing",          "dest": "/en/", "status": 301 },
-    { "src": "/it/landing",          "dest": "/it/", "status": 301 },
-    { "src": "/en(/?)",              "dest": "/public/en/index.html" },
-    { "src": "/it(/?)",              "dest": "/public/it/index.html" },
-    { "src": "/og-image.png",        "dest": "/public/og-image.png" },
-    { "src": "/og-image.svg",        "dest": "/public/og-image.svg" },
-    { "src": "/favicon.svg",         "dest": "/public/favicon.svg" },
-    { "src": "/favicon.ico",         "dest": "/public/favicon.ico" },
-    { "src": "/apple-touch-icon.png","dest": "/public/apple-touch-icon.png" },
-    { "src": "/logo.png",            "dest": "/public/logo.png" },
-    { "src": "/sitemap.xml",         "dest": "/public/sitemap.xml" },
-    { "src": "/robots.txt",          "dest": "/public/robots.txt" },
-    { "src": "/ads.txt",             "dest": "/public/ads.txt" },
-    { "src": "/google(.*)",          "dest": "/public/google$1" },
-    { "src": "/",                    "dest": "/en/", "status": 301 },
-    { "src": "/(.*)",                "dest": "/public/404.html", "status": 404 }
+    {
+      "src": "/api/generate",
+      "dest": "/api/generate.js"
+    },
+    {
+      "src": "/api/checkout",
+      "dest": "/api/checkout.js"
+    },
+    {
+      "src": "/api/webhook",
+      "dest": "/api/webhook.js"
+    },
+    {
+      "src": "/api/credits",
+      "dest": "/api/credits.js"
+    },
+    {
+      "src": "/api/save-email",
+      "dest": "/api/save-email.js"
+    },
+    {
+      "src": "/api/admin",
+      "dest": "/api/admin.js"
+    },
+    {
+      "src": "/admin",
+      "dest": "/public/admin/index.html"
+    },
+    {
+      "src": "/en/tool",
+      "dest": "/public/en/tool.html"
+    },
+    {
+      "src": "/it/tool",
+      "dest": "/public/it/tool.html"
+    },
+    {
+      "src": "/en/landing",
+      "dest": "/en/",
+      "status": 301
+    },
+    {
+      "src": "/it/landing",
+      "dest": "/it/",
+      "status": 301
+    },
+    {
+      "src": "/en(/?)",
+      "dest": "/public/en/index.html"
+    },
+    {
+      "src": "/it(/?)",
+      "dest": "/public/it/index.html"
+    },
+    {
+      "src": "/og-image.png",
+      "dest": "/public/og-image.png"
+    },
+    {
+      "src": "/og-image.svg",
+      "dest": "/public/og-image.svg"
+    },
+    {
+      "src": "/favicon.svg",
+      "dest": "/public/favicon.svg"
+    },
+    {
+      "src": "/favicon.ico",
+      "dest": "/public/favicon.ico"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "dest": "/public/apple-touch-icon.png"
+    },
+    {
+      "src": "/logo.png",
+      "dest": "/public/logo.png"
+    },
+    {
+      "src": "/sitemap.xml",
+      "dest": "/public/sitemap.xml"
+    },
+    {
+      "src": "/robots.txt",
+      "dest": "/public/robots.txt"
+    },
+    {
+      "src": "/ads.txt",
+      "dest": "/public/ads.txt"
+    },
+    {
+      "src": "/google(.*)",
+      "dest": "/public/google$1"
+    },
+    {
+      "src": "/",
+      "dest": "/en/",
+      "status": 301
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/public/404.html",
+      "status": 404
+    }
   ]
 }
