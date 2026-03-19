@@ -11,7 +11,14 @@
 <script>
 // ══════════ CREDITS SYSTEM ══════════
 var userUuid = localStorage.getItem('spe_uuid');
-if(!userUuid){ userUuid = 'spe-'+Date.now()+'-'+Math.random().toString(36).slice(2,9); localStorage.setItem('spe_uuid', userUuid); }
+if(!userUuid){
+  // Use crypto.getRandomValues for cryptographically secure UUID
+  var arr = new Uint8Array(16);
+  crypto.getRandomValues(arr);
+  var randHex = Array.from(arr).map(function(b){ return b.toString(16).padStart(2,'0'); }).join('');
+  userUuid = 'spe-' + Date.now() + '-' + randHex;
+  localStorage.setItem('spe_uuid', userUuid);
+}
 
 // ══════════ HMAC AUTH ══════════
 function authHeaders(){

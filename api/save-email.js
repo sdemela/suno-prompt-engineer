@@ -1,4 +1,6 @@
 // CORS allowlist (fix #3)
+import crypto from 'crypto';
+
 const ALLOWED_ORIGINS = ['https://supre.online', 'https://www.supre.online'];
 function setCors(req, res) {
   const origin = req.headers['origin'] || '';
@@ -127,8 +129,23 @@ export default async function handler(req, res) {
   }
 
   try {
-    await redisSet(`email:${email}`, uuid);
-    await redisSet(`uuid:${uuid}:email`, email);
+    // Fix #5: normalize email + store as SHA256 hash (not PII in keyspace)
+    const normalizedEmail = email.trim().toLowerCase();
+    const emailHash = crypto.createHash('sha256').update(normalizedEmail).digest('hex');
+    const TTL_SECONDS = 365 * 24 * 3600; // 1 year retention
+
+    await Promise.all([
+      redisSet(`email_h:${emailHash}`, uuid),           // hash → uuid lookup
+      redisSet(`uuid:${uuid}:email_h`, emailHash),      // uuid → hash lookup (no PII)
+    ]);
+
+    // Set TTL on both keys
+    const base = process.env.UPSTASH_REDIS_REST_URL;
+    const auth = { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` };
+    await Promise.allSettled([
+      fetchWithTimeout(`${base}/expire/${encodeURIComponent(`email_h:${emailHash}`)}/${TTL_SECONDS}`, { headers: auth }),
+      fetchWithTimeout(`${base}/expire/${encodeURIComponent(`uuid:${uuid}:email_h`)}/${TTL_SECONDS}`, { headers: auth }),
+    ]);
 
     const { signUUID } = await import('./_auth.js');
     const sig = signUUID(uuid);
