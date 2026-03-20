@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suno v4 vs v5: Cosa Cambia nei Prompt — Guida Supre</title>
+<meta name="description" content="Suno v5 elabora i prompt in modo diverso rispetto a v4. Scopri cosa è cambiato, come adattare i tuoi prompt di stile e perché la calibrazione per versione è la competenza più sottovalutata.">
+<meta name="keywords" content="suno v4 vs v5, suno v5 prompt italiano, differenze suno versioni, guida suno v5, prompt suno versioni">
+<link rel="canonical" href="https://supre.online/it/guida/suno-v4-vs-v5-prompt">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/guida/suno-v4-vs-v5-prompt">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/guide/suno-v4-vs-v5-prompts">
+<link rel="alternate" hreflang="x-default" href="https://supre.online/en/guide/suno-v4-vs-v5-prompts">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a; --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 10; }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-cta { background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-decoration: none; display: inline-block; transition: opacity .2s, transform .2s; }
+.nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+.article-wrap { max-width: 740px; margin: 0 auto; padding: 64px 24px 80px; position: relative; z-index: 1; }
+.breadcrumb { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+.breadcrumb a { color: var(--purple); text-decoration: none; }
+.article-tag { display: inline-block; background: rgba(123,92,255,0.15); border: 1px solid rgba(123,92,255,0.3); color: var(--purple); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; margin-bottom: 20px; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 6vw, 52px); letter-spacing: 2px; line-height: 1.1; color: var(--text); margin-bottom: 20px; }
+.article-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+h2 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--text); margin: 48px 0 16px; }
+h3 { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin: 32px 0 12px; }
+p { color: #c8c8d8; margin-bottom: 20px; font-size: 16px; }
+ul { color: #c8c8d8; margin: 0 0 20px 24px; font-size: 16px; }
+li { margin-bottom: 8px; }
+strong { color: var(--text); }
+.code-block { background: var(--deep); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 8px; padding: 20px 24px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--green); margin: 24px 0; overflow-x: auto; line-height: 1.8; }
+.code-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box { background: rgba(0,229,176,0.05); border: 1px solid rgba(0,229,176,0.2); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+.tip-box .tip-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--green); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box p { color: #c8c8d8; margin: 0; }
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.compare-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.compare-card.v4 { border-top: 2px solid var(--purple); }
+.compare-card.v5 { border-top: 2px solid var(--green); }
+.compare-card .c-label { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; margin-bottom: 12px; }
+.compare-card.v4 .c-label { color: var(--purple); }
+.compare-card.v5 .c-label { color: var(--green); }
+.compare-card ul { color: var(--muted); font-size: 13px; margin-left: 16px; }
+.compare-card li { margin-bottom: 6px; }
+.cta-block { background: linear-gradient(135deg, rgba(123,92,255,0.12), rgba(255,60,95,0.08)); border: 1px solid rgba(123,92,255,0.3); border-radius: 12px; padding: 32px; text-align: center; margin: 48px 0 0; }
+.cta-block h2 { margin-top: 0; }
+.cta-block p { color: var(--muted); margin-bottom: 24px; }
+.cta-btn { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: opacity .2s, transform .2s; }
+.cta-btn:hover { opacity: .88; transform: translateY(-1px); }
+.related-links { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+.related-links h3 { margin-top: 0; }
+.related-links a { display: block; color: var(--purple); text-decoration: none; font-family: 'Space Mono', monospace; font-size: 12px; margin-bottom: 10px; }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 1; flex-wrap: wrap; gap: 12px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+@media (max-width: 600px) { nav { padding: 14px 20px; } .compare-grid { grid-template-columns: 1fr; } footer { padding: 20px; flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/it/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+  <a href="/it/tool" class="nav-cta">PROVA GRATIS →</a>
+</nav>
+<div class="article-wrap">
+  <div class="breadcrumb"><a href="/it/">Home</a> / <a href="/it/guida/">Guida</a> / Suno v4 vs v5</div>
+  <div class="article-tag">Guida</div>
+  <h1>Suno v4 vs v5: Cosa Cambia nei Prompt di Stile</h1>
+  <div class="article-meta">Marzo 2026 · 6 min di lettura · Suno v4, v4.5 e v5</div>
+
+  <p>Quando Suno v5 è uscito, molti utenti hanno notato che i loro prompt prima affidabili cominciavano a produrre risultati diversi — a volte peggiori. Il problema non era che i prompt fossero cattivi. È che il modello era cambiato, e la stessa struttura di prompt che funzionava alla perfezione in v4 non era ottimizzata per la nuova architettura.</p>
+
+  <p>Questa guida analizza le vere differenze tra la scrittura di prompt per Suno v4 e v5, e come adattare il tuo workflow per ottenere risultati costantemente buoni da entrambi.</p>
+
+  <h2>La Differenza Fondamentale: Come Ogni Versione Elabora il Linguaggio</h2>
+
+  <p>Suno v4 risponde meglio ai <strong>prompt precisi e basati su parole chiave</strong>. Ha bisogno di descrittori chiari e specifici in un ordine logico. Il linguaggio vago viene ignorato. Le contraddizioni producono output confuso. Più il prompt è specifico e conciso, più il risultato è affidabile.</p>
+
+  <p>Suno v5 ha una comprensione del linguaggio naturale significativamente migliore. Può elaborare <strong>frasi descrittive</strong> — non solo parole chiave individuali — e gestisce istruzioni più complesse e stratificate senza rompersi. Questo significa più spazio per essere espressivi, ma anche uno spazio di prompt più ampio e meno prevedibile senza la giusta calibrazione.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card v4">
+      <div class="c-label">Suno v4</div>
+      <ul>
+        <li>Basato su parole chiave</li>
+        <li>10–15 descrittori</li>
+        <li>Fino a ~120 caratteri</li>
+        <li>Preciso e stratificato</li>
+        <li>Sensibile all'ordine delle parole</li>
+      </ul>
+    </div>
+    <div class="compare-card v5">
+      <div class="c-label">Suno v5</div>
+      <ul>
+        <li>Consapevole delle frasi</li>
+        <li>15–20 descrittori</li>
+        <li>Fino a ~150 caratteri</li>
+        <li>Gestisce descrizioni più ricche</li>
+        <li>Capisce le atmosfere sonore</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>Stesso Brano, Due Versioni: Confronto Diretto</h2>
+
+  <h3>Concetto: Dark minimal techno, notte fonda, tocco industriale</h3>
+
+  <div class="code-label">Ottimizzato per Suno v4</div>
+  <div class="code-block">dark minimal techno, industriale, kick incalzante, percussioni metalliche, sub bass, loop ipnotico, arrangiamento essenziale, riverbero freddo, niente voci</div>
+
+  <div class="code-label">Ottimizzato per Suno v5</div>
+  <div class="code-block">dark minimal techno, atmosfera warehouse industriale notturna, kick incalzante con percussioni metalliche, sub bass profondo, groove ipnotico, riverbero freddo cavernoso, essenziale e inarrestabile, niente voci, energia club est-europeo</div>
+
+  <p>Il prompt v5 usa frasi più descrittive, fa riferimento a un'atmosfera ("warehouse industriale", "club est-europeo") ed è più lungo. Il prompt v4 è più compatto e orientato alle parole chiave. Entrambi sono corretti — ma scambiarli tra versioni produrrà risultati notevolmente peggiori.</p>
+
+  <div class="tip-box">
+    <div class="tip-label">Test rapido</div>
+    <p>Se un prompt performa male in v5, prova a ridurlo del 30% e rimuovere il linguaggio atmosferico. Se performa male in v4, controlla se stai usando frasi dove le parole chiave sarebbero più efficaci.</p>
+  </div>
+
+  <div class="cta-block">
+    <h2>Prompt Calibrati per Versione in Secondi</h2>
+    <p>Seleziona la tua versione Suno. Scegli genere, mood e strumenti. Ottieni la struttura di prompt corretta automaticamente.</p>
+    <a href="/it/tool" class="cta-btn">Apri il Tool →</a>
+  </div>
+
+  <div class="related-links">
+    <h3>Altre Guide</h3>
+    <a href="/it/guida/come-scrivere-prompt-suno">Come Scrivere Prompt Suno AI che Funzionano Davvero →</a>
+    <a href="/it/guida/cheat-sheet-prompt-suno">Cheat Sheet Prompt Suno — 50+ Parole Chiave →</a>
+  </div>
+</div>
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/it/tool">Tool</a>
+    <a href="/it/guida/">Guida</a>
+    <a href="/it/about">Chi siamo</a>
+    <a href="/it/privacy">Privacy</a>
+    <a href="/it/terms">Termini</a>
+    <a href="/en/">EN</a>
+    <a href="mailto:hello@supre.online">Contatto</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

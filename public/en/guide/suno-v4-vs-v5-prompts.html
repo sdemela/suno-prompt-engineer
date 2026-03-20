@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suno v4 vs v5: What Changes in Prompt Style — Supre Guide</title>
+<meta name="description" content="Suno v5 handles prompts differently from v4. Learn what changed, how to adapt your style prompts, and why version calibration is the most underrated Suno skill.">
+<meta name="keywords" content="suno v4 vs v5, suno v5 prompts, suno v5 style field, suno version differences, suno v5 guide, suno prompt differences">
+<link rel="canonical" href="https://supre.online/en/guide/suno-v4-vs-v5-prompts">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/guide/suno-v4-vs-v5-prompts">
+<link rel="alternate" hreflang="x-default" href="https://supre.online/en/guide/suno-v4-vs-v5-prompts">
+<meta property="og:title" content="Suno v4 vs v5: What Changes in Prompt Style">
+<meta property="og:description" content="How to adapt your Suno style prompts when switching between v4 and v5. Key differences, examples, and what actually changed.">
+<meta property="og:url" content="https://supre.online/en/guide/suno-v4-vs-v5-prompts">
+<meta property="og:type" content="article">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Suno v4 vs v5: What Changes in Prompt Style",
+  "description": "How to adapt your Suno style prompts when switching between v4 and v5.",
+  "author": { "@type": "Organization", "name": "Supre Online", "url": "https://supre.online" },
+  "publisher": { "@type": "Organization", "name": "Supre Online", "url": "https://supre.online" },
+  "datePublished": "2026-03-20",
+  "dateModified": "2026-03-20",
+  "mainEntityOfPage": "https://supre.online/en/guide/suno-v4-vs-v5-prompts"
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a;
+  --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 10; }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-cta { background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity .2s, transform .2s; }
+.nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+.article-wrap { max-width: 740px; margin: 0 auto; padding: 64px 24px 80px; position: relative; z-index: 1; }
+.breadcrumb { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+.breadcrumb a { color: var(--purple); text-decoration: none; }
+.article-tag { display: inline-block; background: rgba(123,92,255,0.15); border: 1px solid rgba(123,92,255,0.3); color: var(--purple); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; margin-bottom: 20px; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 6vw, 56px); letter-spacing: 2px; line-height: 1.1; color: var(--text); margin-bottom: 20px; }
+.article-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+h2 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 2px; color: var(--text); margin: 48px 0 16px; }
+h3 { font-family: 'Space Mono', monospace; font-size: 13px; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin: 32px 0 12px; }
+p { color: #c8c8d8; margin-bottom: 20px; font-size: 16px; }
+ul, ol { color: #c8c8d8; margin: 0 0 20px 24px; font-size: 16px; }
+li { margin-bottom: 8px; }
+strong { color: var(--text); }
+.code-block { background: var(--deep); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 8px; padding: 20px 24px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--green); margin: 24px 0; overflow-x: auto; line-height: 1.8; }
+.code-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box { background: rgba(0,229,176,0.05); border: 1px solid rgba(0,229,176,0.2); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+.tip-box .tip-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--green); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box p { color: #c8c8d8; margin: 0; }
+.warn-box { background: rgba(255,60,95,0.05); border: 1px solid rgba(255,60,95,0.2); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+.warn-box .warn-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+.warn-box p { color: #c8c8d8; margin: 0; }
+.compare-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+.compare-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 20px; }
+.compare-card.v4 { border-top: 2px solid var(--purple); }
+.compare-card.v5 { border-top: 2px solid var(--green); }
+.compare-card .c-label { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 2px; margin-bottom: 12px; }
+.compare-card.v4 .c-label { color: var(--purple); }
+.compare-card.v5 .c-label { color: var(--green); }
+.compare-card ul { color: var(--muted); font-size: 13px; margin-left: 16px; }
+.compare-card li { margin-bottom: 6px; }
+.cta-block { background: linear-gradient(135deg, rgba(123,92,255,0.12), rgba(255,60,95,0.08)); border: 1px solid rgba(123,92,255,0.3); border-radius: 12px; padding: 32px; text-align: center; margin: 48px 0 0; }
+.cta-block h2 { margin-top: 0; font-size: 28px; }
+.cta-block p { color: var(--muted); margin-bottom: 24px; }
+.cta-btn { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: opacity .2s, transform .2s; }
+.cta-btn:hover { opacity: .88; transform: translateY(-1px); }
+.related-links { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+.related-links h3 { margin-top: 0; }
+.related-links a { display: block; color: var(--purple); text-decoration: none; font-family: 'Space Mono', monospace; font-size: 12px; margin-bottom: 10px; }
+.related-links a:hover { color: var(--accent); }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 1; flex-wrap: wrap; gap: 12px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+@media (max-width: 600px) { nav { padding: 14px 20px; } .compare-grid { grid-template-columns: 1fr; } footer { padding: 20px; flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+  <a href="/en/tool" class="nav-cta">TRY FREE →</a>
+</nav>
+
+<div class="article-wrap">
+  <div class="breadcrumb">
+    <a href="/en/">Home</a> / <a href="/en/guide/">Guide</a> / Suno v4 vs v5 Prompts
+  </div>
+  <div class="article-tag">Guide</div>
+  <h1>Suno v4 vs v5: What Changes in Prompt Style</h1>
+  <div class="article-meta">March 2026 · 6 min read · Covers Suno v4, v4.5 and v5</div>
+
+  <p>When Suno v5 launched, a lot of users noticed that their previously reliable prompts started producing different — sometimes worse — results. The problem wasn't that the prompts were bad. It's that the model changed, and the same prompt structure that worked brilliantly in v4 wasn't optimized for the new model's architecture.</p>
+
+  <p>This guide breaks down the real differences between writing prompts for Suno v4 and v5, and how to adapt your workflow to get consistently good results from both.</p>
+
+  <h2>The Core Difference: How Each Version Processes Language</h2>
+
+  <p>Suno v4 responds best to <strong>precise, keyword-based prompts</strong>. It needs clear, specific descriptors arranged in a logical order. Vague language gets ignored. Contradictions produce muddled output. The more specific and concise your prompt, the more reliable the result.</p>
+
+  <p>Suno v5 has significantly better natural language understanding. It can process <strong>descriptive phrases</strong> — not just individual keywords — and it handles more complex, layered instructions without breaking. This means you have more room to be expressive, but it also means the prompt space is wider and less predictable without proper calibration.</p>
+
+  <div class="compare-grid">
+    <div class="compare-card v4">
+      <div class="c-label">Suno v4</div>
+      <ul>
+        <li>Keyword-driven</li>
+        <li>10–15 descriptors</li>
+        <li>Up to ~120 characters</li>
+        <li>Precise and layered</li>
+        <li>Sensitive to word order</li>
+        <li>Minimal natural language</li>
+      </ul>
+    </div>
+    <div class="compare-card v5">
+      <div class="c-label">Suno v5</div>
+      <ul>
+        <li>Phrase-aware</li>
+        <li>15–20 descriptors</li>
+        <li>Up to ~150 characters</li>
+        <li>Can handle richer description</li>
+        <li>More tolerant of variation</li>
+        <li>Understands sonic atmospheres</li>
+      </ul>
+    </div>
+  </div>
+
+  <h2>What v5 Does Better</h2>
+
+  <p>Suno v5 has three meaningful improvements over v4 from a prompting perspective:</p>
+
+  <h3>1. Sonic atmosphere language</h3>
+  <p>In v4, describing a "foggy 3am warehouse" in your style prompt would mostly be ignored. In v5, atmospheric language like this can actually influence the production texture and mix character. You still need to anchor it with concrete musical descriptors, but v5 gives you more room for evocative language alongside the technical ones.</p>
+
+  <h3>2. Production era references</h3>
+  <p>V5 handles era-based references more granularly. Describing a specific production period — "late 90s UK garage", "2007 minimal techno", "80s synthwave" — produces more era-accurate results in v5 than in v4, which tends to interpret these more loosely.</p>
+
+  <h3>3. Structural cues</h3>
+  <p>V5 responds better to structural instructions like "build from sparse intro to dense drop" or "minimal arrangement throughout." V4 can process these but tends to apply them inconsistently. In v5, they're more reliable as part of the style prompt.</p>
+
+  <h2>What v4 Does Better</h2>
+
+  <p>Despite v5's improvements, v4 has real advantages in some areas:</p>
+
+  <ul>
+    <li><strong>Consistency</strong> — v4 is more predictable. The same prompt produces more similar results across multiple generations, which is useful when you're iterating on a specific sound.</li>
+    <li><strong>Tight genre adherence</strong> — v4 tends to stay closer to the stated genre without drifting. V5 can occasionally blend in adjacent sounds when the prompt is rich in descriptors.</li>
+    <li><strong>Speed of calibration</strong> — because v4's response to keywords is more direct, it's often faster to iterate to a target sound with fewer generation cycles.</li>
+  </ul>
+
+  <h2>Same Track, Two Versions: A Direct Comparison</h2>
+
+  <p>Here's the same track concept prompted for each version:</p>
+
+  <h3>Concept: Dark minimal techno, late night, industrial edge</h3>
+
+  <div class="code-label">Optimized for Suno v4</div>
+  <div class="code-block">dark minimal techno, industrial, driving kick, metallic percussion, sub bass, hypnotic loop, sparse arrangement, cold reverb, no vocals</div>
+
+  <div class="code-label">Optimized for Suno v5</div>
+  <div class="code-block">dark minimal techno, late-night industrial warehouse feel, driving kick with metallic percussion, deep sub bass, hypnotic groove, cold cavernous reverb, sparse and relentless, no vocals, Eastern European club energy</div>
+
+  <p>The v5 prompt uses more descriptive phrases, references an atmosphere ("warehouse feel", "Eastern European club energy"), and runs longer. The v4 prompt is tighter and more keyword-focused. Both are correct — but swapping them between versions will produce noticeably worse results.</p>
+
+  <div class="tip-box">
+    <div class="tip-label">Quick test</div>
+    <p>If a prompt is performing poorly in v5, try cutting it down by 30% and removing atmospheric language. If it's underperforming in v4, check if you're using phrases where keywords would serve better.</p>
+  </div>
+
+  <h2>What Stays the Same Across Versions</h2>
+
+  <p>Some rules are constant regardless of Suno version:</p>
+
+  <ul>
+    <li><strong>No artist names or song titles</strong> — prohibited by Suno's terms and not reliably effective in any version</li>
+    <li><strong>Word order matters</strong> — earlier tokens get more weight in both v4 and v5; put your most important descriptors first</li>
+    <li><strong>Avoid contradictions</strong> — "energetic and relaxed" or "aggressive and gentle" confuse both models</li>
+    <li><strong>Specificity wins</strong> — "TR-909 kick" is always better than "electronic drums" in any version</li>
+  </ul>
+
+  <h2>Should You Use v4 or v5?</h2>
+
+  <p>Both versions are available in Suno and both have legitimate use cases. The practical answer:</p>
+
+  <ul>
+    <li>Use <strong>v4/v4.5</strong> when you need consistency across multiple generations, or when you're working in a well-defined genre where tight adherence matters.</li>
+    <li>Use <strong>v5</strong> when you want richer production quality, when you're exploring a more atmospheric or cinematic sound, or when you want to leverage natural language to describe a sonic world.</li>
+    <li>When in doubt, generate the same prompt in both and compare. The right version often becomes obvious from the first listen.</li>
+  </ul>
+
+  <div class="warn-box">
+    <div class="warn-label">Common mistake</div>
+    <p>Optimizing a prompt heavily for one version, then running it in the other without adjustment. Version-specific prompts are not interchangeable. Always recalibrate when switching.</p>
+  </div>
+
+  <h2>Let Supre Handle the Version Calibration</h2>
+
+  <p>This is exactly why Supre exists. When you select your target Suno version in the tool, it adjusts the prompt structure, length, and language style automatically — keyword-focused for v3 and v4, phrase-aware for v5, ultra-minimal for legacy v3. You don't have to remember the rules for each version.</p>
+
+  <div class="cta-block">
+    <h2>Version-Calibrated Prompts in Seconds</h2>
+    <p>Select your Suno version. Pick your genre, mood and instruments. Get the right prompt structure automatically.</p>
+    <a href="/en/tool" class="cta-btn">Open the Tool →</a>
+  </div>
+
+  <div class="related-links">
+    <h3>More Guides</h3>
+    <a href="/en/guide/how-to-write-suno-prompts">How to Write Suno AI Prompts That Actually Work →</a>
+    <a href="/en/guide/suno-prompt-cheat-sheet">Suno Style Prompt Cheat Sheet — 50+ Keywords That Work →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/en/tool">Tool</a>
+    <a href="/en/guide/">Guide</a>
+    <a href="/en/about">About</a>
+    <a href="/en/privacy">Privacy</a>
+    <a href="/en/terms">Terms</a>
+    <a href="/it/">IT</a>
+    <a href="mailto:hello@supre.online">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

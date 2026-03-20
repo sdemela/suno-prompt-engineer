@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cheat Sheet Prompt Suno — 50+ Parole Chiave che Funzionano — Supre</title>
+<meta name="description" content="Riferimento rapido con 50+ parole chiave per prompt Suno AI organizzate per categoria: genere, energia, strumenti, produzione, mix e voce. Copia e usa.">
+<meta name="keywords" content="parole chiave suno, prompt suno lista, cheat sheet suno italiano, migliori prompt suno, suno keywords italiani">
+<link rel="canonical" href="https://supre.online/it/guida/cheat-sheet-prompt-suno">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/guida/cheat-sheet-prompt-suno">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/guide/suno-prompt-cheat-sheet">
+<link rel="alternate" hreflang="x-default" href="https://supre.online/en/guide/suno-prompt-cheat-sheet">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a; --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 10; }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-cta { background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-decoration: none; display: inline-block; transition: opacity .2s, transform .2s; }
+.nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+.article-wrap { max-width: 740px; margin: 0 auto; padding: 64px 24px 80px; position: relative; z-index: 1; }
+.breadcrumb { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+.breadcrumb a { color: var(--purple); text-decoration: none; }
+.article-tag { display: inline-block; background: rgba(123,92,255,0.15); border: 1px solid rgba(123,92,255,0.3); color: var(--purple); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; margin-bottom: 20px; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(30px, 5vw, 48px); letter-spacing: 2px; line-height: 1.1; color: var(--text); margin-bottom: 20px; }
+.article-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+h2 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--text); margin: 48px 0 16px; }
+h3 { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin: 32px 0 12px; }
+p { color: #c8c8d8; margin-bottom: 20px; font-size: 16px; }
+strong { color: var(--text); }
+.keyword-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+.kw { background: var(--card); border: 1px solid var(--border); border-radius: 6px; padding: 6px 14px; font-family: 'Space Mono', monospace; font-size: 11px; color: var(--text); transition: border-color .15s, color .15s; }
+.kw:hover { border-color: var(--purple); color: var(--purple); }
+.kw.green { color: var(--green); border-color: rgba(0,229,176,0.25); }
+.kw.accent { color: var(--accent); border-color: rgba(255,60,95,0.25); }
+.code-block { background: var(--deep); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 8px; padding: 20px 24px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--green); margin: 24px 0; overflow-x: auto; line-height: 1.8; }
+.code-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box { background: rgba(0,229,176,0.05); border: 1px solid rgba(0,229,176,0.2); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+.tip-box .tip-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--green); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box p { color: #c8c8d8; margin: 0; }
+.cta-block { background: linear-gradient(135deg, rgba(123,92,255,0.12), rgba(255,60,95,0.08)); border: 1px solid rgba(123,92,255,0.3); border-radius: 12px; padding: 32px; text-align: center; margin: 48px 0 0; }
+.cta-block h2 { margin-top: 0; }
+.cta-block p { color: var(--muted); margin-bottom: 24px; }
+.cta-btn { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: opacity .2s, transform .2s; }
+.cta-btn:hover { opacity: .88; transform: translateY(-1px); }
+.related-links { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+.related-links h3 { margin-top: 0; }
+.related-links a { display: block; color: var(--purple); text-decoration: none; font-family: 'Space Mono', monospace; font-size: 12px; margin-bottom: 10px; }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 1; flex-wrap: wrap; gap: 12px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+@media (max-width: 600px) { nav { padding: 14px 20px; } footer { padding: 20px; flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/it/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+  <a href="/it/tool" class="nav-cta">PROVA GRATIS →</a>
+</nav>
+<div class="article-wrap">
+  <div class="breadcrumb"><a href="/it/">Home</a> / <a href="/it/guida/">Guida</a> / Cheat Sheet</div>
+  <div class="article-tag">Cheat Sheet</div>
+  <h1>Cheat Sheet Prompt Suno — 50+ Parole Chiave che Funzionano</h1>
+  <div class="article-meta">Marzo 2026 · Riferimento rapido · Aggiornato per Suno v4 e v5</div>
+
+  <p>Questo è il riferimento rapido a cui tornare quando scrivi prompt di stile Suno. Ogni parola chiave qui è stata testata su più versioni Suno e produce risultati costanti e utili. Organizzate per categoria così puoi mescolarle e combinare.</p>
+
+  <div class="tip-box">
+    <div class="tip-label">Come usare questa lista</div>
+    <p>Scegli una o due da ogni categoria rilevante. Inizia con il genere, poi energia, poi strumenti e produzione. Per Suno v5 puoi combinare le parole chiave in brevi frasi descrittive. Per v3 e v4, tienile come parole chiave individuali separate da virgole.</p>
+  </div>
+
+  <h2>Genere e Sottogenere</h2>
+  <p>La base di ogni prompt. Sii specifico — "tech house" funziona meglio di "elettronica", e "dark R&B" funziona meglio di "R&B".</p>
+  <div class="keyword-grid">
+    <span class="kw">tech house</span><span class="kw">deep house</span><span class="kw">minimal techno</span><span class="kw">dark techno</span><span class="kw">afro house</span>
+    <span class="kw">dark R&B</span><span class="kw">neo soul</span><span class="kw">trap</span><span class="kw">drill</span><span class="kw">UK garage</span>
+    <span class="kw">afrobeats</span><span class="kw">bossa nova</span><span class="kw">jazz fusion</span><span class="kw">cinematic</span><span class="kw">darkwave</span>
+    <span class="kw">post-punk</span><span class="kw">indie rock</span><span class="kw">shoegaze</span><span class="kw">synth-pop</span><span class="kw">ambient</span>
+    <span class="kw">drum and bass</span><span class="kw">liquid DnB</span><span class="kw">reggaeton</span><span class="kw">cumbia</span>
+  </div>
+
+  <h2>Energia e Movimento Temporale</h2>
+  <p>Descrive come si muove il brano — non il BPM esatto, ma la qualità cinetica della musica.</p>
+  <div class="keyword-grid">
+    <span class="kw green">ipnotico</span><span class="kw green">incalzante</span><span class="kw green">inarrestabile</span><span class="kw green">pulsante</span><span class="kw green">a fuoco lento</span>
+    <span class="kw green">fluttuante</span><span class="kw green">meditativo</span><span class="kw green">uptempo</span><span class="kw green">half-time feel</span><span class="kw green">urgente</span>
+    <span class="kw green">cupo</span><span class="kw green">euforico</span><span class="kw green">malinconico</span><span class="kw green">frenetico</span><span class="kw green">lussureggiante</span>
+  </div>
+
+  <h2>Strumenti e Sorgenti Sonore</h2>
+  <p>I nomi specifici degli strumenti superano le categorie generiche. "kick TR-909" dice di più di "batteria elettronica".</p>
+  <div class="keyword-grid">
+    <span class="kw">TR-909</span><span class="kw">TR-808</span><span class="kw">rolling bass</span><span class="kw">sub bass</span><span class="kw">contrabbasso</span>
+    <span class="kw">Rhodes piano</span><span class="kw">Moog synth</span><span class="kw">marimba</span><span class="kw">oud</span><span class="kw">kora</span>
+    <span class="kw">chitarra fingerpicking</span><span class="kw">chitarra distorta</span><span class="kw">sezione fiati</span>
+    <span class="kw">archi orchestrali</span><span class="kw">violino solo</span><span class="kw">talking drum</span><span class="kw">congas</span>
+    <span class="kw">pad synth</span><span class="kw">arp synth</span><span class="kw">acid line</span><span class="kw">vocal chop</span>
+  </div>
+
+  <h2>Trama Produttiva</h2>
+  <p>Descrive come suona il mix — il carattere sonoro e l'estetica di registrazione.</p>
+  <div class="keyword-grid">
+    <span class="kw accent">lo-fi</span><span class="kw accent">calore analogico</span><span class="kw accent">saturazione nastro</span><span class="kw accent">digitale nitido</span>
+    <span class="kw accent">secco e potente</span><span class="kw accent">stereo ampio</span><span class="kw accent">overdrive</span><span class="kw accent">compresso</span>
+    <span class="kw accent">registrazione grezza</span><span class="kw accent">mix cristallino</span><span class="kw accent">grintoso</span><span class="kw accent">nebuloso</span>
+    <span class="kw accent">strati densi</span><span class="kw accent">arrangiamento essenziale</span><span class="kw accent">minimale</span><span class="kw accent">club-ready</span>
+  </div>
+
+  <h2>Esempi di Prompt Costruiti da Questa Lista</h2>
+
+  <h3>Minimal Techno</h3>
+  <div class="code-block">dark techno, ipnotico, kick incalzante, TR-909, sub bass, arrangiamento essenziale, riverbero freddo, niente voci</div>
+
+  <h3>Neo Soul</h3>
+  <div class="code-block">neo soul, a fuoco lento, Rhodes piano, chitarra fingerpicking, contrabbasso, riverbero caldo, calore analogico, voce intima, armonie vocali</div>
+
+  <h3>Afrobeats</h3>
+  <div class="code-block">afrobeats, uptempo, talking drum, kora, chitarra brillante pizzicata, percussioni stratificate, mix caldo, voci in call and response</div>
+
+  <div class="tip-box">
+    <div class="tip-label">Formula base</div>
+    <p>Un prompt solido: <strong>[genere] + [energia] + [1–2 strumenti] + [trama produttiva] + [riverbero] + [direzione vocale]</strong>. È tutto quello che serve per un punto di partenza affidabile.</p>
+  </div>
+
+  <div class="cta-block">
+    <h2>Lascia che il Tool Assembli il Prompt</h2>
+    <p>Scegli i tuoi parametri. Supre combina le parole chiave giuste nell'ordine giusto per la tua versione Suno.</p>
+    <a href="/it/tool" class="cta-btn">Prova Gratis →</a>
+  </div>
+
+  <div class="related-links">
+    <h3>Altre Guide</h3>
+    <a href="/it/guida/come-scrivere-prompt-suno">Come Scrivere Prompt Suno AI che Funzionano Davvero →</a>
+    <a href="/it/guida/suno-v4-vs-v5-prompt">Suno v4 vs v5: Cosa Cambia nei Prompt →</a>
+  </div>
+</div>
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/it/tool">Tool</a>
+    <a href="/it/guida/">Guida</a>
+    <a href="/it/about">Chi siamo</a>
+    <a href="/it/privacy">Privacy</a>
+    <a href="/it/terms">Termini</a>
+    <a href="/en/">EN</a>
+    <a href="mailto:hello@supre.online">Contatto</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

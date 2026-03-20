@@ -2,23 +2,22 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xhtml="http://www.w3.org/1999/xhtml">
 
-  <!-- Landing pages (homepage) -->
+  <!-- Landing pages -->
   <url>
     <loc>https://supre.online/en/</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://supre.online/en/"/>
-    <lastmod>2026-03-17</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
-
   <url>
     <loc>https://supre.online/it/</loc>
     <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/"/>
     <xhtml:link rel="alternate" hreflang="x-default" href="https://supre.online/en/"/>
-    <lastmod>2026-03-17</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
@@ -28,18 +27,129 @@
     <loc>https://supre.online/en/tool</loc>
     <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/tool"/>
     <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/tool"/>
-    <lastmod>2026-03-17</lastmod>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
-    <priority>0.8</priority>
+    <priority>0.9</priority>
   </url>
-
   <url>
     <loc>https://supre.online/it/tool</loc>
     <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/tool"/>
     <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/tool"/>
-    <lastmod>2026-03-17</lastmod>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.9</priority>
+  </url>
+
+  <!-- Guide index -->
+  <url>
+    <loc>https://supre.online/en/guide/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/"/>
+    <lastmod>2026-03-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/it/guida/</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Articles EN -->
+  <url>
+    <loc>https://supre.online/en/guide/how-to-write-suno-prompts</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/how-to-write-suno-prompts"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/come-scrivere-prompt-suno"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/en/guide/suno-v4-vs-v5-prompts</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/suno-v4-vs-v5-prompts"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/suno-v4-vs-v5-prompt"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/en/guide/suno-prompt-cheat-sheet</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/suno-prompt-cheat-sheet"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/cheat-sheet-prompt-suno"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- Articles IT -->
+  <url>
+    <loc>https://supre.online/it/guida/come-scrivere-prompt-suno</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/come-scrivere-prompt-suno"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/how-to-write-suno-prompts"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/it/guida/suno-v4-vs-v5-prompt</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/suno-v4-vs-v5-prompt"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/suno-v4-vs-v5-prompts"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/it/guida/cheat-sheet-prompt-suno</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/guida/cheat-sheet-prompt-suno"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/guide/suno-prompt-cheat-sheet"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+
+  <!-- About / Legal -->
+  <url>
+    <loc>https://supre.online/en/about</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/about"/>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/about"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/it/about</loc>
+    <xhtml:link rel="alternate" hreflang="it" href="https://supre.online/it/about"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://supre.online/en/about"/>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.5</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/en/privacy</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/it/privacy</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/en/terms</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://supre.online/it/terms</loc>
+    <lastmod>2026-03-20</lastmod>
+    <changefreq>yearly</changefreq>
+    <priority>0.3</priority>
   </url>
 
 </urlset>

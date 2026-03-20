@@ -159,6 +159,70 @@
       "dest": "/public/google$1"
     },
     {
+      "src": "/en/guide",
+      "dest": "/public/en/guide/index.html"
+    },
+    {
+      "src": "/en/guide/",
+      "dest": "/public/en/guide/index.html"
+    },
+    {
+      "src": "/en/guide/how-to-write-suno-prompts",
+      "dest": "/public/en/guide/how-to-write-suno-prompts.html"
+    },
+    {
+      "src": "/en/guide/suno-v4-vs-v5-prompts",
+      "dest": "/public/en/guide/suno-v4-vs-v5-prompts.html"
+    },
+    {
+      "src": "/en/guide/suno-prompt-cheat-sheet",
+      "dest": "/public/en/guide/suno-prompt-cheat-sheet.html"
+    },
+    {
+      "src": "/en/about",
+      "dest": "/public/en/about.html"
+    },
+    {
+      "src": "/en/privacy",
+      "dest": "/public/en/privacy.html"
+    },
+    {
+      "src": "/en/terms",
+      "dest": "/public/en/terms.html"
+    },
+    {
+      "src": "/it/guida",
+      "dest": "/public/it/guida/index.html"
+    },
+    {
+      "src": "/it/guida/",
+      "dest": "/public/it/guida/index.html"
+    },
+    {
+      "src": "/it/guida/come-scrivere-prompt-suno",
+      "dest": "/public/it/guida/come-scrivere-prompt-suno.html"
+    },
+    {
+      "src": "/it/guida/suno-v4-vs-v5-prompt",
+      "dest": "/public/it/guida/suno-v4-vs-v5-prompt.html"
+    },
+    {
+      "src": "/it/guida/cheat-sheet-prompt-suno",
+      "dest": "/public/it/guida/cheat-sheet-prompt-suno.html"
+    },
+    {
+      "src": "/it/about",
+      "dest": "/public/it/about.html"
+    },
+    {
+      "src": "/it/privacy",
+      "dest": "/public/it/privacy.html"
+    },
+    {
+      "src": "/it/terms",
+      "dest": "/public/it/terms.html"
+    },
+    {
       "src": "/",
       "dest": "/en/",
       "status": 301

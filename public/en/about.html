@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>About Supre — The Suno AI Prompt Engineer</title>
+<meta name="description" content="Supre is a prompt engineering tool for Suno AI, built by musicians and developers who were tired of guessing style prompts. Learn what it is, how it works, and why version calibration matters.">
+<link rel="canonical" href="https://supre.online/en/about">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/about">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/about">
+<link rel="alternate" hreflang="x-default" href="https://supre.online/en/about">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a; --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 10; }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-cta { background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity .2s, transform .2s; }
+.nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+.page-wrap { max-width: 740px; margin: 0 auto; padding: 64px 24px 80px; position: relative; z-index: 1; }
+.breadcrumb { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+.breadcrumb a { color: var(--purple); text-decoration: none; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 6vw, 56px); letter-spacing: 2px; line-height: 1.1; color: var(--text); margin-bottom: 32px; }
+h2 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--text); margin: 48px 0 16px; }
+p { color: #c8c8d8; margin-bottom: 20px; font-size: 16px; }
+strong { color: var(--text); }
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 40px 0; }
+.stat-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; text-align: center; }
+.stat-card .num { font-family: 'Bebas Neue', sans-serif; font-size: 36px; letter-spacing: 2px; color: var(--purple); }
+.stat-card .lbl { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-transform: uppercase; margin-top: 4px; }
+.contact-block { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin: 40px 0; }
+.contact-block h2 { margin-top: 0; }
+.contact-block a { color: var(--purple); text-decoration: none; }
+.contact-block a:hover { text-decoration: underline; }
+.cta-block { background: linear-gradient(135deg, rgba(123,92,255,0.12), rgba(255,60,95,0.08)); border: 1px solid rgba(123,92,255,0.3); border-radius: 12px; padding: 32px; text-align: center; margin: 48px 0 0; }
+.cta-block h2 { margin-top: 0; }
+.cta-block p { color: var(--muted); margin-bottom: 24px; }
+.cta-btn { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: opacity .2s, transform .2s; }
+.cta-btn:hover { opacity: .88; transform: translateY(-1px); }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 1; flex-wrap: wrap; gap: 12px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+@media (max-width: 600px) { nav { padding: 14px 20px; } .stat-grid { grid-template-columns: 1fr 1fr; } footer { padding: 20px; flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+  <a href="/en/tool" class="nav-cta">TRY FREE →</a>
+</nav>
+<div class="page-wrap">
+  <div class="breadcrumb"><a href="/en/">Home</a> / About</div>
+  <h1>About Supre</h1>
+
+  <p>Supre is a prompt engineering tool for Suno AI. It was built because writing a good Suno style prompt is harder than it should be — and most of the guidance out there is generic, version-agnostic, and wrong half the time.</p>
+
+  <p>The tool lets you pick your genre, mood, BPM range, instruments, and target Suno version, then generates an optimized Style of Music prompt calibrated for that specific model. Not a generic prompt. A prompt that accounts for how Suno v3, v4, v4.5, and v5 actually differ in how they process the style field.</p>
+
+  <h2>Why Version Calibration Matters</h2>
+
+  <p>Most Suno users don't realize that the same prompt performs very differently across Suno versions. A layered, descriptive prompt that produces excellent results in v5 will often sound unfocused or generic in v3 — because v3 was trained on shorter, more direct inputs. The reverse is equally true: a tight v3-style prompt often underperforms in v5, which can handle richer language but needs it to produce its best results.</p>
+
+  <p>Supre handles this calibration automatically. When you select your Suno version, the output structure, length, and language style change accordingly. You get the right type of prompt for the right model, every time.</p>
+
+  <h2>How It Works</h2>
+
+  <p>Supre uses a Claude AI model on the backend to generate prompts, but the real work is in the system — the genre taxonomy, version-specific rules, instrument vocabulary, and production texture library that have been built and refined through extensive testing with Suno across all versions.</p>
+
+  <p>The tool isn't just a wrapper around an LLM. It's a structured prompt engineering system that encodes knowledge about how Suno actually responds to different types of language, in a form that non-experts can access through a clean UI.</p>
+
+  <h2>Who It's For</h2>
+
+  <p>Supre is for anyone who uses Suno AI seriously — musicians exploring AI-assisted composition, content creators who need background music, producers experimenting with AI as a creative tool, and anyone who has ever typed "lo-fi chill beats" into Suno and wondered why the result sounds nothing like what they had in mind.</p>
+
+  <p>You don't need to know anything about prompt engineering to use it. You just need to know what kind of music you want to make.</p>
+
+  <h2>Pricing</h2>
+
+  <p>Supre is free to try — every user gets 2 free generations per day, no account required. Paid plans are available for users who generate prompts more frequently: Starter (50 credits, €1.99), Pro (150 credits, €3.99), and Studio (400 credits, €7.99). Credits don't expire.</p>
+
+  <div class="contact-block">
+    <h2>Contact</h2>
+    <p>Questions, feedback, or issues with the tool? Reach us at <a href="mailto:hello@supre.online">hello@supre.online</a>. We read everything.</p>
+  </div>
+
+  <div class="cta-block">
+    <h2>Try the Tool</h2>
+    <p>Free to start. No account required.</p>
+    <a href="/en/tool" class="cta-btn">Open Supre →</a>
+  </div>
+</div>
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/en/tool">Tool</a>
+    <a href="/en/guide/">Guide</a>
+    <a href="/en/about">About</a>
+    <a href="/en/privacy">Privacy</a>
+    <a href="/en/terms">Terms</a>
+    <a href="/it/">IT</a>
+    <a href="mailto:hello@supre.online">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

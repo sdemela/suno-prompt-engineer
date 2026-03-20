@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Suno AI Prompt Guides — Supre</title>
+<meta name="description" content="Guides and resources for writing better Suno AI style prompts. Learn prompt structure, version differences, and get a complete keyword reference.">
+<link rel="canonical" href="https://supre.online/en/guide/">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/guide/">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/guida/">
+<link rel="alternate" hreflang="x-default" href="https://supre.online/en/guide/">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a; --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 10; }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-cta { background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity .2s, transform .2s; }
+.nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+.page-wrap { max-width: 740px; margin: 0 auto; padding: 64px 24px 80px; position: relative; z-index: 1; }
+.breadcrumb { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+.breadcrumb a { color: var(--purple); text-decoration: none; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(36px, 6vw, 52px); letter-spacing: 2px; line-height: 1.1; color: var(--text); margin-bottom: 16px; }
+.subtitle { color: var(--muted); font-size: 16px; margin-bottom: 48px; }
+.article-card { display: block; background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 28px; margin-bottom: 16px; text-decoration: none; transition: border-color .2s, transform .2s; }
+.article-card:hover { border-color: var(--purple); transform: translateY(-2px); }
+.article-card .tag { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin-bottom: 10px; }
+.article-card h2 { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 1px; color: var(--text); margin-bottom: 8px; }
+.article-card p { color: var(--muted); font-size: 14px; margin: 0; }
+.article-card .meta { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.5); margin-top: 12px; }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 1; flex-wrap: wrap; gap: 12px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+@media (max-width: 600px) { nav { padding: 14px 20px; } footer { padding: 20px; flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+  <a href="/en/tool" class="nav-cta">TRY FREE →</a>
+</nav>
+<div class="page-wrap">
+  <div class="breadcrumb"><a href="/en/">Home</a> / Guide</div>
+  <h1>Suno Prompt Guide</h1>
+  <p class="subtitle">Everything you need to write better Suno AI style prompts — from first principles to specific version tips.</p>
+
+  <a href="/en/guide/how-to-write-suno-prompts" class="article-card">
+    <div class="tag">Guide · 8 min read</div>
+    <h2>How to Write Suno AI Prompts That Actually Work</h2>
+    <p>The complete guide to Suno style prompt structure. Genre, energy, instruments, production texture — and how to layer them correctly for each Suno version.</p>
+    <div class="meta">Updated March 2026</div>
+  </a>
+
+  <a href="/en/guide/suno-v4-vs-v5-prompts" class="article-card">
+    <div class="tag">Guide · 6 min read</div>
+    <h2>Suno v4 vs v5: What Changes in Prompt Style</h2>
+    <p>Why your v4 prompts don't perform the same in v5 — and how to adapt them. The real differences in how each model processes language, with direct comparison examples.</p>
+    <div class="meta">Updated March 2026</div>
+  </a>
+
+  <a href="/en/guide/suno-prompt-cheat-sheet" class="article-card">
+    <div class="tag">Cheat Sheet · Quick reference</div>
+    <h2>Suno Style Prompt Cheat Sheet — 50+ Keywords That Work</h2>
+    <p>A practical keyword reference organized by category: genre, energy, instruments, production texture, reverb and vocals. Copy, mix, and build your prompts.</p>
+    <div class="meta">Updated March 2026</div>
+  </a>
+</div>
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/en/tool">Tool</a>
+    <a href="/en/guide/">Guide</a>
+    <a href="/en/about">About</a>
+    <a href="/en/privacy">Privacy</a>
+    <a href="/en/terms">Terms</a>
+    <a href="/it/">IT</a>
+    <a href="mailto:hello@supre.online">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

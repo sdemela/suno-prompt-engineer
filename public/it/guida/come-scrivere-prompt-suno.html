@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Come Scrivere Prompt Suno AI che Funzionano Davvero — Guida Supre</title>
+<meta name="description" content="La guida completa per scrivere prompt Suno AI efficaci. Struttura, parole chiave e regole specifiche per versione: Suno v3, v4, v4.5 e v5. Con esempi pratici.">
+<meta name="keywords" content="come scrivere prompt suno, suno ai prompt guida, suno style prompt italiano, suno v4 prompt, suno v5 prompt, prompt suno efficaci">
+<link rel="canonical" href="https://supre.online/it/guida/come-scrivere-prompt-suno">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/guida/come-scrivere-prompt-suno">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/guide/how-to-write-suno-prompts">
+<link rel="alternate" hreflang="x-default" href="https://supre.online/en/guide/how-to-write-suno-prompts">
+<meta property="og:title" content="Come Scrivere Prompt Suno AI che Funzionano Davvero">
+<meta property="og:description" content="Guida completa alla struttura dei prompt Suno per v3, v4 e v5. Struttura, parole chiave, esempi e errori comuni.">
+<meta property="og:url" content="https://supre.online/it/guida/come-scrivere-prompt-suno">
+<meta property="og:type" content="article">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Come Scrivere Prompt Suno AI che Funzionano Davvero",
+  "description": "Guida completa alla struttura dei prompt Suno AI per v3, v4, v4.5 e v5.",
+  "author": { "@type": "Organization", "name": "Supre Online", "url": "https://supre.online" },
+  "publisher": { "@type": "Organization", "name": "Supre Online", "url": "https://supre.online" },
+  "datePublished": "2026-03-20",
+  "dateModified": "2026-03-20",
+  "inLanguage": "it",
+  "mainEntityOfPage": "https://supre.online/it/guida/come-scrivere-prompt-suno"
+}
+</script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a; --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; overflow-x: hidden; }
+body::before { content: ''; position: fixed; inset: 0; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E"); pointer-events: none; z-index: 0; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 10; }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.nav-cta { background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; border: none; border-radius: 8px; padding: 10px 24px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; cursor: pointer; text-decoration: none; display: inline-block; transition: opacity .2s, transform .2s; }
+.nav-cta:hover { opacity: .88; transform: translateY(-1px); }
+.article-wrap { max-width: 740px; margin: 0 auto; padding: 64px 24px 80px; position: relative; z-index: 1; }
+.breadcrumb { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+.breadcrumb a { color: var(--purple); text-decoration: none; }
+.article-tag { display: inline-block; background: rgba(123,92,255,0.15); border: 1px solid rgba(123,92,255,0.3); color: var(--purple); font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; padding: 4px 12px; border-radius: 4px; text-transform: uppercase; margin-bottom: 20px; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: clamp(32px, 6vw, 52px); letter-spacing: 2px; line-height: 1.1; color: var(--text); margin-bottom: 20px; }
+.article-meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); letter-spacing: 1px; margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+h2 { font-family: 'Bebas Neue', sans-serif; font-size: 26px; letter-spacing: 2px; color: var(--text); margin: 48px 0 16px; }
+h3 { font-family: 'Space Mono', monospace; font-size: 12px; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin: 32px 0 12px; }
+p { color: #c8c8d8; margin-bottom: 20px; font-size: 16px; }
+ul, ol { color: #c8c8d8; margin: 0 0 20px 24px; font-size: 16px; }
+li { margin-bottom: 8px; }
+strong { color: var(--text); }
+.code-block { background: var(--deep); border: 1px solid var(--border); border-left: 3px solid var(--purple); border-radius: 8px; padding: 20px 24px; font-family: 'Space Mono', monospace; font-size: 12px; color: var(--green); margin: 24px 0; overflow-x: auto; line-height: 1.8; }
+.code-label { font-family: 'Space Mono', monospace; font-size: 9px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box { background: rgba(0,229,176,0.05); border: 1px solid rgba(0,229,176,0.2); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+.tip-box .tip-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--green); text-transform: uppercase; margin-bottom: 8px; }
+.tip-box p { color: #c8c8d8; margin: 0; }
+.warn-box { background: rgba(255,60,95,0.05); border: 1px solid rgba(255,60,95,0.2); border-radius: 8px; padding: 20px 24px; margin: 24px 0; }
+.warn-box .warn-label { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--accent); text-transform: uppercase; margin-bottom: 8px; }
+.warn-box p { color: #c8c8d8; margin: 0; }
+.version-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 16px; margin: 24px 0; }
+.version-card { background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 16px; }
+.version-card .v-label { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 2px; color: var(--purple); margin-bottom: 6px; }
+.version-card p { font-size: 13px; color: var(--muted); margin: 0; }
+.cta-block { background: linear-gradient(135deg, rgba(123,92,255,0.12), rgba(255,60,95,0.08)); border: 1px solid rgba(123,92,255,0.3); border-radius: 12px; padding: 32px; text-align: center; margin: 48px 0 0; }
+.cta-block h2 { margin-top: 0; }
+.cta-block p { color: var(--muted); margin-bottom: 24px; }
+.cta-btn { display: inline-block; background: linear-gradient(135deg, var(--purple), var(--accent)); color: #fff; text-decoration: none; padding: 14px 32px; border-radius: 8px; font-family: 'Space Mono', monospace; font-size: 11px; letter-spacing: 2px; text-transform: uppercase; transition: opacity .2s, transform .2s; }
+.cta-btn:hover { opacity: .88; transform: translateY(-1px); }
+.related-links { margin-top: 48px; padding-top: 32px; border-top: 1px solid var(--border); }
+.related-links h3 { margin-top: 0; }
+.related-links a { display: block; color: var(--purple); text-decoration: none; font-family: 'Space Mono', monospace; font-size: 12px; margin-bottom: 10px; }
+.related-links a:hover { color: var(--accent); }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid rgba(42,42,58,0.5); position: relative; z-index: 1; flex-wrap: wrap; gap: 12px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+@media (max-width: 600px) { nav { padding: 14px 20px; } footer { padding: 20px; flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/it/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+  <a href="/it/tool" class="nav-cta">PROVA GRATIS →</a>
+</nav>
+
+<div class="article-wrap">
+  <div class="breadcrumb">
+    <a href="/it/">Home</a> / <a href="/it/guida/">Guida</a> / Come Scrivere Prompt Suno
+  </div>
+  <div class="article-tag">Guida</div>
+  <h1>Come Scrivere Prompt Suno AI che Funzionano Davvero</h1>
+  <div class="article-meta">Marzo 2026 · 8 min di lettura · Aggiornato per Suno v4 e v5</div>
+
+  <p>Se hai usato Suno AI per più di cinque minuti, probabilmente hai scritto qualcosa come "lo-fi hip hop rilassato" nel campo Style of Music e ti sei chiesto perché il risultato suona esattamente come tutti gli altri brani Suno su YouTube. Il problema non è Suno. È il prompt.</p>
+
+  <p>Scrivere un buon prompt di stile per Suno è un'abilità specifica. Non è come scrivere un prompt per ChatGPT, e non è come scrivere i testi di una canzone. Questa guida spiega esattamente come funziona — dalla struttura di base alle tecniche avanzate che cambiano i risultati in modo radicale.</p>
+
+  <h2>Cosa Fa Davvero il Campo Style of Music</h2>
+
+  <p>Il campo Style of Music di Suno è un input testuale breve che funziona come segnale di condizionamento per il modello di generazione musicale. Non descrive di cosa "parla" la musica — descrive il DNA sonoro del brano: genere, energia, strumenti, trama produttiva, carattere vocale ed epoca.</p>
+
+  <p>Pensalo come un briefing a un musicista session. Non stai descrivendo la sensazione che vuoi evocare. Stai dicendo: ecco il genere, ecco la sensazione di tempo, ecco lo stile di produzione, ecco gli strumenti che voglio sentire.</p>
+
+  <div class="tip-box">
+    <div class="tip-label">Concetto chiave</div>
+    <p>Il campo Style of Music risponde ai <strong>descrittori musicali</strong>, non al linguaggio emotivo o narrativo. "Malinconico viaggio notturno in auto" funziona meno bene di "synth-pop, tonalità minore, 808 incalzante, riverbero freddo, arrangiamento essenziale."</p>
+  </div>
+
+  <h2>La Struttura Base di un Buon Prompt</h2>
+
+  <p>Un prompt Suno ben strutturato segue un ordine di stratificazione naturale, dal macro al micro:</p>
+
+  <ol>
+    <li><strong>Genere / sottogenere</strong> — la categoria più ampia ("tech house", "dark R&B", "afrobeats")</li>
+    <li><strong>Epoca o periodo di riferimento</strong> — aiuta Suno a calibrare lo stile produttivo ("anni 90", "era 808", "2010s")</li>
+    <li><strong>Mood ed energia</strong> — non un'emozione, ma un'energia musicale ("ipnotico", "incalzante", "meditativo")</li>
+    <li><strong>Strumenti principali</strong> — i suoni che definiscono il brano ("rolling bass, vocal chop, TR-808")</li>
+    <li><strong>Trama produttiva</strong> — come suona il mix ("lo-fi", "analogico caldo", "stereo ampio", "secco e potente")</li>
+    <li><strong>Direzione vocale</strong> — se rilevante ("spoken word", "falsetto", "strati corali", "niente voci")</li>
+  </ol>
+
+  <p>Non servono tutti e sei ogni volta. Ma più strati includi, più specifico e riproducibile diventa il risultato.</p>
+
+  <h3>Esempio: Prima e Dopo</h3>
+
+  <div class="code-label">Prompt debole</div>
+  <div class="code-block">musica elettronica rilassante con buone vibrazioni</div>
+
+  <div class="code-label">Prompt efficace (Suno v4)</div>
+  <div class="code-block">deep house, minimale, groove ipnotico, sub bass, hi-hat in levare, accordi filtrati, calore analogico, club notturno, niente voci</div>
+
+  <p>Stessa intenzione generale. Risultati completamente diversi. Il secondo prompt dà a Suno informazioni reali con cui lavorare a ogni livello del processo di generazione.</p>
+
+  <h2>La Versione Conta — Molto</h2>
+
+  <p>Uno degli errori più comuni degli utenti Suno è usare lo stesso stile di prompt per ogni versione. I modelli funzionano diversamente, e quello che funziona alla perfezione in v4 spesso produce risultati peggiori in v3, o migliori in v5 con una struttura diversa.</p>
+
+  <div class="version-grid">
+    <div class="version-card">
+      <div class="v-label">Suno v3</div>
+      <p>Corto e diretto. Max 6–8 parole chiave. Nessun descrittore di trama o struttura. Sotto i 60 caratteri.</p>
+    </div>
+    <div class="version-card">
+      <div class="v-label">Suno v4 / v4.5</div>
+      <p>Prompt completo e stratificato. 10–15 parole chiave. Fino a 120 caratteri. Includi genere, mood, strumenti, trama produttiva.</p>
+    </div>
+    <div class="version-card">
+      <div class="v-label">Suno v5</div>
+      <p>Linguaggio descrittivo ricco. 15–20 parole chiave. Fino a 150 caratteri. Può fare riferimento liberamente ad atmosfere sonore ed epoche produttive.</p>
+    </div>
+  </div>
+
+  <h2>Cosa Includere — e Cosa Evitare</h2>
+
+  <h3>Includi</h3>
+  <ul>
+    <li>Nomi di sottogeneri specifici ("afro house", "drill", "bossa nova", "darkwave")</li>
+    <li>Parole che descrivono il movimento del tempo ("incalzante", "a fuoco lento", "inarrestabile", "fluttuante")</li>
+    <li>Strumenti specifici per nome ("marimba", "TR-909", "contrabbasso", "oud")</li>
+    <li>Descrittori produttivi ("lo-fi", "overdrive", "mix ampio", "riverbero secco", "saturazione nastro")</li>
+    <li>Indicazioni strutturali per v4/v5 ("arrangiamento minimalista", "intro essenziale", "breakdown stratificato")</li>
+  </ul>
+
+  <h3>Evita</h3>
+  <ul>
+    <li><strong>Nomi di artisti</strong> — vietati dai termini di servizio di Suno, e il modello spesso li ignora comunque</li>
+    <li><strong>Titoli di brani</strong> — stesso problema</li>
+    <li><strong>Linguaggio narrativo</strong> — "una canzone sulla nostalgia che guida in città di notte" appartiene al campo dei testi, non dello stile</li>
+    <li><strong>Segnali contraddittori</strong> — "aggressivo e pacifico" o "veloce e lento" confondono il modello</li>
+    <li><strong>Troppi generi insieme</strong> — "jazz hip hop reggae afrobeats" è troppo per il modello da riconciliare in modo pulito</li>
+  </ul>
+
+  <div class="warn-box">
+    <div class="warn-label">Errore comune</div>
+    <p>Usare il campo Style of Music per descrivere la sensazione del brano invece della musica stessa. "Una canzone triste per una serata piovosa" non dice nulla di utile a Suno. "Ballata piano lenta in tonalità minore, archi essenziali, voce intima, riverbero caldo" sì.</p>
+  </div>
+
+  <h2>Esempi di Prompt per Genere</h2>
+
+  <h3>Tech House</h3>
+  <div class="code-block">tech house, groove incalzante, rolling bass, clap percussivi, synth stab filtrato, energia club, mix secco, loop ipnotico</div>
+
+  <h3>Dark R&B</h3>
+  <div class="code-block">dark R&B, tempo lento, 808 bass, vocal chop intonato, pad cupi, arrangiamento minimale, voce intima, hi-hat trap</div>
+
+  <h3>Afrobeats</h3>
+  <div class="code-block">afrobeats, uptempo, talking drum, chitarra brillante pizzicata, percussioni stratificate, voci in call and response, mix caldo</div>
+
+  <h3>Ambient Cinematico</h3>
+  <div class="code-block">ambient cinematico, sviluppo lento, archi orchestrali, piano essenziale, riverbero ampio, tensione e rilascio, niente batteria, niente voci</div>
+
+  <div class="cta-block">
+    <h2>Genera il Tuo Prompt Suno</h2>
+    <p>Scegli i tuoi parametri. Ottieni un prompt calibrato per versione in pochi secondi. Gratis da provare.</p>
+    <a href="/it/tool" class="cta-btn">Apri il Tool →</a>
+  </div>
+
+  <div class="related-links">
+    <h3>Altre Guide</h3>
+    <a href="/it/guida/suno-v4-vs-v5-prompt">Suno v4 vs v5: Cosa Cambia nei Prompt →</a>
+    <a href="/it/guida/cheat-sheet-prompt-suno">Cheat Sheet Prompt Suno — 50+ Parole Chiave che Funzionano →</a>
+  </div>
+</div>
+
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/it/tool">Tool</a>
+    <a href="/it/guida/">Guida</a>
+    <a href="/it/about">Chi siamo</a>
+    <a href="/it/privacy">Privacy</a>
+    <a href="/it/terms">Termini</a>
+    <a href="/en/">EN</a>
+    <a href="mailto:hello@supre.online">Contatto</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

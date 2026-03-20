@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Supre</title>
+<meta name="description" content="Privacy Policy di supre.online — come gestiamo dati, cookie, analytics e pagamenti.">
+<link rel="canonical" href="https://supre.online/it/privacy">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/privacy">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/privacy">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--border:#2a2a3a;--purple:#7b5cff;--text:#e8e8f0;--muted:#6b6b85;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.7;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(42,42,58,0.5);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--text);text-decoration:none;}
+.nav-logo span{color:var(--purple);}
+.page-wrap{max-width:740px;margin:0 auto;padding:64px 24px 80px;}
+.breadcrumb{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:32px;}
+.breadcrumb a{color:var(--purple);text-decoration:none;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:40px;letter-spacing:2px;color:var(--text);margin-bottom:8px;}
+.meta{font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-bottom:40px;padding-bottom:32px;border-bottom:1px solid var(--border);}
+h2{font-family:'Space Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--purple);text-transform:uppercase;margin:36px 0 12px;}
+p{color:#c8c8d8;margin-bottom:16px;font-size:15px;}
+ul{color:#c8c8d8;margin:0 0 16px 24px;font-size:15px;}
+li{margin-bottom:6px;}
+strong{color:var(--text);}
+a{color:var(--purple);}
+footer{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;border-top:1px solid rgba(42,42,58,0.5);flex-wrap:wrap;gap:12px;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--muted);}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+.footer-links a{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;}
+.footer-links a:hover{color:var(--purple);}
+.footer-copy{font-family:'Space Mono',monospace;font-size:10px;color:rgba(107,107,133,0.4);letter-spacing:1px;}
+@media(max-width:600px){nav{padding:14px 20px;}footer{padding:20px;flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+<nav><a href="/it/" class="nav-logo">SUPRE<span>.</span>ONLINE</a></nav>
+<div class="page-wrap">
+  <div class="breadcrumb"><a href="/it/">Home</a> / Privacy Policy</div>
+  <h1>Privacy Policy</h1>
+  <div class="meta">Ultimo aggiornamento: marzo 2026</div>
+
+  <p>Questa Privacy Policy descrive come supre.online ("Supre", "noi") raccoglie, utilizza e protegge le informazioni quando usi il nostro sito e servizio.</p>
+
+  <h2>1. Cosa Raccogliamo</h2>
+  <p><strong>Identificatori di sessione.</strong> Quando usi il tool, viene generato un UUID univoco memorizzato nel localStorage del tuo browser per tracciare il saldo crediti. Non è collegato a dati personali salvo indicazione esplicita da parte tua.</p>
+  <p><strong>Indirizzo email (opzionale).</strong> Se scegli di salvare il tuo ID sessione via email, memorizziamo un hash SHA-256 dell'indirizzo. Non viene memorizzato in chiaro. L'hash viene conservato per un massimo di un anno.</p>
+  <p><strong>Indirizzo IP.</strong> Usato transitoriamente per il rate limiting giornaliero (TTL massimo 24 ore). Non viene memorizzato permanentemente.</p>
+  <p><strong>Dati di utilizzo.</strong> Statistiche aggregate e anonimizzate: totale prompt generati, sessioni attive giornaliere. Non collegati a individui.</p>
+
+  <h2>2. Cookie Analitici e Pubblicitari</h2>
+  <p>Usiamo Google Analytics 4 e Google AdSense. Entrambi vengono caricati solo dopo consenso esplicito tramite il banner cookie. Quando il consenso è negato, nessuno script di tracking viene caricato e nessun cookie di profilazione viene impostato.</p>
+
+  <h2>3. Pagamenti</h2>
+  <p>I pagamenti sono elaborati da Stripe. Non raccogliamo né memorizziamo dati di carte di pagamento. Si applica la privacy policy di Stripe: <a href="https://stripe.com/privacy" target="_blank" rel="noopener">stripe.com/privacy</a>.</p>
+
+  <h2>4. Archiviazione dei Dati</h2>
+  <p>Dati di sessione e crediti sono memorizzati in Upstash Redis, database cloud ospitato nell'UE. Gli hash delle email vengono conservati per un massimo di un anno. Le chiavi di rate limiting scadono entro 24 ore.</p>
+
+  <h2>5. I Tuoi Diritti (GDPR)</h2>
+  <p>Hai il diritto di accedere, correggere o richiedere la cancellazione dei tuoi dati. Contattaci a <a href="mailto:hello@supre.online">hello@supre.online</a>.</p>
+
+  <h2>6. Servizi di Terze Parti</h2>
+  <ul>
+    <li><strong>Anthropic Claude API</strong> — generazione dei prompt.</li>
+    <li><strong>Stripe</strong> — elaborazione pagamenti.</li>
+    <li><strong>Google Analytics 4</strong> — analytics (subordinato a consenso).</li>
+    <li><strong>Google AdSense</strong> — pubblicità (subordinato a consenso).</li>
+    <li><strong>Resend</strong> — email transazionali.</li>
+  </ul>
+
+  <h2>7. Contatto</h2>
+  <p><a href="mailto:hello@supre.online">hello@supre.online</a></p>
+</div>
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/it/tool">Tool</a><a href="/it/guida/">Guida</a><a href="/it/about">Chi siamo</a>
+    <a href="/it/privacy">Privacy</a><a href="/it/terms">Termini</a>
+    <a href="/en/">EN</a><a href="mailto:hello@supre.online">Contatto</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

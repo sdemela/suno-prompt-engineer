@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chi Siamo — Supre, il Prompt Engineer per Suno AI</title>
+<meta name="description" content="Supre è un tool di prompt engineering per Suno AI. Scopri cosa fa, come funziona e perché la calibrazione per versione cambia i risultati in modo radicale.">
+<link rel="canonical" href="https://supre.online/it/about">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/about">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/about">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{--black:#0a0a0a;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--text:#e8e8f0;--muted:#6b6b85;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;line-height:1.7;}
+nav{display:flex;align-items:center;justify-content:space-between;padding:16px 40px;border-bottom:1px solid rgba(42,42,58,0.5);}
+.nav-logo{font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:3px;color:var(--text);text-decoration:none;}
+.nav-logo span{color:var(--purple);}
+.nav-cta{background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;border:none;border-radius:8px;padding:10px 24px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-decoration:none;display:inline-block;transition:opacity .2s;}
+.nav-cta:hover{opacity:.88;}
+.page-wrap{max-width:740px;margin:0 auto;padding:64px 24px 80px;}
+.breadcrumb{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:32px;}
+.breadcrumb a{color:var(--purple);text-decoration:none;}
+h1{font-family:'Bebas Neue',sans-serif;font-size:clamp(36px,6vw,56px);letter-spacing:2px;color:var(--text);margin-bottom:32px;}
+h2{font-family:'Bebas Neue',sans-serif;font-size:26px;letter-spacing:2px;color:var(--text);margin:48px 0 16px;}
+p{color:#c8c8d8;margin-bottom:20px;font-size:16px;}
+strong{color:var(--text);}
+.contact-block{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:28px;margin:40px 0;}
+.contact-block h2{margin-top:0;}
+.contact-block a{color:var(--purple);text-decoration:none;}
+.cta-block{background:linear-gradient(135deg,rgba(123,92,255,0.12),rgba(255,60,95,0.08));border:1px solid rgba(123,92,255,0.3);border-radius:12px;padding:32px;text-align:center;margin:48px 0 0;}
+.cta-block h2{margin-top:0;}
+.cta-block p{color:var(--muted);margin-bottom:24px;}
+.cta-btn{display:inline-block;background:linear-gradient(135deg,var(--purple),var(--accent));color:#fff;text-decoration:none;padding:14px 32px;border-radius:8px;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;}
+footer{display:flex;align-items:center;justify-content:space-between;padding:24px 40px;border-top:1px solid rgba(42,42,58,0.5);flex-wrap:wrap;gap:12px;}
+.footer-logo{font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;color:var(--muted);}
+.footer-links{display:flex;gap:24px;flex-wrap:wrap;}
+.footer-links a{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;}
+.footer-links a:hover{color:var(--purple);}
+.footer-copy{font-family:'Space Mono',monospace;font-size:10px;color:rgba(107,107,133,0.4);letter-spacing:1px;}
+@media(max-width:600px){nav{padding:14px 20px;}footer{padding:20px;flex-direction:column;align-items:flex-start;}}
+</style>
+</head>
+<body>
+<nav><a href="/it/" class="nav-logo">SUPRE<span>.</span>ONLINE</a><a href="/it/tool" class="nav-cta">PROVA GRATIS →</a></nav>
+<div class="page-wrap">
+  <div class="breadcrumb"><a href="/it/">Home</a> / Chi Siamo</div>
+  <h1>Chi Siamo</h1>
+  <p>Supre è un tool di prompt engineering per Suno AI. È stato costruito perché scrivere un buon prompt di stile per Suno è più difficile di quanto dovrebbe essere — e la maggior parte delle guide disponibili è generica, agnostica rispetto alla versione, e sbagliata metà delle volte.</p>
+  <p>Il tool ti permette di scegliere genere, mood, range di BPM, strumenti e versione Suno di destinazione, e genera un prompt Style of Music ottimizzato e calibrato per quella specifica versione del modello. Non un prompt generico — un prompt che tiene conto di come Suno v3, v4, v4.5 e v5 differiscono effettivamente nell'elaborare il campo di stile.</p>
+  <h2>Perché la Calibrazione per Versione Conta</h2>
+  <p>La maggior parte degli utenti Suno non si rende conto che lo stesso prompt performa in modo molto diverso tra le versioni. Un prompt stratificato e descrittivo che produce risultati eccellenti in v5 spesso suona sfocato o generico in v3 — perché v3 è stato addestrato su input più brevi e diretti. Supre gestisce questa calibrazione automaticamente: quando selezioni la versione Suno, la struttura dell'output, la lunghezza e lo stile del linguaggio cambiano di conseguenza.</p>
+  <h2>Come Funziona</h2>
+  <p>Supre usa il modello Claude AI sul backend per generare i prompt, ma il vero lavoro sta nel sistema — la tassonomia dei generi, le regole specifiche per versione, il vocabolario degli strumenti e la libreria delle texture produttive, costruiti e raffinati attraverso test estensivi con Suno su tutte le versioni disponibili.</p>
+  <h2>Per Chi È</h2>
+  <p>Per chiunque usi Suno AI seriamente — musicisti che esplorano la composizione assistita dall'AI, creator che hanno bisogno di musica di sottofondo, produttori che sperimentano con l'AI come strumento creativo, e chiunque abbia mai scritto "lo-fi chill beats" in Suno chiedendosi perché il risultato non somigliasse a quello che aveva in mente.</p>
+  <h2>Prezzi</h2>
+  <p>Supre è gratuito da provare — ogni utente ottiene 2 generazioni gratuite al giorno, senza account richiesto. Piani a pagamento disponibili: Starter (50 crediti, €1,99), Pro (150 crediti, €3,99) e Studio (400 crediti, €7,99). I crediti non scadono.</p>
+  <div class="contact-block">
+    <h2>Contatto</h2>
+    <p>Domande, feedback o problemi con il tool? Scrivici a <a href="mailto:hello@supre.online">hello@supre.online</a>. Leggiamo tutto.</p>
+  </div>
+  <div class="cta-block">
+    <h2>Prova il Tool</h2>
+    <p>Gratuito da iniziare. Nessun account richiesto.</p>
+    <a href="/it/tool" class="cta-btn">Apri Supre →</a>
+  </div>
+</div>
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/it/tool">Tool</a><a href="/it/guida/">Guida</a><a href="/it/about">Chi siamo</a>
+    <a href="/it/privacy">Privacy</a><a href="/it/terms">Termini</a>
+    <a href="/en/">EN</a><a href="mailto:hello@supre.online">Contatto</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>

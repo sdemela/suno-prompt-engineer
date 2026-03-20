@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Privacy Policy — Supre</title>
+<meta name="description" content="Privacy Policy for supre.online — how we handle data, cookies, analytics and payments.">
+<link rel="canonical" href="https://supre.online/en/privacy">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/privacy">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/privacy">
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root { --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a; --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85; }
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; }
+nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 40px; border-bottom: 1px solid rgba(42,42,58,0.5); }
+.nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 3px; color: var(--text); text-decoration: none; }
+.nav-logo span { color: var(--purple); }
+.page-wrap { max-width: 740px; margin: 0 auto; padding: 64px 24px 80px; }
+.breadcrumb { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 2px; color: var(--muted); text-transform: uppercase; margin-bottom: 32px; }
+.breadcrumb a { color: var(--purple); text-decoration: none; }
+h1 { font-family: 'Bebas Neue', sans-serif; font-size: 40px; letter-spacing: 2px; color: var(--text); margin-bottom: 8px; }
+.meta { font-family: 'Space Mono', monospace; font-size: 10px; color: var(--muted); margin-bottom: 40px; padding-bottom: 32px; border-bottom: 1px solid var(--border); }
+h2 { font-family: 'Space Mono', monospace; font-size: 13px; letter-spacing: 2px; color: var(--purple); text-transform: uppercase; margin: 36px 0 12px; }
+p { color: #c8c8d8; margin-bottom: 16px; font-size: 15px; }
+ul { color: #c8c8d8; margin: 0 0 16px 24px; font-size: 15px; }
+li { margin-bottom: 6px; }
+a { color: var(--purple); }
+footer { display: flex; align-items: center; justify-content: space-between; padding: 24px 40px; border-top: 1px solid rgba(42,42,58,0.5); flex-wrap: wrap; gap: 12px; }
+.footer-logo { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 3px; color: var(--muted); }
+.footer-links { display: flex; gap: 24px; flex-wrap: wrap; }
+.footer-links a { font-family: 'Space Mono', monospace; font-size: 10px; letter-spacing: 1px; color: var(--muted); text-decoration: none; }
+.footer-links a:hover { color: var(--purple); }
+.footer-copy { font-family: 'Space Mono', monospace; font-size: 10px; color: rgba(107,107,133,0.4); letter-spacing: 1px; }
+@media (max-width: 600px) { nav { padding: 14px 20px; } footer { padding: 20px; flex-direction: column; align-items: flex-start; } }
+</style>
+</head>
+<body>
+<nav>
+  <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
+</nav>
+<div class="page-wrap">
+  <div class="breadcrumb"><a href="/en/">Home</a> / Privacy Policy</div>
+  <h1>Privacy Policy</h1>
+  <div class="meta">Last updated: March 2026</div>
+
+  <p>This Privacy Policy describes how supre.online ("Supre", "we", "us") collects, uses, and protects information when you use our website and service.</p>
+
+  <h2>1. What We Collect</h2>
+  <p><strong>Session identifiers.</strong> When you use the tool, a unique session ID (UUID) is generated and stored in your browser's localStorage. This ID is used to track your credit balance if you purchase a paid plan. It is not linked to any personal information unless you choose to provide your email address.</p>
+  <p><strong>Email address (optional).</strong> If you choose to save your session ID by email, we store a cryptographic hash (SHA-256) of your email address. We do not store your email address in plaintext. This hash is retained for up to one year and allows you to recover your session ID if you lose it.</p>
+  <p><strong>IP address.</strong> We use your IP address to enforce the daily free-tier usage limit (2 generations per day). IP addresses are not stored permanently — they are used transiently as rate-limiting keys with a maximum TTL of 24 hours.</p>
+  <p><strong>Usage data.</strong> We collect aggregate, anonymized usage statistics: total number of prompts generated, daily active sessions. This data is not linked to individuals.</p>
+
+  <h2>2. Analytics and Advertising Cookies</h2>
+  <p>We use Google Analytics 4 (GA4) to understand how visitors use the site, and Google AdSense to display advertisements. Both services are loaded only after you provide explicit consent via the cookie banner on your first visit. You can change your consent choice at any time by clearing your browser's localStorage for supre.online.</p>
+  <p>When consent is granted, Google may set cookies and collect data in accordance with <a href="https://policies.google.com/privacy" target="_blank" rel="noopener">Google's Privacy Policy</a>.</p>
+  <p>When consent is denied, no analytics or advertising scripts are loaded. No tracking cookies are set.</p>
+
+  <h2>3. Payments</h2>
+  <p>Payments are processed by Stripe. When you purchase credits, you are redirected to a Stripe-hosted checkout page. We do not collect or store payment card information. Stripe's privacy policy applies to payment data: <a href="https://stripe.com/privacy" target="_blank" rel="noopener">stripe.com/privacy</a>.</p>
+  <p>After a successful payment, we receive a Stripe webhook event containing your email address and the purchased plan. Your email is hashed and stored as described above to link your purchase to your session ID.</p>
+
+  <h2>4. Data Storage</h2>
+  <p>Session and credit data is stored in Upstash Redis, a managed cloud database hosted in the EU. Email hashes are retained for up to one year. Rate-limiting keys expire automatically within 24 hours. No personal data is stored beyond what is described in this policy.</p>
+
+  <h2>5. Your Rights</h2>
+  <p>Under GDPR and applicable privacy law, you have the right to access, correct, or request deletion of any personal data we hold about you. Since we store only hashed email addresses, deletion requests require you to provide your email address or session ID so we can identify and remove the relevant records. Contact us at <a href="mailto:hello@supre.online">hello@supre.online</a> to exercise these rights.</p>
+
+  <h2>6. Third-Party Services</h2>
+  <ul>
+    <li><strong>Anthropic Claude API</strong> — used to generate prompts. Your form inputs are sent to Anthropic's API. Anthropic's privacy policy applies: <a href="https://www.anthropic.com/privacy" target="_blank" rel="noopener">anthropic.com/privacy</a>.</li>
+    <li><strong>Stripe</strong> — payment processing.</li>
+    <li><strong>Google Analytics 4</strong> — analytics (consent-gated).</li>
+    <li><strong>Google AdSense</strong> — advertising (consent-gated).</li>
+    <li><strong>Resend</strong> — transactional email delivery for session ID emails.</li>
+  </ul>
+
+  <h2>7. Children</h2>
+  <p>Supre is not directed at children under 13 years of age. We do not knowingly collect personal information from children. If you believe a child has provided us with personal information, contact us and we will delete it.</p>
+
+  <h2>8. Changes to This Policy</h2>
+  <p>We may update this policy from time to time. The "last updated" date at the top of this page reflects the most recent revision. Continued use of the service after changes constitutes acceptance of the updated policy.</p>
+
+  <h2>9. Contact</h2>
+  <p>Questions about this policy: <a href="mailto:hello@supre.online">hello@supre.online</a></p>
+</div>
+<footer>
+  <div class="footer-logo">SUPRE.ONLINE</div>
+  <div class="footer-links">
+    <a href="/en/tool">Tool</a>
+    <a href="/en/guide/">Guide</a>
+    <a href="/en/about">About</a>
+    <a href="/en/privacy">Privacy</a>
+    <a href="/en/terms">Terms</a>
+    <a href="/it/">IT</a>
+    <a href="mailto:hello@supre.online">Contact</a>
+  </div>
+  <div class="footer-copy">© 2026 supre.online</div>
+</footer>
+</body>
+</html>
