@@ -579,10 +579,12 @@ footer {
 
 <!-- STICKY HEADER: banner + nav -->
 <div id="site-header" style="position:sticky;top:0;z-index:100;background:rgba(10,10,10,0.97);backdrop-filter:blur(12px)">
-<div id="ph-banner" style="background:linear-gradient(90deg,rgba(228,184,74,0.12),rgba(228,184,74,0.06));border-bottom:1px solid rgba(228,184,74,0.2);padding:10px 24px;text-align:center;font-family:'Space Mono',monospace;font-size:12px;letter-spacing:1px">
-  <span style="color:#e4b84a">🔺 Featured on Product Hunt today</span>
-  <span style="color:#6b6b85;margin:0 12px">·</span>
-  <a href="https://www.producthunt.com/products/supre?launch=supre" target="_blank" rel="noopener" style="color:#e4b84a;text-decoration:underline;text-underline-offset:3px">Upvote & support →</a>
+<div id="ph-banner" style="background:linear-gradient(90deg,rgba(123,92,255,0.1),rgba(255,60,95,0.06));border-bottom:1px solid rgba(123,92,255,0.2);padding:10px 24px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;letter-spacing:1px">
+  <span style="color:var(--purple)">✦ NEW</span>
+  <span style="color:#6b6b85;margin:0 10px">·</span>
+  <span style="color:#9090aa">Read the guide:</span>
+  <span style="color:#6b6b85;margin:0 6px"></span>
+  <a href="/en/guide/how-to-write-suno-prompts" style="color:var(--text);text-decoration:underline;text-underline-offset:3px;transition:color .2s" onmouseover="this.style.color='var(--purple)'" onmouseout="this.style.color='var(--text)'">How to Write Suno Prompts That Actually Work →</a>
 </div>
 <nav style="position:relative;top:auto">
   <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
@@ -601,7 +603,7 @@ footer {
   <div class="hero-glow"></div>
   <div class="hero-glow2"></div>
 
-  <div class="hero-tag">AI Music Prompt Tool · Free to try</div>
+  <div class="hero-tag">AI Music Prompt Tool · Trusted by Suno Creators</div>
 
   <h1 class="hero-title">
     THE PROMPT<br>
@@ -611,7 +613,7 @@ footer {
   </h1>
 
   <p class="hero-sub">
-    Stop guessing the Style field. Pick your <strong>genre, mood, BPM and instruments</strong> — get a version-calibrated prompt for Suno v3, v4, v4.5 and v5 in seconds.
+    Stop guessing the Style field. Pick your <strong>genre, mood, BPM and instruments</strong> — get a version-calibrated prompt for Suno v3 through v5 in seconds. Built on the principles in our <a href="/en/guide/" style="color:var(--purple);text-decoration:underline;text-underline-offset:3px">Suno Prompt Guide →</a>
   </p>
 
   <div class="hero-cta-group">
@@ -640,12 +642,12 @@ footer {
 <!-- SOCIAL PROOF STRIP -->
 <div class="social-strip reveal">
   <div class="stat">
-    <div class="stat-n" style="color:#e4b84a">🔺<span style="font-size:18px;color:#e4b84a"> PH</span></div>
-    <div class="stat-l">Featured today</div>
+    <div class="stat-n">3</div>
+    <div class="stat-l">Guides published</div>
   </div>
   <div class="stat-div"></div>
   <div class="stat">
-    <div class="stat-n">4<span>x</span></div>
+    <div class="stat-n">5<span>+</span></div>
     <div class="stat-l">Suno versions</div>
   </div>
   <div class="stat-div"></div>
@@ -699,6 +701,44 @@ footer {
         <div class="testi-quote">"Tried v5 for the first time with a Supre prompt. The difference vs what I was writing manually is embarrassing. Especially the production texture language — Suno actually responded to it."</div>
         <div class="testi-author">— Sarah K., content creator · London</div>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- FROM THE GUIDE -->
+<section class="guide-section reveal" style="padding:100px 40px;background:var(--deep);">
+  <div style="max-width:1100px;margin:0 auto;">
+    <div class="section-tag">The Supre Guide</div>
+    <h2 class="section-title">LEARN THE<br>CRAFT.</h2>
+    <p class="section-sub" style="margin-bottom:56px;">Three deep dives on Suno prompt engineering — written by the team that built this tool.</p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px;">
+      <a href="/en/guide/how-to-write-suno-prompts" style="text-decoration:none;" class="guide-article-card">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:border-color .2s,transform .2s;" onmouseover="this.style.borderColor='rgba(123,92,255,0.4)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--purple);margin-bottom:12px;">📖 HOW-TO · 8 MIN READ</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--text);margin-bottom:10px;line-height:1.2;">How to Write Suno Prompts That Actually Work</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">The fundamentals: keyword density, prompt structure, and what Suno actually reads vs ignores. Start here.</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--purple);">Read the guide →</div>
+        </div>
+      </a>
+      <a href="/en/guide/suno-v4-vs-v5-prompts" style="text-decoration:none;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:border-color .2s,transform .2s;" onmouseover="this.style.borderColor='rgba(123,92,255,0.4)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--accent);margin-bottom:12px;">📊 COMPARISON · 6 MIN READ</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--text);margin-bottom:10px;line-height:1.2;">Suno v4 vs v5: What Changes in Prompt Style</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">Not all versions respond the same. Here's exactly what to write differently for v5 vs v4 — with examples.</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--accent);">Read the guide →</div>
+        </div>
+      </a>
+      <a href="/en/guide/suno-prompt-cheat-sheet" style="text-decoration:none;">
+        <div style="background:var(--card);border:1px solid var(--border);border-radius:14px;padding:28px;transition:border-color .2s,transform .2s;" onmouseover="this.style.borderColor='rgba(0,229,176,0.4)';this.style.transform='translateY(-4px)'" onmouseout="this.style.borderColor='var(--border)';this.style.transform='translateY(0)'">
+          <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--green);margin-bottom:12px;">⚡ CHEAT SHEET · 5 MIN READ</div>
+          <div style="font-family:'Bebas Neue',sans-serif;font-size:22px;letter-spacing:1px;color:var(--text);margin-bottom:10px;line-height:1.2;">Suno Prompt Cheat Sheet — 50+ Keywords That Work</div>
+          <div style="font-size:13px;color:var(--muted);line-height:1.7;margin-bottom:16px;">The words that reliably work across genres, moods and Suno versions. Bookmark this and stop guessing.</div>
+          <div style="font-family:'Space Mono',monospace;font-size:11px;color:var(--green);">Read the guide →</div>
+        </div>
+      </a>
+    </div>
+    <div style="text-align:center;margin-top:40px;">
+      <a href="/en/guide/" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--muted);text-decoration:none;border:1px solid var(--border);border-radius:8px;padding:12px 28px;display:inline-block;transition:border-color .2s,color .2s;" onmouseover="this.style.borderColor='var(--purple)';this.style.color='var(--text)'" onmouseout="this.style.borderColor='var(--border)';this.style.color='var(--muted)'">VIEW ALL GUIDES →</a>
     </div>
   </div>
 </section>
@@ -905,7 +945,7 @@ footer {
   <div class="faq-list">
     <div class="faq-item reveal">
       <div class="faq-q">What is a Suno Style prompt and why does it matter? <span class="faq-arrow">+</span></div>
-      <div class="faq-a">The Style of Music field in Suno is the most powerful parameter for shaping your track's sound. A well-crafted prompt gives Suno precise direction on genre, energy, instruments and texture. A bad prompt produces generic results. Suno Prompt Engineer generates prompts calibrated for each Suno version's specific behavior.</div>
+      <div class="faq-a">The Style of Music field in Suno is the most powerful parameter for shaping your track's sound. A well-crafted prompt gives Suno precise direction on genre, energy, instruments and texture. A bad prompt produces generic results. Suno Prompt Engineer generates prompts calibrated for each Suno version's specific behavior. → Deep dive: <a href="/en/guide/how-to-write-suno-prompts" style="color:var(--purple);text-decoration:underline;text-underline-offset:3px">How to Write Suno Prompts That Actually Work</a></div>
     </div>
     <!-- AdSense: Landing In-Article -->
 <div style="margin:40px auto;max-width:900px;padding:0 24px">
@@ -927,7 +967,7 @@ footer {
     </div>
     <div class="faq-item reveal">
       <div class="faq-q">What's the difference between the Suno versions? <span class="faq-arrow">+</span></div>
-      <div class="faq-a">Each version responds to different prompt styles. v3 needs short keyword lists, v4 and v4.5 work best with layered descriptors, while v5 understands natural language phrases and can handle richer sonic descriptions. Our engine adapts automatically.</div>
+      <div class="faq-a">Each version responds to different prompt styles. v3 needs short keyword lists, v4 and v4.5 work best with layered descriptors, while v5 understands natural language phrases and richer sonic descriptions. Our engine adapts automatically. → Full breakdown: <a href="/en/guide/suno-v4-vs-v5-prompts" style="color:var(--purple);text-decoration:underline;text-underline-offset:3px">Suno v4 vs v5 Prompt Guide</a></div>
     </div>
     <div class="faq-item reveal">
       <div class="faq-q">Can I use the generated prompts commercially? <span class="faq-arrow">+</span></div>
@@ -942,7 +982,11 @@ footer {
 
 <!-- CTA BAND -->
 <section class="cta-band reveal">
-  <div style="display:inline-block;background:rgba(228,184,74,0.12);border:1px solid rgba(228,184,74,0.3);border-radius:100px;padding:6px 16px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#e4b84a;margin-bottom:24px">🔺 LAUNCHED TODAY ON PRODUCT HUNT</div>
+  <div style="display:inline-flex;align-items:center;gap:16px;flex-wrap:wrap;justify-content:center;margin-bottom:28px;">
+    <span style="background:rgba(123,92,255,0.12);border:1px solid rgba(123,92,255,0.3);border-radius:100px;padding:6px 16px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--purple);">✦ 3 GUIDES</span>
+    <span style="background:rgba(0,229,176,0.08);border:1px solid rgba(0,229,176,0.25);border-radius:100px;padding:6px 16px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--green);">5 SUNO VERSIONS</span>
+    <span style="background:rgba(255,60,95,0.08);border:1px solid rgba(255,60,95,0.2);border-radius:100px;padding:6px 16px;font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--accent);">CREDITS NEVER EXPIRE</span>
+  </div>
   <h2>YOUR 2 FREE<br>GENERATIONS<br>ARE WAITING.</h2>
   <p>No signup. No credit card. Just better Suno prompts.</p>
   <a href="/en/tool" class="btn-primary">⚡ GENERATE YOUR FIRST PROMPT →</a>
