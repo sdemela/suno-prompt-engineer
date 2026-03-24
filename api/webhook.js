@@ -67,7 +67,7 @@ function verifyStripeSignature(rawBody, sig, secret) {
 
 // Upstash REST helpers
 async function redisIncrby(key, amount) {
-  const r = await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${key}/${amount}`, {
+  const r = await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${encodeURIComponent(key)}/${amount}`, {
     headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
   });
   const d = await r.json();

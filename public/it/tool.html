@@ -146,6 +146,15 @@ async function saveEmail(){
   } catch(e){ alert('Impossibile salvare l\'email. Controlla la connessione.'); }
 }
 </script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<meta name="theme-color" content="#0a0a0a">
+<link rel="canonical" href="https://supre.online/it/tool">
+<link rel="alternate" hreflang="it" href="https://supre.online/it/tool">
+<link rel="alternate" hreflang="en" href="https://supre.online/en/tool">
+<link rel="alternate" hreflang="x-default" href="https://supre.online/en/tool">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 :root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
@@ -530,14 +539,14 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
     </div>
   </div>
 </div>
-<button class="btn-gen" id="generateBtn">▶ GENERA PROMPT SUNO</button>
+<button class="btn-gen" id="generateBtn" aria-label="Genera il prompt Suno">▶ GENERA PROMPT SUNO</button>
 <div class="out-wrap" id="outputWrapper" style="display:none">
   <div style="height:1px;background:linear-gradient(90deg,transparent,var(--border),transparent);margin:32px 0 24px"></div>
   <div class="sec"><span>Prompt Generato</span></div>
   <div class="out-card">
     <div class="out-hdr">
       <span id="outLabel" style="font-family:'Space Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--purple);text-transform:uppercase">—</span>
-      <button class="cpbtn" id="copyBtn">Copia Prompt</button>
+      <button class="cpbtn" id="copyBtn" aria-label="Copia il prompt generato">Copia Prompt</button>
     </div>
     <div class="out-blk"><div class="out-blk-lbl">Style Prompt — paste in Suno "Style of Music"</div><div class="ptxt" id="promptText"></div></div>
     <div class="out-blk"><div class="out-blk-lbl">Technical Tags</div><div id="techTags"></div></div>
@@ -557,7 +566,7 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
       <div class="hist-hdr"><span class="hist-title">Prompt recenti</span><button class="hist-clear" id="histClear">clear</button></div>
       <div class="hist-list" id="histList"></div>
     </div>
-    <button class="btn-regen" id="regenBtn">↺ RIGENERA</button>
+    <button class="btn-regen" id="regenBtn" aria-label="Rigenera prompt con gli stessi parametri">↺ RIGENERA</button>
   </div>
 </div>
 <div style="margin-top:60px;text-align:center;font-family:'Space Mono',monospace;font-size:10px;color:var(--border);letter-spacing:2px;line-height:2">
@@ -700,7 +709,10 @@ function buildUserMessage(f){
   if(f.refDesc)parts.push('Reference description: '+f.refDesc);
   return parts.join('\n');
 }
+var _generating = false;
 async function generate(){
+  if(_generating) return;
+  _generating = true;
   var genre=document.getElementById('genre').value,era=document.getElementById('era').value.trim(),bpm=document.getElementById('bpm').value,key=document.getElementById('key').value,vs=document.getElementById('vocalStyle').value,vt=document.getElementById('vocalTex').value,vl=document.getElementById('vocalLang').value,extra=document.getElementById('extra').value.trim(),refDesc=document.getElementById('refDesc').value.trim();
   var substyles=getTags('substyle-tags'),moods=getTags('mood-tags'),energy=getTags('energy-tags'),timeSig=getTags('time-tags'),instrs=getTags('instr-tags'),mix=getTags('mix-tags'),struct=getTags('struct-tags');
   if(!genre&&substyles.length===0&&moods.length===0){alert('Seleziona almeno un genere o alcuni tag.');return;}
@@ -878,5 +890,24 @@ function showSuccessModal(credits,uuid){
   </div>
   <div style="font-family:Space Mono,monospace;font-size:10px;color:rgba(107,107,133,0.4);letter-spacing:1px;">© 2026 supre.online · P.IVA IT02838440903</div>
 </footer>
+<script>
+// Offline detection
+(function(){
+  function showOfflineBanner(show){
+    var b = document.getElementById('offlineBanner');
+    if(!b){
+      b = document.createElement('div');
+      b.id = 'offlineBanner';
+      b.style.cssText = 'position:fixed;top:0;left:0;right:0;z-index:9999;background:#ff3c5f;color:#fff;text-align:center;padding:10px 16px;font-family:Space Mono,monospace;font-size:11px;letter-spacing:2px;text-transform:uppercase;display:none;';
+      b.textContent = '⚠ NO INTERNET CONNECTION — Check your network';
+      document.body.appendChild(b);
+    }
+    b.style.display = show ? 'block' : 'none';
+  }
+  window.addEventListener('offline', function(){ showOfflineBanner(true); });
+  window.addEventListener('online',  function(){ showOfflineBanner(false); });
+  if(!navigator.onLine) showOfflineBanner(true);
+})();
+</script>
 </body>
 </html>

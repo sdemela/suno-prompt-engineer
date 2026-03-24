@@ -114,8 +114,22 @@ export default async function handler(req, res) {
   const totalLen = JSON.stringify(formData).length;
   if (totalLen > 3000) return res.status(400).json({ error: 'Input too long' });
 
+  // Per-field sanitization: truncate free-text fields to prevent prompt injection
+  const sanitize = (v, max) => typeof v === 'string' ? v.slice(0, max).replace(/[<>]/g, '') : v;
+  if (formData.genre)    formData.genre    = sanitize(formData.genre, 100);
+  if (formData.era)      formData.era      = sanitize(formData.era, 100);
+  if (formData.extra)    formData.extra    = sanitize(formData.extra, 500);
+  if (formData.refDesc)  formData.refDesc  = sanitize(formData.refDesc, 1000);
+  // Array fields: ensure they are actually arrays, cap item count
+  ['substyles','moods','energy','instruments','mix','structure'].forEach(k => {
+    if (!Array.isArray(formData[k])) formData[k] = [];
+    formData[k] = formData[k].slice(0, 20).map(s => sanitize(s, 60));
+  });
+
   // FIX #2: Only treat as paid user if UUID matches our format AND has credits in Redis
-  const isValidSpeUuid = uuid && typeof uuid === 'string' && uuid.startsWith('spe-') && uuid.length >= 15 && uuid.length <= 60;
+  // Sanitize uuid: strip anything outside alphanumeric/dash to prevent Redis key injection
+  const sanitizedUuid = uuid && typeof uuid === 'string' ? uuid.replace(/[^a-zA-Z0-9\-]/g, '').slice(0, 60) : '';
+  const isValidSpeUuid = sanitizedUuid && sanitizedUuid.startsWith('spe-') && sanitizedUuid.length >= 15;
 
   if (isValidSpeUuid) {
     // HMAC auth — verifica firma prima di consumare crediti paid
@@ -126,7 +140,7 @@ export default async function handler(req, res) {
 
     if (valid) {
       try {
-        const newCredits = await redisAtomicDecrIfPositive(`credits:${uuid}`);
+        const newCredits = await redisAtomicDecrIfPositive(`credits:${sanitizedUuid}`);
         if (newCredits === -3) {
           // Key doesn't exist — not a paid user, fall through to free tier
         } else if (newCredits === -1) {
@@ -140,7 +154,7 @@ export default async function handler(req, res) {
           } catch(anthropicErr) {
             // Rollback: reincrement the credit since generation failed
             try {
-              await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${encodeURIComponent(`credits:${uuid}`)}/1`, {
+              await fetchWithTimeout(`${process.env.UPSTASH_REDIS_REST_URL}/incrby/${encodeURIComponent(`credits:${sanitizedUuid}`)}/1`, {
                 headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` }
               });
             } catch(rollbackErr) {
@@ -266,7 +280,8 @@ function buildUserMessage(f) {
   if (f.instruments?.length) parts.push(`Instruments: ${f.instruments.join(', ')}`);
   if (f.mix?.length) parts.push(`Mix: ${f.mix.join(', ')}`);
   if (f.structure?.length) parts.push(`Structure: ${f.structure.join(', ')}`);
-  if (f.vocalStyle) parts.push(`Vocals: ${[f.vocalStyle, f.vocalTex, f.vocalLang].filter(Boolean).join(', ')}`);
+  const vocalParts = [f.vocalStyle, f.vocalTex, f.vocalLang].filter(Boolean);
+  if (vocalParts.length) parts.push(`Vocals: ${vocalParts.join(', ')}`);
   if (f.extra) parts.push(`Extra notes: ${f.extra}`);
   if (f.refDesc) parts.push(`Reference description: ${f.refDesc}`);
   return parts.join('\n');

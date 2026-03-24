@@ -56,14 +56,14 @@ export default async function handler(req, res) {
   const { valid } = verifyHMAC(uuid, sig);
   if (!valid) return res.status(401).json({ error: 'Invalid signature. Reload the page and try again.' });
 
-  const origin = lang === 'it' ? 'https://supre.online/it' : 'https://supre.online/en';
+  const origin = lang === 'it' ? 'https://supre.online/it/tool' : 'https://supre.online/en/tool';
   const params = new URLSearchParams({
     mode: 'payment',
     'line_items[0][price]': PACKAGES[pkg],
     'line_items[0][quantity]': '1',
     'metadata[uuid]': uuid,
-    success_url: `${origin}/?payment=success&session_id={CHECKOUT_SESSION_ID}`,
-    cancel_url: `${origin}/?payment=cancelled`,
+    success_url: `${origin}?payment=success&session_id={CHECKOUT_SESSION_ID}`,
+    cancel_url: `${origin}?payment=cancelled`,
     locale: lang === 'it' ? 'it' : 'en',
     'payment_method_types[0]': 'card',
     allow_promotion_codes: 'true',

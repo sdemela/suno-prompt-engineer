@@ -37,12 +37,47 @@ async function redisScan(pattern) {
   return keys;
 }
 
+// Rate limit helper for admin brute-force protection
+async function checkAdminRateLimit(ip) {
+  const key = `rl:admin:${ip}`;
+  const r = await fetchWithTimeout(
+    `${process.env.UPSTASH_REDIS_REST_URL}/incr/${encodeURIComponent(key)}`,
+    { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }
+  );
+  const d = await r.json();
+  const count = d.result;
+  if (count === 1) {
+    await fetchWithTimeout(
+      `${process.env.UPSTASH_REDIS_REST_URL}/expire/${encodeURIComponent(key)}/900`,
+      { headers: { Authorization: `Bearer ${process.env.UPSTASH_REDIS_REST_TOKEN}` } }
+    );
+  }
+  return count;
+}
+
+function getTrustedIp(req) {
+  const forwarded = req.headers['x-forwarded-for'];
+  if (forwarded) {
+    const ips = forwarded.split(',').map(s => s.trim()).filter(Boolean);
+    return ips[0] || 'unknown';
+  }
+  return req.socket?.remoteAddress || 'unknown';
+}
+
 export default async function handler(req, res) {
-  // CORS — only from same origin
   res.setHeader('X-Content-Type-Options', 'nosniff');
+  res.setHeader('X-Frame-Options', 'DENY');
+  res.setHeader('Cache-Control', 'no-store');
 
   if (req.method === 'OPTIONS') return res.status(200).end();
   if (req.method !== 'GET') return res.status(405).end();
+
+  // Rate limit: max 10 requests per 15 minutes per IP
+  const ip = getTrustedIp(req);
+  const rlCount = await checkAdminRateLimit(ip);
+  if (rlCount > 10) {
+    return res.status(429).json({ error: 'Too many requests' });
+  }
 
   // Auth via header only — never via query string (tokens in URLs end up in logs/history)
   const token = req.headers['x-admin-token'] || (req.headers['authorization'] || '').replace('Bearer ', '');
