@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="/theme.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -33,7 +34,6 @@
 <meta name="theme-color" content="#0a0a0a">
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root { --black: #0a0a0a; --deep: #111118; --card: #1c1c28; --border: #2a2a3a; --accent: #ff3c5f; --purple: #7b5cff; --green: #00e5b0; --text: #e8e8f0; --muted: #6b6b85; }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body { background: var(--black); color: var(--text); font-family: 'DM Sans', sans-serif; line-height: 1.7; overflow-x: hidden; }
@@ -120,11 +120,41 @@ footer { display: flex; align-items: center; justify-content: space-between; pad
   ]
 }
 </script>
+<script>
+(function(){
+  var saved = localStorage.getItem('spe_theme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  // Listen for system changes (only when no manual override)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e){
+    if(!localStorage.getItem('spe_theme')){
+      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      updateToggleIcon();
+    }
+  });
+})();
+function toggleTheme(){
+  var cur = document.documentElement.getAttribute('data-theme');
+  var next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('spe_theme', next);
+  updateToggleIcon();
+}
+function updateToggleIcon(){
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.querySelectorAll('.theme-toggle-icon').forEach(function(el){
+    el.textContent = isDark ? '🌙' : '☀️';
+  });
+}
+document.addEventListener('DOMContentLoaded', updateToggleIcon);
+</script>
 </head>
 <body>
 <nav>
   <a href="/en/" class="nav-logo">SUPRE<span>.</span>ONLINE</a>
   <a href="/en/tool" class="nav-cta">TRY FREE →</a>
+  <div style="display:flex;align-items:center;gap:7px"><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button><span class="theme-toggle-icon" style="font-size:13px;user-select:none;pointer-events:none">🌙</span></div>
 </nav>
 
 <div class="article-wrap">

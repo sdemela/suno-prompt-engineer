@@ -1,0 +1,281 @@
+/* ══════════════════════════════════════
+   SUPRE.ONLINE — THEME SYSTEM
+   Dark (default) + Light + Toggle
+   ══════════════════════════════════════ */
+
+/* ── DARK (default) ── */
+:root {
+  --black: #0a0a0a;
+  --deep:  #111118;
+  --card:  #1c1c28;
+  --border:#2a2a3a;
+  --accent:#ff3c5f;
+  --purple:#7b5cff;
+  --green: #00e5b0;
+  --text:  #e8e8f0;
+  --muted: #6b6b85;
+  --shadow: rgba(0,0,0,0.4);
+  --input-bg: #111118;
+  --select-arrow: %236b6b85;
+  color-scheme: dark;
+}
+
+/* ── LIGHT (system preference) ── */
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) {
+    --black: #f4f4f8;
+    --deep:  #eaeaf0;
+    --card:  #ffffff;
+    --border:#d0d0e0;
+    --accent:#e0163b;
+    --purple:#6246e5;
+    --green: #00a882;
+    --text:  #1a1a2e;
+    --muted: #6a6a88;
+    --shadow: rgba(0,0,0,0.12);
+    --input-bg: #f8f8fc;
+    --select-arrow: %236a6a88;
+    color-scheme: light;
+  }
+}
+
+/* ── LIGHT (manual toggle) ── */
+[data-theme="light"] {
+  --black: #f4f4f8;
+  --deep:  #eaeaf0;
+  --card:  #ffffff;
+  --border:#d0d0e0;
+  --accent:#e0163b;
+  --purple:#6246e5;
+  --green: #00a882;
+  --text:  #1a1a2e;
+  --muted: #6a6a88;
+  --shadow: rgba(0,0,0,0.12);
+  --input-bg: #f8f8fc;
+  --select-arrow: %236a6a88;
+  color-scheme: light;
+}
+
+/* ── DARK (manual override when system=light) ── */
+[data-theme="dark"] {
+  --black: #0a0a0a;
+  --deep:  #111118;
+  --card:  #1c1c28;
+  --border:#2a2a3a;
+  --accent:#ff3c5f;
+  --purple:#7b5cff;
+  --green: #00e5b0;
+  --text:  #e8e8f0;
+  --muted: #6b6b85;
+  --shadow: rgba(0,0,0,0.4);
+  --input-bg: #111118;
+  --select-arrow: %236b6b85;
+  color-scheme: dark;
+}
+
+/* ── TOGGLE BUTTON ── */
+.theme-toggle {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  width: 38px;
+  height: 22px;
+  cursor: pointer;
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+  transition: background .25s, border-color .25s;
+  flex-shrink: 0;
+}
+.theme-toggle::after {
+  content: '';
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: var(--purple);
+  transition: transform .25s, background .25s;
+  transform: translateX(0);
+}
+[data-theme="light"] .theme-toggle::after,
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) .theme-toggle::after {
+    transform: translateX(16px);
+  }
+}
+[data-theme="light"] .theme-toggle::after {
+  transform: translateX(16px);
+  background: var(--purple);
+}
+.theme-toggle-wrap {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.theme-toggle-icon {
+  font-size: 13px;
+  line-height: 1;
+  user-select: none;
+  pointer-events: none;
+}
+
+/* ── LIGHT MODE GLOBAL FIXES ── */
+[data-theme="light"] body,
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) body {
+    background: var(--black);
+    color: var(--text);
+  }
+}
+
+/* Hero gradient text — stay vibrant in both modes */
+[data-theme="light"] h1.hero-title em,
+[data-theme="light"] .hero-title em {
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Cards and modals in light mode */
+[data-theme="light"] .card,
+[data-theme="light"] .how-card,
+[data-theme="light"] .feat-card,
+[data-theme="light"] .testi-card,
+[data-theme="light"] .pkg-card,
+[data-theme="light"] .ver-card,
+[data-theme="light"] .ba-card {
+  box-shadow: 0 2px 12px var(--shadow);
+}
+
+/* Inputs in light mode */
+[data-theme="light"] select,
+[data-theme="light"] input[type="text"],
+[data-theme="light"] textarea,
+[data-theme="light"] input[type="email"] {
+  background: var(--input-bg);
+  color: var(--text);
+  border-color: var(--border);
+}
+
+/* Nav background in light mode */
+[data-theme="light"] #site-header,
+[data-theme="light"] nav {
+  background: rgba(244,244,248,0.97);
+}
+
+/* Prompt box in light mode */
+[data-theme="light"] .prompt-box {
+  background: #f0f0f8;
+  border-color: var(--border);
+  color: var(--purple);
+}
+
+/* Body noise overlay — lighter in light mode */
+[data-theme="light"] body::before {
+  opacity: 0.02;
+}
+
+/* Output box in light mode (tool) */
+[data-theme="light"] #outputBox {
+  background: #f0f0f8;
+  color: var(--purple);
+}
+
+/* Modals in light mode */
+[data-theme="light"] .modal-box,
+[data-theme="light"] .success-box,
+[data-theme="light"] .limit-box {
+  background: var(--card);
+  border-color: rgba(98,70,229,0.4);
+}
+
+/* ── STICKY HEADER BACKGROUND ── */
+#site-header {
+  background: rgba(10,10,10,0.97) !important;
+}
+[data-theme="light"] #site-header {
+  background: rgba(244,244,248,0.97) !important;
+}
+@media (prefers-color-scheme: light) {
+  :root:not([data-theme="dark"]) #site-header {
+    background: rgba(244,244,248,0.97) !important;
+  }
+}
+
+/* ── HERO GRADIENT TEXT (light mode fix) ── */
+[data-theme="light"] h1.hero-title em {
+  background: linear-gradient(135deg, var(--purple), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── TESTIMONIAL SECTION DARK BG (light mode) ── */
+[data-theme="light"] .testimonials-section,
+[data-theme="light"] .features-section,
+[data-theme="light"] .pricing-section {
+  background: var(--deep);
+}
+[data-theme="light"] .guide-section {
+  background: var(--deep);
+}
+
+/* ── COOKIE BANNER (light mode) ── */
+[data-theme="light"] #cookieBanner {
+  background: rgba(234,234,240,0.97) !important;
+  border-top: 1px solid var(--border) !important;
+}
+
+/* ── FOOTER (light mode) ── */
+[data-theme="light"] footer {
+  background: var(--black);
+  border-top: 1px solid var(--border);
+}
+
+/* ── WAVEFORM BARS ── */
+[data-theme="light"] .wbar {
+  background: var(--purple);
+}
+
+/* ── TOOL PAGE SPECIFIC ── */
+[data-theme="light"] .free-banner {
+  background: rgba(98,70,229,0.08);
+  border-color: rgba(98,70,229,0.3);
+}
+[data-theme="light"] .output-box,
+[data-theme="light"] #outputBox {
+  background: #ededf8;
+  color: var(--purple);
+}
+[data-theme="light"] .credits-bar {
+  background: rgba(98,70,229,0.08);
+  border-color: rgba(98,70,229,0.3);
+}
+
+/* ── PROMPT PREVIEW BOX (landing) ── */
+[data-theme="light"] .prompt-box {
+  background: #ededf8;
+  border-color: var(--border);
+  color: var(--purple);
+}
+[data-theme="light"] .prompt-cursor {
+  background: var(--purple);
+}
+
+/* ── BEFORE/AFTER CARDS ── */
+[data-theme="light"] .ba-card.bad {
+  background: rgba(224,22,59,0.04);
+  border-color: rgba(224,22,59,0.2);
+}
+[data-theme="light"] .ba-card.good {
+  background: rgba(0,168,130,0.04);
+  border-color: rgba(0,168,130,0.2);
+}
+
+/* ── GUIDE SECTION CARDS ── */
+[data-theme="light"] .article-card {
+  background: var(--card);
+  border-color: var(--border);
+  box-shadow: 0 2px 8px var(--shadow);
+}

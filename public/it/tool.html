@@ -2,6 +2,7 @@
 <html lang="it">
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" href="/theme.css">
 <link rel="icon" type="image/svg+xml" href="/favicon.svg">
 <link rel="icon" type="image/x-icon" href="/favicon.ico">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
@@ -157,7 +158,6 @@ async function saveEmail(){
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-:root{--black:#0a0a0a;--deep:#111118;--card:#1c1c28;--border:#2a2a3a;--accent:#ff3c5f;--purple:#7b5cff;--green:#00e5b0;--text:#e8e8f0;--muted:#6b6b85;}
 *{box-sizing:border-box;margin:0;padding:0;}
 body{background:var(--black);color:var(--text);font-family:'DM Sans',sans-serif;min-height:100vh;}
 a{color:var(--purple);text-decoration:none;}a:hover{text-decoration:underline;}
@@ -294,17 +294,17 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;hei
 .hist-cp{background:transparent;border:1px solid var(--border);color:var(--muted);padding:4px 10px;border-radius:5px;font-family:'Space Mono',monospace;font-size:10px;cursor:pointer;white-space:nowrap;flex-shrink:0;transition:all .15s;}
 .hist-cp:hover{border-color:var(--green);color:var(--green);}
 .success-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px;animation:fadeIn .3s ease}
-.success-box{background:#111118;border:1px solid rgba(123,92,255,.5);border-radius:16px;padding:32px;max-width:420px;width:100%;position:relative;box-shadow:0 0 60px rgba(123,92,255,.2)}
-.success-close{position:absolute;top:14px;right:16px;background:transparent;border:none;color:#3a3a5a;font-size:20px;cursor:pointer;line-height:1}
+.success-box{background:var(--deep);border:1px solid rgba(123,92,255,.5);border-radius:16px;padding:32px;max-width:420px;width:100%;position:relative;box-shadow:0 0 60px rgba(123,92,255,.2)}
+.success-close{position:absolute;top:14px;right:16px;background:transparent;border:none;color:var(--border);font-size:20px;cursor:pointer;line-height:1}
 .success-close:hover{color:#fff}
 .success-title{font-family:'Bebas Neue',sans-serif;font-size:28px;letter-spacing:3px;color:#fff;text-align:center;margin-bottom:4px}
 .success-credits{text-align:center;margin-bottom:20px}
 .success-credits-num{font-family:'Bebas Neue',sans-serif;font-size:56px;color:#7b5cff;line-height:1}
-.success-credits-sub{font-family:'Space Mono',monospace;font-size:11px;color:#6b6b85;letter-spacing:1px}
+.success-credits-sub{font-family:'Space Mono',monospace;font-size:11px;color:var(--muted);letter-spacing:1px}
 .success-session{background:#0a0a0f;border:1px solid #1e1e2e;border-radius:8px;padding:14px;margin-bottom:20px}
-.success-session-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#3a3a5a;text-transform:uppercase;margin-bottom:6px}
+.success-session-lbl{font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--border);text-transform:uppercase;margin-bottom:6px}
 .success-session-id{font-family:'Space Mono',monospace;font-size:11px;color:#7b5cff;word-break:break-all;margin-bottom:8px}
-.success-session-hint{font-size:10px;color:#3a3a5a;line-height:1.6}
+.success-session-hint{font-size:10px;color:var(--border);line-height:1.6}
 .success-cta{display:block;width:100%;padding:14px;background:linear-gradient(135deg,#7b5cff,#ff3c5f);border:none;border-radius:10px;color:#fff;font-family:'Bebas Neue',sans-serif;font-size:18px;letter-spacing:3px;cursor:pointer;transition:all .2s;text-align:center}
 .success-cta:hover{transform:translateY(-2px);box-shadow:0 8px 30px rgba(123,92,255,.4)}
 .cancelled-bar{position:fixed;top:0;left:0;right:0;background:#1a0a0a;border-bottom:1px solid rgba(255,60,95,.3);padding:10px 20px;text-align:center;font-family:'Space Mono',monospace;font-size:11px;color:#ff3c5f;z-index:200;letter-spacing:1px}
@@ -332,15 +332,45 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"WebApplication","name":"Suno Prompt Engineer","url":"https://supre.online/it/","description":"Generate precise prompts for Suno AI.","applicationCategory":"MusicApplication","operatingSystem":"Web","inLanguage":["en","it"],"publisher":{"@type":"Organization","name":"Supre Online","url":"https://supre.online"}}
 </script>
+<script>
+(function(){
+  var saved = localStorage.getItem('spe_theme');
+  var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  var theme = saved || (prefersDark ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-theme', theme);
+  // Listen for system changes (only when no manual override)
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', function(e){
+    if(!localStorage.getItem('spe_theme')){
+      document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+      updateToggleIcon();
+    }
+  });
+})();
+function toggleTheme(){
+  var cur = document.documentElement.getAttribute('data-theme');
+  var next = cur === 'dark' ? 'light' : 'dark';
+  document.documentElement.setAttribute('data-theme', next);
+  localStorage.setItem('spe_theme', next);
+  updateToggleIcon();
+}
+function updateToggleIcon(){
+  var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+  document.querySelectorAll('.theme-toggle-icon').forEach(function(el){
+    el.textContent = isDark ? '🌙' : '☀️';
+  });
+}
+document.addEventListener('DOMContentLoaded', updateToggleIcon);
+</script>
 </head>
 <body>
 <div class="container">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
-  <a href="/it/" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:#3a3a5a;text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color .2s" onmouseover="this.style.color='#7b5cff'" onmouseout="this.style.color='#3a3a5a'">← supre.online</a>
+  <a href="/it/" style="font-family:'Space Mono',monospace;font-size:10px;letter-spacing:2px;color:var(--border);text-decoration:none;display:inline-flex;align-items:center;gap:6px;transition:color .2s" onmouseover="this.style.color='#7b5cff'" onmouseout="this.style.color='var(--border)'">← supre.online</a>
   <div class="lang-btn">
     <a href="/en/tool" onclick="localStorage.setItem('spe_lang','en')">EN</a>
     <a href="/it/tool" class="active" onclick="localStorage.setItem('spe_lang','it')">IT</a>
   </div>
+  <div style="display:flex;align-items:center;gap:7px"><button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle theme"></button><span class="theme-toggle-icon" style="font-size:13px;user-select:none;pointer-events:none">🌙</span></div>
 </div>
 <div class="ad-top">
   <div class="ad-label">advertisement</div>
@@ -374,22 +404,22 @@ gtag('consent','default',{'analytics_storage':'denied','ad_storage':'denied','wa
   </div>
   <button class="buy-btn" onclick="openPricing()">+ Acquista</button>
 </div>
-<div id="sessionIdRow" style="display:none;background:#111118;border:1px solid #2a2a3a;border-radius:8px;padding:14px 16px;margin-top:6px">
+<div id="sessionIdRow" style="display:none;background:var(--deep);border:1px solid var(--border);border-radius:8px;padding:14px 16px;margin-top:6px">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:12px">
     <div>
-      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:3px">Il tuo Session ID — salvalo per ripristinare i crediti su altri browser</div>
+      <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:3px">Il tuo Session ID — salvalo per ripristinare i crediti su altri browser</div>
       <div style="font-family:'Space Mono',monospace;font-size:11px;color:#7b5cff;word-break:break-all" id="sessionIdDisplay"></div>
     </div>
-    <button onclick="copySessionId()" style="background:none;border:1px solid #2a2a3a;color:#6b6b85;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;white-space:nowrap" id="copySessionBtn">Copia ID</button>
+    <button onclick="copySessionId()" style="background:none;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Space Mono',monospace;font-size:10px;white-space:nowrap" id="copySessionBtn">Copia ID</button>
   </div>
   <div style="border-top:1px solid #1c1c28;padding-top:12px">
-    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:#6b6b85;text-transform:uppercase;margin-bottom:8px">🔐 Salva i tuoi crediti via email — opzionale</div>
+    <div style="font-family:'Space Mono',monospace;font-size:9px;letter-spacing:2px;color:var(--muted);text-transform:uppercase;margin-bottom:8px">🔐 Salva i tuoi crediti via email — opzionale</div>
     <div id="emailSaveArea">
       <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <input type="email" id="emailInput" placeholder="tua@email.com" style="flex:1;min-width:180px;background:#0a0a0a;border:1px solid #2a2a3a;border-radius:6px;color:#e8e8f0;font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none">
+        <input type="email" id="emailInput" placeholder="tua@email.com" style="flex:1;min-width:180px;background:var(--black);border:1px solid var(--border);border-radius:6px;color:var(--text);font-family:'Space Mono',monospace;font-size:11px;padding:8px 12px;outline:none">
         <button onclick="saveEmail()" style="background:var(--purple);border:none;color:#fff;border-radius:6px;padding:8px 16px;cursor:pointer;font-family:'Space Mono',monospace;font-size:11px;white-space:nowrap">Invia ID via email</button>
       </div>
-      <div style="font-family:'Space Mono',monospace;font-size:10px;color:#6b6b85;margin-top:6px">Ti manderemo il Session ID così potrai ripristinare i crediti su qualsiasi dispositivo.</div>
+      <div style="font-family:'Space Mono',monospace;font-size:10px;color:var(--muted);margin-top:6px">Ti manderemo il Session ID così potrai ripristinare i crediti su qualsiasi dispositivo.</div>
     </div>
     <div id="emailSaved" style="display:none;font-family:'Space Mono',monospace;font-size:11px;color:#00e5b0">✓ Session ID inviato alla tua email.</div>
   </div>
@@ -764,7 +794,7 @@ async function generate(){
     var h='';
     if(audioFileName)h+='📎 <strong>'+esc(audioFileName)+'</strong> — upload in Suno via <strong style="color:#00e5b0">Upload audio</strong><br>';
     if(refDesc)h+='📝 Reference description used for AI keyword extraction.<br>';
-    h+='<span style="color:#6b6b85;font-size:11px">→ Title and artist stay private.</span>';
+    h+='<span style="color:var(--muted);font-size:11px">→ Title and artist stay private.</span>';
     document.getElementById('refContent').innerHTML=h;
     document.getElementById('refBlock').style.display='block';
   }else{document.getElementById('refBlock').style.display='none';}
@@ -878,15 +908,15 @@ function showSuccessModal(credits,uuid){
 }
 </script>
 <footer style="padding:16px 32px;border-top:1px solid rgba(42,42,58,0.5);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;z-index:1;">
-  <div style="font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:3px;color:#6b6b85;">SUPRE.ONLINE</div>
+  <div style="font-family:Bebas Neue,sans-serif;font-size:16px;letter-spacing:3px;color:var(--muted);">SUPRE.ONLINE</div>
   <div style="display:flex;gap:20px;flex-wrap:wrap;">
-    <a href="/it/" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:#6b6b85;text-decoration:none;">Home</a>
-    <a href="/it/guida/" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:#6b6b85;text-decoration:none;">Guida</a>
-    <a href="/it/about" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:#6b6b85;text-decoration:none;">Chi siamo</a>
-    <a href="/it/privacy" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:#6b6b85;text-decoration:none;">Privacy</a>
-    <a href="/it/terms" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:#6b6b85;text-decoration:none;">Termini</a>
-    <a href="/en/tool" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:#6b6b85;text-decoration:none;">EN</a>
-    <a href="mailto:hello@supre.online" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:#6b6b85;text-decoration:none;">Contatto</a>
+    <a href="/it/" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;">Home</a>
+    <a href="/it/guida/" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;">Guida</a>
+    <a href="/it/about" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;">Chi siamo</a>
+    <a href="/it/privacy" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;">Privacy</a>
+    <a href="/it/terms" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;">Termini</a>
+    <a href="/en/tool" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;">EN</a>
+    <a href="mailto:hello@supre.online" style="font-family:Space Mono,monospace;font-size:10px;letter-spacing:1px;color:var(--muted);text-decoration:none;">Contatto</a>
   </div>
   <div style="font-family:Space Mono,monospace;font-size:10px;color:rgba(107,107,133,0.4);letter-spacing:1px;">© 2026 supre.online · P.IVA IT02838440903</div>
 </footer>
